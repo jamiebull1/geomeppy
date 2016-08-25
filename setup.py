@@ -56,6 +56,7 @@ setup(
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # used for geometry intersection
         "transforms3d",  # used for geometry tranformations
+        "matplotlib",  # for a simple geometry viewer
         ],
     classifiers = [
         'Programming Language :: Python :: 2',

@@ -7,28 +7,28 @@ dist: trusty
 sudo: required 
 
 env:
-  - PYTHON=2.7 NUMPY=numpy ENERGYPLUS_VERSION=8.5.0 ENERGYPLUS_SHA=c87e61b44b ENERGYPLUS_INSTALL_VERSION=8-5-0
-  - PYTHON=2.7 NUMPY=tinynumpy ENERGYPLUS_VERSION=8.5.0 ENERGYPLUS_SHA=c87e61b44b ENERGYPLUS_INSTALL_VERSION=8-5-0
-  - PYTHON=3.5 NUMPY=numpy ENERGYPLUS_VERSION=8.5.0 ENERGYPLUS_SHA=c87e61b44b ENERGYPLUS_INSTALL_VERSION=8-5-0
-  - PYTHON=3.5 NUMPY=tinynumpy ENERGYPLUS_VERSION=8.5.0 ENERGYPLUS_SHA=c87e61b44b ENERGYPLUS_INSTALL_VERSION=8-5-0
+  - PYTHON=2.7 
+  - PYTHON=3.5
 
 before_install:
-  # activate virtual env
-  - if [[ $PYTHON == 2* ]]; then virtualenv venv -p python; fi
-  - if [[ $PYTHON == 3* ]]; then virtualenv venv -p python3; fi
-  - source venv/bin/activate
-
+  # miniconda
+  - travis_retry wget http://repo.continuum.io/miniconda/Miniconda-3.8.3-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+  
+  # create miniconda env
+  - conda create --yes -n geomeppy python=$PYTHON
+  - source activate geomeppy
+  - conda install --yes numpy matplotlib pip
+  
   # coverage and testing requirements
-  - pip install --upgrade pip
-  - pip install --upgrade setuptools
   - pip install pytest-cov
   - pip install codecov
-  
 
 install:
   - python setup.py install 
-  # install numpy and remove tinynumpy if testing with numpy
-  - if [[ $NUMPY == numpy ]]; then pip install numpy; pip uninstall tinynumpy -y; fi
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir
@@ -37,6 +37,5 @@ script:
 after_success:
   # coverage reporting on CodeCov 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]] &&
-       [[ $PYTHON == 3* ]] &&
-       [[ $NUMPY == numpy ]]; then codecov; fi
+       [[ $PYTHON == 2* ]]; then codecov; fi
     

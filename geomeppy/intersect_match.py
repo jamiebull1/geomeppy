@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import normalize_coords
 from itertools import combinations
-import itertools
+from itertools import product
 
 from six.moves import zip_longest
 
@@ -45,7 +45,7 @@ def intersect_idf_surfaces(idf):
         clockwise = ggr[0].Vertex_Entry_Direction
     else:
         clockwise = 'counterclockwise'
-    for s1, s2 in itertools.combinations(surfaces, 2):
+    for s1, s2 in combinations(surfaces, 2):
         # get a point outside the zone, assuming surface is oriented correctly
         outside_s1 = s1[1].outside_point(clockwise)
         outside_s2 = s2[1].outside_point(clockwise)
@@ -119,24 +119,11 @@ def is_hole(s1, s2, intersect):
 
     """
     s1_touches = any([c[0].is_collinear(c[1]) 
-                      for c in itertools.product(s1.edges, intersect.edges)])
+                      for c in product(s1.edges, intersect.edges)])
     s2_touches = any([c[0].is_collinear(c[1]) 
-                      for c in itertools.product(s2.edges, intersect.edges)])
+                      for c in product(s2.edges, intersect.edges)])
 
     return not all([s1_touches, s2_touches])
-
-def test_is_hole():
-    """Test if a surface represents a hole in one of the surfaces.
-    """
-    poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-    poly2 = Polygon3D([(3,3,0),(3,1,0),(1,1,0),(1,3,0)])
-    intersect = Polygon3D([(3,3,0),(1,3,0),(1,1,0),(3,1,0)])
-    assert is_hole(poly1, poly2, intersect)
-
-    poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-    poly2 = Polygon3D([(3,3,0),(3,1,0),(0,1,0),(0,3,0)])
-    intersect = Polygon3D([(3,3,0),(0,3,0),(0,1,0),(3,1,0)])
-    assert not is_hole(poly1, poly2, intersect)
 
 
 def set_coords(surface, poly, outside_pt, ggr=None):
@@ -161,10 +148,12 @@ def set_coords(surface, poly, outside_pt, ggr=None):
     poly = normalize_coords(poly, outside_pt, ggr)
     coords = [i for vertex in poly for i in vertex]
     # find the vertex fields
-    n_vertices_index = surface.fieldnames.index('Number_of_Vertices')
+    n_vertices_index = surface.objls.index('Number_of_Vertices')
+#    n_vertices_index = surface.fieldnames.index('Number_of_Vertices')
     last_z = len(surface.obj)
     first_x = n_vertices_index + 1 # X of first coordinate
-    vertex_fields = surface.fieldnames[first_x:last_z] # Z of final coordinate
+    vertex_fields = surface.objls[first_x:last_z] # Z of final coordinate
+#    vertex_fields = surface.fieldnames[first_x:last_z] # Z of final coordinate
     
     # set the vertex field values
     for field, x in zip_longest(vertex_fields, coords, fillvalue=""):
@@ -173,7 +162,6 @@ def set_coords(surface, poly, outside_pt, ggr=None):
 
 def getidfsurfaces(idf):
     """Return all surfaces in an IDF.
-    
     """
     surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
     return surfaces

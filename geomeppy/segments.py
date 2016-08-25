@@ -5,9 +5,7 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """
-Heavy lifting geometry for IDF surfaces.
-
-PyClipper is used for clipping.
+Segment class, representing a line segment.
 
 """
 
@@ -28,19 +26,18 @@ class Segment(object):
         self.p1 = vertices[0]
         self.p2 = vertices[1]
     
-    @property
-    def direction(self):
-        return self.p2 - self.p2
-    
     def __repr__(self):
         class_name = type(self).__name__
-        return '{}({!r})'.format(class_name, self.vertices)
+        return '{}({}, {})'.format(class_name, self.p1, self.p2)
     
     def __neg__(self):
         return Segment(self.p2, self.p1)
     
     def __iter__(self):
         return (i for i in self.vertices)
+    
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
     
     def is_collinear(self, other):
         if almostequal(other, self) or almostequal(other, -self):
@@ -74,40 +71,3 @@ class Segment(object):
             if self.is_collinear(edge):
                 return True
         return False
-
-def test_collinear():
-    # same line
-    edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    edge2 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    assert edge1.is_collinear(edge2)
-
-    # opposite line
-    edge1 = Segment(Vector3D(1,1,1), Vector3D(0,0,0))
-    edge2 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    assert edge1.is_collinear(edge2)
-
-    # edge1 is longer
-    edge1 = Segment(Vector3D(0,0,0), Vector3D(4,4,4))
-    edge2 = Segment(Vector3D(1,1,1), Vector3D(2,2,2))
-    assert edge1.is_collinear(edge2)
-
-    # same start point, different lengths
-    edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    edge2 = Segment(Vector3D(0,0,0), Vector3D(2,2,2))
-    assert edge1.is_collinear(edge2)
-    
-    # something being missed
-    edge1 = Segment(Vector3D(1,4,0), Vector3D(1,0,0))
-    edge2 = Segment(Vector3D(1,0,0), Vector3D(1,2,0))
-    assert edge1.is_collinear(edge2)
-    
-    # parallel
-    edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    edge2 = Segment(Vector3D(1,0,0), Vector3D(2,1,1))
-    assert not edge1.is_collinear(edge2)
-
-    
-    
-    
-    
-

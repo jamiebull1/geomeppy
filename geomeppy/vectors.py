@@ -12,10 +12,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-try:
-    import numpy as np
-except ImportError:
-    import tinynumpy.tinynumpy as np
+import numpy as np
 
 
 class Vector2D(object):

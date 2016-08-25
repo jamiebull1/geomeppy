@@ -62,7 +62,6 @@ def test_polygons_not_equal():
     # different normal vector
     poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
     poly3d_2 = Polygon3D([(0,0,2), (0,1,2), (1,1,2), (1,0,2)])
-    result = poly3d.normal_vector == poly3d_2.normal_vector
     assert poly3d.normal_vector != poly3d_2.normal_vector
     assert poly3d != poly3d_2
     # different distance

@@ -10,27 +10,20 @@ Heavy lifting geometry for IDF surfaces.
 PyClipper is used for clipping.
 
 """
-# keep imports which rely on numpy isolated
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 from geomeppy.segments import Segment
+from geomeppy.transformations import reorder_ULC
 from geomeppy.vectors import Vector2D
 from geomeppy.vectors import Vector3D
-from geomeppy.vectors import inverse_vector
 from geomeppy.vectors import normalise_vector
-import pyclipper as pc
 from tests.pytest_helpers import almostequal
 
-
-try:
-    import numpy as np
-    from geomeppy.transformations import reorder_ULC
-except ImportError:
-    import tinynumpy.tinynumpy as np
+import numpy as np
+import pyclipper as pc
 
 
 class Polygon(object):
