@@ -12,14 +12,62 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.polygons import Polygon3D
-from geomeppy.polygons import normalize_coords
+from collections import defaultdict
 from itertools import combinations
 from itertools import product
+
+from devtools.view_geometry import view_polygons
+from eppy.geometry.surface import area
+from geomeppy.polygons import Polygon3D
+from geomeppy.polygons import break_polygons
+from geomeppy.polygons import normalize_coords
+from geomeppy.vectors import Vector3D
+from tests.pytest_helpers import almostequal
 
 from six.moves import zip_longest
 
 
+def match_idf_surfaces(idf):
+    """Match all surfaces in an IDF.
+    
+    Parameters
+    ----------
+    idf : IDF object
+        The IDF.
+    
+    """
+    surfaces = getidfsurfaces(idf)
+    for s1 in surfaces:
+        poly1 = Polygon3D(s1.coords)
+        s1.View_Factor_to_Ground = 'autocalculate'
+        for s2 in surfaces:
+            if s1 is s2:
+                continue
+            poly2 = Polygon3D(s2.coords)
+            if poly1 == poly2.invert_orientation():
+                s1.Outside_Boundary_Condition = 'surface'
+                s1.Outside_Boundary_Condition_Object = s2.Name
+                s1.Sun_Exposure = 'NoSun'
+                s1.Wind_Exposure = 'NoWind'
+                break
+
+            if almostequal(poly1.normal_vector, Vector3D(0.0, 0.0, -1.0)):
+                s1.Outside_Boundary_Condition_Object = ''
+                if min(poly1.zs) <= 0:  # adjacent to ground
+                    s1.Outside_Boundary_Condition = 'ground'
+                    s1.Sun_Exposure = 'NoSun'
+                    s1.Wind_Exposure = 'NoWind'
+                else:
+                    s1.Outside_Boundary_Condition = 'outdoors'
+                    s1.Sun_Exposure = 'NoSun'
+                    s1.Wind_Exposure = 'WindExposed'
+            else:
+                s1.Outside_Boundary_Condition = 'outdoors'
+                s1.Outside_Boundary_Condition_Object = ''
+                s1.Sun_Exposure = 'SunExposed'
+                s1.Wind_Exposure = 'WindExposed'
+
+            
 def intersect_idf_surfaces(idf):
     """Intersect all surfaces in an IDF.
     
@@ -28,137 +76,175 @@ def intersect_idf_surfaces(idf):
     idf : IDF object
         The IDF.
     
-    Returns
-    -------
-    IDF object
-    
     """
     surfaces = getidfsurfaces(idf)
-    """
-    @TODO: Add the Polygon3D as a field for all EPlus building surfaces so we
-    can call surface1.poly.intersect(surface2.poly) and avoid all the indexing
-    in the code below.
-    """ 
-    surfaces = [[s, Polygon3D(s.coords)] for s in surfaces]
-    ggr = idf.idfobjects['GLOBALGEOMETRYRULES']
-    if ggr:
-        clockwise = ggr[0].Vertex_Entry_Direction
-    else:
-        clockwise = 'counterclockwise'
-    for s1, s2 in combinations(surfaces, 2):
-        # get a point outside the zone, assuming surface is oriented correctly
-        outside_s1 = s1[1].outside_point(clockwise)
-        outside_s2 = s2[1].outside_point(clockwise)
+    # get all the intersected surfaces
+    adjacencies = get_adjacencies(surfaces)
+    for surface in adjacencies:
+        key, name = surface
+        new_surfaces = adjacencies[surface][0]
+        old_obj = idf.getobject(key.upper(), name)
+        for i, new_coords in enumerate(new_surfaces, 1):
+            new = idf.copyidfobject(old_obj)
+            new.Name = "%s_%i" % (name, i)
+            set_coords(new, new_coords)
+        idf.removeidfobject(old_obj)    
 
-        if not s1[1].is_coplanar(s2[1]):
-            continue
-        intersects = s1[1].intersect(s2[1])
-        if not intersects:
-            continue
-        # create new surfaces for the intersects, and their reflections
-        for i, intersect in enumerate(intersects, 1):
-            """
-            @TODO: Check the intersection touches an edge of both surfaces.
-            If it doesn't touch an edge then we need to make subsurfaces as 
-            doors in each surface, or split the subsurface.
-            """
-            if is_hole(s1[1], s2[1], intersect):
-                # split surface with a hole in it, or make it a subsurface
-                print("subsurface - continuing")
-                continue
-            else:
-                # regular intersection
-                new_name = "%s_%s_%i" % (s1[0].Name, 'new', i)
-                new_inv_name = "%s_%s_%i" % (s2[0].Name, 'new', i)
-                # intersection
-                new = idf.copyidfobject(s1[0])
-                new.Name = new_name
-                set_coords(new, intersect, outside_s2, ggr)
-                new.Outside_Boundary_Condition = "Surface"
-                new.Outside_Boundary_Condition_Object = new_inv_name
-                # inverted intersection
-                new_inv = idf.copyidfobject(s2[0])
-                new_inv.Name = new_inv_name
-                new_inv.Outside_Boundary_Condition = "Surface"
-                new_inv.Outside_Boundary_Condition_Object = new_name
-                set_coords(new_inv,
-                           intersect.invert_orientation(),
-                           outside_s2, ggr)
-        # edit the original two surfaces
-        s1_new = s1[1].difference(s2[1])
-        s2_new = s2[1].difference(s1[1])
-        if s1_new:
-            # modify the original s1[0]
-            set_coords(s1[0], s1_new[0], outside_s1, ggr)
-        if s2_new:
-            # modify the original s2[0]
-            set_coords(s2[0], s2_new[0], outside_s2, ggr)
-    
-    
-def is_hole(s1, s2, intersect):
-    """Identify if intersect is a hole in either of the surfaces.
-    
-    Check the intersection touches an edge of both surfaces. If it doesn't then
-    it represents a hole in one of the surfaces, and this needs further
-    processing into valid EnergyPlus surfaces.
+
+def get_adjacencies(surfaces):
+    """Create a dictionary mapping surfaces to their adjacent surfaces.
     
     Parameters
     ----------
-    s1 : Polygon3D
+    surfaces : IdfMSequence
+        A mutable list of surfaces.
+    
+    Returns
+    -------
+    dict
+    
+    """
+    adjacencies = defaultdict(list)
+    # find all adjacent surfaces
+    for s1, s2 in combinations(surfaces, 2):
+        adjacencies = populate_adjacencies(adjacencies, s1, s2)
+    # make sure we have only unique surfaces
+    for surface in adjacencies:
+        adjacencies[surface] = unique(adjacencies[surface])
+
+    return adjacencies
+
+def populate_adjacencies(adjacencies, s1, s2):
+    """Update the adjacencies dict with any intersections between two surfaces.
+    
+    Parameters
+    ----------
+    adjacencies : dict
+        Dict to contain lists of adjacent surfaces.
+    s1 : EPBunch
+        Object representing an EnergyPlus surface.
+    s2 : EPBunch
+        Object representing an EnergyPlus surface.
+    
+    Returns
+    -------
+    dict
+    
+    """
+    poly1 = Polygon3D(s1.coords)
+    poly2 = Polygon3D(s2.coords)
+    intersection = poly1.intersect(poly2)
+    if intersection:
+        new_surfaces = intersect(poly1, poly2)
+        new_s1 = [s for s in new_surfaces 
+                  if almostequal(s.normal_vector, poly1.normal_vector)]
+        new_s2 = [s for s in new_surfaces 
+                  if almostequal(s.normal_vector, poly2.normal_vector)]
+        adjacencies[(s1.key, s1.Name)] += new_s1
+        adjacencies[(s2.key, s2.Name)] += new_s2
+    return adjacencies
+
+
+def intersect(poly1, poly2):
+    """Calculate the polygons to represent the intersection of two polygons.
+    
+    Parameters
+    ----------
+    poly1 : Polygon3D
+        The first polygon.
+    poly2 : Polygon3D
+        The second polygon.
+    
+    Returns
+    -------
+    list
+        A list of unique polygons.
+        
+    """
+    polys = []
+    polys.extend(poly1.intersect(poly2))
+    polys.extend(poly2.intersect(poly1))
+    if is_hole(poly1, poly2):
+        polys.extend(break_polygons(poly1, poly2))
+    elif is_hole(poly2, poly1):
+        polys.extend(break_polygons(poly2, poly1))
+    else:
+        polys.extend(poly1.difference(poly2))
+        polys.extend(poly2.difference(poly1))
+    polys = unique(*polys)
+    return polys
+
+
+def unique(*polys):
+    """Make a unique set of polygons.
+    
+    Parameters
+    ----------
+    *polys : 
+    
+    Returns
+    -------
+    list
+    
+    """
+    result = []
+    for poly in polys:
+        if poly not in result:
+            result.append(poly)
+    return result
+
+
+def is_hole(surface, possible_hole):
+    """Identify if an intersection is a hole in the surface.
+    
+    Check the intersection touches an edge of the surface. If it doesn't then
+    it represents a hole, and this needs further processing into valid
+    EnergyPlus surfaces.
+    
+    Parameters
+    ----------
+    surface : Polygon3D
         The first surface.
 
-    s2 : Polygon3D
-        The second surface.
-
-    intersect : Polygon3D
-        The intersection between the two surfaces.
+    possible_hole : Polygon3D
+        The intersection into the surface.
         
     Returns
     -------
     bool
 
     """
-    s1_touches = any([c[0].is_collinear(c[1]) 
-                      for c in product(s1.edges, intersect.edges)])
-    s2_touches = any([c[0].is_collinear(c[1]) 
-                      for c in product(s2.edges, intersect.edges)])
+    if surface.area < possible_hole.area:
+        return False
+    collinear_edges = (edges[0].is_collinear(edges[1]) 
+                       for edges in product(surface.edges, possible_hole.edges))
+    return not any(collinear_edges)
 
-    return not all([s1_touches, s2_touches])
 
-
-def set_coords(surface, poly, outside_pt, ggr=None):
+def set_coords(surface, poly):
     """Update the coordinates of a surface.
-    
-    This functions follows the GlobalGeometryRules of the IDF where available.
-    
+      
     Parameters
     ----------
     surface : EPBunch
         The surface to modify.
     coords : list
-        The new coordinates.
-    outside_pt : Point3D
-        A point outside the zone the surface belongs to.
-    ggr : EPBunch
-        The section of the IDF that give rules for the order of vertices in a
-        surface.
-    
-    """
-    # make new_coords follow the GlobalGeometryRules
-    poly = normalize_coords(poly, outside_pt, ggr)
+        The new coordinates as lists of [x,y,z] lists.
+   
+    """  
     coords = [i for vertex in poly for i in vertex]
     # find the vertex fields
     n_vertices_index = surface.objls.index('Number_of_Vertices')
-#    n_vertices_index = surface.fieldnames.index('Number_of_Vertices')
-    last_z = len(surface.obj)
     first_x = n_vertices_index + 1 # X of first coordinate
-    vertex_fields = surface.objls[first_x:last_z] # Z of final coordinate
-#    vertex_fields = surface.fieldnames[first_x:last_z] # Z of final coordinate
-    
+    last_z = max(len(surface.obj), first_x + len(coords)) # Z of final coordinate
+    vertex_fields = surface.objls[first_x:last_z]
     # set the vertex field values
     for field, x in zip_longest(vertex_fields, coords, fillvalue=""):
-        surface[field] = x
-    
+        try:
+            surface[field] = x
+        except:
+            pass
+            
 
 def getidfsurfaces(idf):
     """Return all surfaces in an IDF.

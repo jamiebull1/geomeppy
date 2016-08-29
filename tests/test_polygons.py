@@ -15,6 +15,7 @@ from geomeppy.polygons import Polygon
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import Vector2D
 from geomeppy.polygons import Vector3D
+from geomeppy.polygons import break_polygons
 from geomeppy.polygons import difference_3D_polys
 from geomeppy.polygons import intersect_3D_polys
 from geomeppy.polygons import union_2D_polys
@@ -29,6 +30,29 @@ def test_polygon_repr():
     
     s3D = Polygon3D([(0,0,0), (2,0,0), (2,2,0), (0,2,0)])  # vertical
     assert eval(repr(s3D)) == s3D
+
+def test_equal_polygon():
+    poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
+    poly2 = Polygon([(1,1),(1,0),(0,0),(0,1)])
+    assert poly1 == poly2
+    
+    poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
+    poly2 = Polygon(reversed([(1,1),(1,0),(0,0),(0,1)]))
+    assert poly1 != poly2
+    
+def test_equal_polygon3D():
+    poly1 = Polygon([(1,0,0),(0,0,0),(0,1,0),(1,1,0)])
+    poly2 = Polygon([(1,1,0),(1,0,0),(0,0,0),(0,1,0)])
+    assert poly1 == poly2
+    
+    poly1 = Polygon([(1,0,0),(0,0,0),(0,1,0),(1,1,0)])
+    poly2 = Polygon(reversed([(1,1,0),(1,0,0),(0,0,0),(0,1,0)]))
+    assert poly1 != poly2
+    
+def test_polygon_index():
+    poly = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
+    assert poly[1] == Vector3D(0,0,0)
+    assert poly.index(Vector3D(0,0,0)) == 1
 
 def test_polygon_attributes():
     poly2d = Polygon([(0,0), (0,1), (1,1), (1,0)])
@@ -131,8 +155,8 @@ def test_union_2D_polys_single():
     # surface is already a flat plane with z == 0
     s1 = Polygon([(0,2), (2,2), (2,0), (0,0)])  # clockwise
     s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
-    expected = [Polygon(reversed([(0,0), (0,2), (1,2), (1,3),
-                                  (3,3), (3,1), (2,1), (2,0)]))]  #counterclockwise
+    expected = [Polygon([(0,0), (0,2), (1,2), (1,3),
+                                  (3,3), (3,1), (2,1), (2,0)])]  # clockwise
     
     result = union_2D_polys(s1, s2)
     for res, exp in zip(result, expected):
@@ -155,7 +179,7 @@ def test_intersect_2D_polys_single():
     # surface is already a flat plane with z == 0
     s1 = Polygon([(0,2), (2,2), (2,0), (0,0)])  # clockwise
     s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
-    expected = [Polygon([(1,1), (2,1), (2,2), (1,2)])]  #clockwise
+    expected = [Polygon([(1,2), (2,2), (2,1), (1,1)])]  #clockwise
     
     result = s1.intersect(s2)
     for res, exp in zip(result, expected):
@@ -177,8 +201,8 @@ def test_difference_2D_polys_single():
     s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
     
     # clockwise
-    ex_s1 = [Polygon(reversed([(0,2), (1,2), (1,1), (2,1), (2,0), (0,0)]))]
-    ex_s2 = [Polygon(reversed([(1,3), (3,3), (3,1), (2,1), (2,2), (1,2)]))]
+    ex_s1 = [Polygon([(0,2), (1,2), (1,1), (2,1), (2,0), (0,0)])]
+    ex_s2 = [Polygon([(1,3), (3,3), (3,1), (2,1), (2,2), (1,2)])]
     expected = [ex_s1, ex_s2]
 
     result = [s1.difference(s2), s2.difference(s1)]
@@ -196,8 +220,8 @@ def test_union_3D_polys_single():
     # surface is already a flat plane with z == 0
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = Polygon3D([(1,3,0), (3,3,0), (3,1,0), (1,1,0)])  # clockwise
-    expected = [Polygon3D(reversed([(0,0,0), (0,2,0), (1,2,0), (1,3,0),
-                           (3,3,0), (3,1,0), (2,1,0), (2,0,0)]))]  #counterclockwise
+    expected = [Polygon3D([(0,0,0), (0,2,0), (1,2,0), (1,3,0),
+                           (3,3,0), (3,1,0), (2,1,0), (2,0,0)])]  # clockwise
     
     result = union_3D_polys(s1, s2)
     for res, exp in zip(result, expected):
@@ -220,8 +244,7 @@ def test_intersect_3D_polys_single():
     # surface is already a flat plane with z == 0
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = Polygon3D([(1,3,0), (3,3,0), (3,1,0), (1,1,0)])  # clockwise
-    expected = [Polygon3D([(1,1,0), (2,1,0), (2,2,0), (1,2,0)])]  #clockwise
-    
+    expected = [Polygon3D([(1,2,0), (2,2,0), (2,1,0), (1,1,0)])]  #clockwise
     result = intersect_3D_polys(s1, s2)
     for res, exp in zip(result, expected):
         assert res == exp
@@ -239,8 +262,8 @@ def test_difference_3D_polys_single():
     s2 = Polygon3D([(1,3,0), (3,3,0), (3,1,0), (1,1,0)])  # clockwise
     
     # clockwise
-    ex_s1 = [Polygon3D(reversed([(0,2,0), (1,2,0), (1,1,0), (2,1,0), (2,0,0), (0,0,0)]))]
-    ex_s2 = [Polygon3D(reversed([(1,3,0), (3,3,0), (3,1,0), (2,1,0), (2,2,0), (1,2,0)]))]
+    ex_s1 = [Polygon3D([(0,2,0), (1,2,0), (1,1,0), (2,1,0), (2,0,0), (0,0,0)])]
+    ex_s2 = [Polygon3D([(1,3,0), (3,3,0), (3,1,0), (2,1,0), (2,2,0), (1,2,0)])]
     expected = [ex_s1, ex_s2]
 
     result = [difference_3D_polys(s1, s2), difference_3D_polys(s2, s1)]
@@ -250,8 +273,8 @@ def test_difference_3D_polys_single():
 def test_intersect_3D_polys_angled():
     s1 = Polygon3D([(2.5,1.95,0.5), (2.5,1.95,0), (1.5,2.05,0), (1.5,2.05,0.5)])  # clockwise
     s2 = Polygon3D([(1,2.1,0.5), (1,2.1,0), (2,2,0), (2,2,0.5)])  # clockwise
-    expected = [Polygon3D([(2.0, 2.0, 0.5), (1.5, 2.05, 0.5),
-                           (1.5, 2.05, 0.0), (2.0, 2.0, 0.0)])]
+    expected = [Polygon3D([(2.0, 2.0, 0.0), (1.5, 2.05, 0.0),
+                           (1.5, 2.05, 0.5),(2.0, 2.0, 0.5)])]
 
     result = intersect_3D_polys(s1, s2)
 
@@ -262,7 +285,7 @@ def test_intersect_no_overlap():
     # surfaces don't overlap
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = Polygon3D([(2,3,0), (3,3,0), (3,1,0), (2,1,0)])  # clockwise
-    expected = False  #clockwise
+    expected = []  #clockwise
     result = intersect_3D_polys(s1, s2)
     assert result == expected
 
@@ -271,7 +294,7 @@ def test_difference_no_difference():
     # surfaces don't overlap
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = s1
-    expected = False  #clockwise
+    expected = []  #clockwise
     result = difference_3D_polys(s1, s2)
     assert result == expected
 
@@ -394,6 +417,20 @@ def test_surface_is_clockwise():
     assert not poly_inv.is_clockwise(pt)
     
 
+def test_break_polygons():
+    poly = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
+    hole = Polygon3D([(1,3,0),(1.5,2,0),(1,1,0),(3,1,0),(3,3,0)])
+    expected = [
+        Polygon3D([(0,4,0),(0,0,0),(1,1,0),(1.5,2,0),(1,3,0)]),
+        Polygon3D([(4,4,0),(0,4,0),(1,3,0),(3,3,0),(3,1,0),(1,1,0),(0,0,0),(4,0,0)])
+        ]
+
+    result = break_polygons(poly, hole)
+    
+    assert result[0] == expected[0]
+    assert result[1] == expected[1]
+
+
 def test_point():
     pt1 = Vector3D(0.0, 0.0, 0.0)
     pt2 = Vector3D(1.0, 1.0, 1.0)
@@ -430,4 +467,8 @@ def test_on_poly_edge():
     assert edge1.on_poly_edge(poly)
     assert not edge2.on_poly_edge(poly)
 
+def test_closest():
+    pt = Vector3D(0,0,0)
+    poly = Polygon3D([(1,1,1), (2,2,3), (3,4,5)])
+    assert pt.closest(poly) == Vector3D(1,1,1)
 

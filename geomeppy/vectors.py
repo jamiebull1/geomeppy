@@ -73,6 +73,24 @@ class Vector2D(object):
     
         return length
 
+    def closest(self, poly):
+        """Find the closest vector in a polygon.
+        
+        Parameters
+        ----------
+        poly : Polygon or Polygon3D
+        
+        """
+        min_d = float('inf')
+        closest_pt = None
+        for pt2 in poly:
+            direction = self - pt2
+            sq_d = sum(x ** 2 for x in direction)
+            if sq_d < min_d:
+                min_d = sq_d
+                closest_pt = pt2
+        return closest_pt
+        
     def normalize(self):
         return self.set_length(1.0)
     

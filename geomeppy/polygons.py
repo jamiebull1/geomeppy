@@ -10,11 +10,16 @@ Heavy lifting geometry for IDF surfaces.
 PyClipper is used for clipping.
 
 """
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from collections import MutableSequence
+
+from devtools.view_geometry import view_polygons
+from eppy.geometry.surface import area
 from geomeppy.segments import Segment
 from geomeppy.transformations import reorder_ULC
 from geomeppy.vectors import Vector2D
@@ -26,32 +31,48 @@ import numpy as np
 import pyclipper as pc
 
 
-class Polygon(object):
+class Polygon(MutableSequence):
     """Two-dimensional polygon."""
     n_dims = 2
 
     def __init__(self, vertices):
+        super(Polygon, self).__init__()
         self.vertices = [Vector2D(*v) for v in vertices]
-    
-    def __iter__(self):
-        return (i for i in self.vertices)
     
     def __repr__(self):
         class_name = type(self).__name__
         return '{}({!r})'.format(class_name, self.vertices)
 
-    def __eq__(self, other):
-        if self.__dict__ == other.__dict__:  # try the simple case first
-            return True
-        else:  # also cover same shape in different orientation
-            return self.difference(other) == False
-    
     def __len__(self):
         return len(self.vertices)
             
+    def __delitem__(self, key):
+        del self.vertices[key]
+    
     def __getitem__(self, key):
         return self.vertices[key]
+    
+    def __setitem__(self, key, value):
+        self.vertices[key] = value
 
+    def __eq__(self, other):
+        if self.__dict__ == other.__dict__:  # try the simple case first
+            return True
+        else:  # also cover same shape in different rotation
+            if self.difference(other):
+                return False
+            if self.normal_vector == other.normal_vector:
+                return True
+        return False
+    
+    @property
+    def normal_vector(self):
+        as_3d = Polygon3D((v.x, v.y, 0) for v in self)
+        return as_3d.normal_vector
+
+    def insert(self, key, value):
+        self.vertices.insert(key, value)
+                
     @property
     def points_matrix(self):
         """[[x1, x2,... xn]
@@ -94,6 +115,22 @@ class Polygon(object):
         
         """
         return [pt_to_tuple(pt, dims=self.n_dims) for pt in self.vertices]
+    
+    @property
+    def area(self):
+        return area(self)
+    
+    def invert_orientation(self):
+        """Reverse the order of the vertices.
+        
+        This is to create a matching surface, e.g. the other side of a wall.
+        
+        Returns
+        -------
+        Polygon3D
+        
+        """
+        return self.__class__(reversed(self.vertices))
         
     def project_to_3D(self, example3d):
         """Project the 2D polygon rotated into 3D space.
@@ -167,8 +204,41 @@ class Polygon(object):
         
         """
         return difference_2D_polys(self, poly)
+
+
+def break_polygons(poly, hole):
+    section_on_poly = poly[:2]
+    first_on_hole = section_on_poly[1].closest(hole)
+    last_on_hole = section_on_poly[0].closest(hole)
+    
+    coords = reversed(hole[:] + hole[:])  # a double loop
+    section_on_hole = []
+    for item in coords:
+        if item == first_on_hole:
+            section_on_hole.append(item)
+        elif section_on_hole:
+            section_on_hole.append(item)
+            if item == last_on_hole:
+                break
+
+    new_poly = section_on_poly + section_on_hole
         
-        
+    new_poly = Polygon3D(new_poly)
+    union = hole.union(new_poly)
+    union = union[0]
+    new_poly2 = poly.difference(union)[0]
+    if not almostequal(new_poly.normal_vector, poly.normal_vector):
+        print("inverting 1")
+        new_poly = new_poly.invert_orientation()
+    if not almostequal(new_poly2.normal_vector, poly.normal_vector):
+        print("inverting 2")
+        new_poly2 = new_poly2.invert_orientation()
+#    view_polygons({'blue': [new_poly], 'red': [hole]})
+#    view_polygons({'blue': [new_poly, new_poly2], 'red': [hole]})
+    
+    return [new_poly, new_poly2]
+    
+    
 def prep_2D_polys(poly1, poly2):
     """Prepare two 2D polygons for clipping operations.
     
@@ -214,9 +284,15 @@ def union_2D_polys(poly1, poly2):
     clipper = prep_2D_polys(poly1, poly2)        
     intersections = clipper.Execute(
         pc.CT_UNION, pc.PFT_NONZERO, pc.PFT_NONZERO)
-    result = process_clipped_2D_polys(intersections)
+    polys = process_clipped_2D_polys(intersections)
+    results = []
+    for poly in polys:
+        if poly.normal_vector == poly1.normal_vector:
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
 
-    return result
+    return results
 
 
 def intersect_2D_polys(poly1, poly2):
@@ -241,9 +317,15 @@ def intersect_2D_polys(poly1, poly2):
     clipper = prep_2D_polys(poly1, poly2)        
     intersections = clipper.Execute(
         pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
-    result = process_clipped_2D_polys(intersections)
+    polys = process_clipped_2D_polys(intersections)
+    results = []
+    for poly in polys:
+        if poly.normal_vector == poly1.normal_vector:
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
 
-    return result
+    return results
 
 
 def difference_2D_polys(poly1, poly2):
@@ -268,9 +350,15 @@ def difference_2D_polys(poly1, poly2):
     clipper = prep_2D_polys(poly1, poly2)        
     differences = clipper.Execute(
         pc.CT_DIFFERENCE, pc.PFT_NONZERO, pc.PFT_NONZERO)
-    result = process_clipped_2D_polys(differences)
+    polys = process_clipped_2D_polys(differences)
+    results = []
+    for poly in polys:
+        if poly.normal_vector == poly1.normal_vector:
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
 
-    return result
+    return results
 
 
 def process_clipped_2D_polys(results):
@@ -293,7 +381,7 @@ def process_clipped_2D_polys(results):
         results = [pc.scale_from_clipper(r) for r in results]
         return [Polygon(r) for r in results]
     else:
-        return False
+        return []
         
 
 class Polygon3D(Polygon):
@@ -308,7 +396,7 @@ class Polygon3D(Polygon):
 
     def __eq__(self, other):
         # check they're in the same plane
-        if list(self.normal_vector) != list(other.normal_vector):
+        if not almostequal(self.normal_vector, other.normal_vector):
             return False
         if self.distance != other.distance:
             return False
@@ -496,18 +584,6 @@ class Polygon3D(Polygon):
         
         return Polygon([pt[:2] for pt in projected_points])
     
-    def invert_orientation(self):
-        """Reverse the order of the vertices.
-        
-        This is to create a matching surface, e.g. the other side of a wall.
-        
-        Returns
-        -------
-        Polygon3D
-        
-        """
-        return Polygon3D(reversed(self.vertices))
-        
     def union(self, poly):
         """Union with another 3D polygon.
         
@@ -614,7 +690,9 @@ def prep_3D_polys(poly1, poly2):
     -------
     Pyclipper object
     
-    """    
+    """
+    if not poly1.is_coplanar(poly2):
+        return False
     poly1 = poly1.project_to_2D()
     poly2 = poly2.project_to_2D()
 
@@ -644,13 +722,22 @@ def union_3D_polys(poly1, poly2):
     
     """
     clipper = prep_3D_polys(poly1, poly2)
-        
+    if not clipper:
+        return []
     unions = clipper.Execute(
         pc.CT_UNION, pc.PFT_NONZERO, pc.PFT_NONZERO)
     
-    result = process_clipped_3D_polys(unions, poly1)
+    polys = process_clipped_3D_polys(unions, poly1)
+    
+    # orient to match poly1
+    results = []
+    for poly in polys:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
 
-    return result
+    return results
 
 
 def intersect_3D_polys(poly1, poly2):    
@@ -670,18 +757,26 @@ def intersect_3D_polys(poly1, poly2):
         objects representing each intersection.
     
     """
-    clipper = prep_3D_polys(poly1, poly2)
-    
+    clipper = prep_3D_polys(poly1, poly2)    
+    if not clipper:
+        return []
     intersections = clipper.Execute(
         pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
     
-    result = process_clipped_3D_polys(intersections, poly1)
+    polys = process_clipped_3D_polys(intersections, poly1)
+    # orient to match poly1
+    results = []
+    for poly in polys:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
 
-    return result
+    return results
 
 
 def difference_3D_polys(poly1, poly2):
-    """Difference between of two 3D polygons.
+    """Difference between two 3D polygons.
     
     Parameters
     ----------
@@ -698,13 +793,22 @@ def difference_3D_polys(poly1, poly2):
     
     """
     clipper = prep_3D_polys(poly1, poly2)
-    
+    if not clipper:
+        return []
     differences = clipper.Execute(
         pc.CT_DIFFERENCE, pc.PFT_NONZERO, pc.PFT_NONZERO)
     
-    result = process_clipped_3D_polys(differences, poly1)
+    polys = process_clipped_3D_polys(differences, poly1)
 
-    return result
+    # orient to match poly1
+    results = []
+    for poly in polys:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
+            results.append(poly)
+        else:
+            results.append(poly.invert_orientation())
+
+    return results
 
 
 def process_clipped_3D_polys(results, example3d):
@@ -725,7 +829,7 @@ def process_clipped_3D_polys(results, example3d):
         res_vertices = [pc.scale_from_clipper(r) for r in results]
         return [Polygon(v).project_to_3D(example3d) for v in res_vertices]
     else:
-        return False
+        return []
 
         
 def project_to_2D(vertices, proj_axis):
@@ -924,3 +1028,5 @@ def set_starting_position(poly, outside_pt, ggr=None):
     poly = poly.order_points(starting_position)
 
     return poly
+
+
