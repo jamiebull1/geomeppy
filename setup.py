@@ -1,6 +1,4 @@
-from distutils.core import setup
-
-import geomeppy
+from setuptools import setup
 
 
 setup(
