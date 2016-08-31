@@ -17,10 +17,8 @@ from itertools import combinations
 from itertools import product
 
 from devtools.view_geometry import view_polygons
-from eppy.geometry.surface import area
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import break_polygons
-from geomeppy.polygons import normalize_coords
 from geomeppy.vectors import Vector3D
 from tests.pytest_helpers import almostequal
 
