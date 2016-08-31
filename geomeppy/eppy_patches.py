@@ -18,9 +18,6 @@ from __future__ import unicode_literals
 from eppy import idfreader
 import eppy
 from eppy.modeleditor import addthisbunch
-from eppy.modeleditor import namebunch
-from eppy.modeleditor import newrawobject
-from eppy.modeleditor import obj2bunch
 from eppy.modeleditor import IDF as BaseIDF
 
 
