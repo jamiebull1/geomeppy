@@ -41,21 +41,21 @@ setup(
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
     author_email='jamie.bull@oco-carbon.com',
-    description='Geometry editing for E+ idf files, and E+ output files',
-    long_description=long_description,# TODO set this up
+    description='Geometry editing for E+ idf files',
+    long_description=long_description,
     packages=['geomeppy',
               'devtools',
               'tests'
               ],
     include_package_data=True,
     platforms='any',
-    test_suite='geomeppy.tests',# TODO make test_eppy
+    test_suite='geomeppy.tests',
     install_requires = [
         "eppy>=0.5.2",
         "numpy>=1.2.1",
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # used for geometry intersection
-        "transforms3d",  # used for geometry tranformations
+        "transforms3d",  # used for geometry transformations
         "matplotlib",  # for a simple geometry viewer
         ],
     classifiers = [
@@ -71,6 +71,5 @@ setup(
         ],
     extras_require={
         'testing': ['pytest'],
-        'develop': ['matplotlib'] 
     }
 )
