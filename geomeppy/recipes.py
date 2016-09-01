@@ -15,6 +15,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from geomeppy.intersect_match import set_coords
+from geomeppy.polygons import Polygon3D
 
 
 def set_wwr(idf, wwr=0.2):
@@ -79,4 +80,4 @@ def window_vertices_given_wall(wall, wwr):
                       ]
                      for x, y, z in vertices]
 
-    return window_points
+    return Polygon3D(window_points)

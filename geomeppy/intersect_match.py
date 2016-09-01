@@ -232,8 +232,8 @@ def set_coords(surface, poly, ggr):
         Global geometry rules.
 
     """  
+    poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
-#    coords = poly.normalize_coords(ggr)
     # find the vertex fields
     n_vertices_index = surface.objls.index('Number_of_Vertices')
     first_x = n_vertices_index + 1 # X of first coordinate
