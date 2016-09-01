@@ -15,7 +15,6 @@ from transforms3d._gohlketransforms import translation_matrix
 
 from geomeppy.polygons import Polygon3D
 from geomeppy.transformations import Transformation
-from geomeppy.transformations import reorder_ULC
 from geomeppy.vectors import Vector3D
 import numpy as np
 from geomeppy.utilities import almostequal
@@ -168,25 +167,3 @@ class TestTransormations():
         tempVertices = t.inverse() * testVertices
         expectedVertices = Polygon3D([(0,0,0),(27.69,0,0),(22.69,5,0),(5,5,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
-    
-        
-    def test_reorder_ULC(self):
-        points = Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-        points = reorder_ULC(points)
-        assert points == Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-        
-        points = Polygon3D([(0,0,0),(1,0,0),(1,0,1),(0,0,1)])
-        points = reorder_ULC(points)
-        assert points == Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-         
-        points = Polygon3D([(1,0,0),(1,0,1),(0,0,1),(0,0,0)])
-        points = reorder_ULC(points)
-        assert points == Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-         
-        points = Polygon3D([(1,0,1),(0,0,1),(0,0,0),(1,0,0)])
-        points = reorder_ULC(points)
-        assert points == Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-    
-        points = Polygon3D(reversed([(0,0,1),(0,0,0),(1,0,0),(1,0,1)]))
-        points = reorder_ULC(points)
-        assert points == Polygon3D(reversed([(0,0,1),(0,0,0),(1,0,0),(1,0,1)]))

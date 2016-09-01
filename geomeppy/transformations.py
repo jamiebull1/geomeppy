@@ -129,36 +129,41 @@ class Transformation(object):
         return Transformation(rotation_matrix(angle, direction))
 
 
-def reorder_ULC(polygon):
-    """Reorder points to upper-left-corner convention.
+def align_face(polygon):
+    """Transformation to align face with z-axis.
+
+    Parameters
+    ----------
+    polygon : Polygon3D
+        Polygon to be aligned.
+    
+    Returns
+    -------
+    Polygon3D
+    
     """
-    N = len(polygon)
-    assert N >= 3
-    # transformation to align face
     t = Transformation()
     t.align_face(polygon)
-    aligned_polygon = t.inverse() * polygon
     
-    # find ulc index in face coordinates
-    min_x = float('inf')
-    max_y = max(aligned_polygon.ys)  # prioritise upper vertices
-    ulc_index = 0
-    for i, vertex in enumerate(aligned_polygon):
-        assert vertex.z < 0.001
-        if vertex.y == max_y:
-            if vertex.x <= min_x:
-                min_x = vertex.x
-                ulc_index = i
+    return t.inverse() * polygon
+
+
+def invert_align_face(original, poly2):
+    """Transformation to align face with original position.
     
-    # create output
-    if ulc_index == 0:
-        result = polygon
-    else:
-        vertices = [polygon.vertices[(i + ulc_index) % len(polygon)] 
-                    for i in range(len(polygon))]
-        result = polygon.__class__(vertices)
-        assert len(result) == N
-
-    return result       
-
-
+    Parameters
+    ----------
+    original : Polygon3D
+        Polygon in the desired orientation.
+    poly2 : Polygon3D
+        Polygon previously aligned with `align_face`.
+    
+    Returns
+    -------
+    Polygon3D
+    
+    """
+    t = Transformation()
+    t.align_face(original)
+    
+    return t * poly2

@@ -75,6 +75,7 @@ def intersect_idf_surfaces(idf):
     
     """
     surfaces = getidfsurfaces(idf)
+    ggr = idf.idfobjects['GLOBALGEOMETRYRULES']
     # get all the intersected surfaces
     adjacencies = get_adjacencies(surfaces)
     for surface in adjacencies:
@@ -84,7 +85,7 @@ def intersect_idf_surfaces(idf):
         for i, new_coords in enumerate(new_surfaces, 1):
             new = idf.copyidfobject(old_obj)
             new.Name = "%s_%i" % (name, i)
-            set_coords(new, new_coords)
+            set_coords(new, new_coords, ggr)
         idf.removeidfobject(old_obj)    
 
 
@@ -218,7 +219,7 @@ def is_hole(surface, possible_hole):
     return not any(collinear_edges)
 
 
-def set_coords(surface, poly):
+def set_coords(surface, poly, ggr):
     """Update the coordinates of a surface.
       
     Parameters
@@ -227,8 +228,11 @@ def set_coords(surface, poly):
         The surface to modify.
     coords : list
         The new coordinates as lists of [x,y,z] lists.
-   
+    ggr : EpBunch
+        Global geometry rules.
+
     """  
+    poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
     # find the vertex fields
     n_vertices_index = surface.objls.index('Number_of_Vertices')

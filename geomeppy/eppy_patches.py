@@ -19,7 +19,6 @@ from eppy import idfreader
 import eppy
 from eppy.modeleditor import IDF as BaseIDF
 from eppy.modeleditor import addthisbunch
-from eppy.modeleditor import namebunch
 from eppy.modeleditor import newrawobject
 from eppy.modeleditor import obj2bunch
 

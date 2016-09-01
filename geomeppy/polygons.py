@@ -17,14 +17,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import MutableSequence
+from geomeppy.utilities import almostequal
 
 from eppy.geometry.surface import area
 from geomeppy.segments import Segment
-from geomeppy.transformations import reorder_ULC
+from geomeppy.transformations import align_face
+from geomeppy.transformations import invert_align_face
 from geomeppy.vectors import Vector2D
 from geomeppy.vectors import Vector3D
 from geomeppy.vectors import normalise_vector
-from geomeppy.utilities import almostequal
 
 import numpy as np
 import pyclipper as pc
@@ -68,7 +69,18 @@ class Polygon(MutableSequence):
     def normal_vector(self):
         as_3d = Polygon3D((v.x, v.y, 0) for v in self)
         return as_3d.normal_vector
-
+    
+    @property
+    def bounding_box(self):
+        aligned = align_face(self)
+        top_left = Vector3D(min(aligned.xs), max(aligned.ys), max(aligned.zs))
+        bottom_left = Vector3D(min(aligned.xs), min(aligned.ys), min(aligned.zs))
+        bottom_right = Vector3D(max(aligned.xs), min(aligned.ys), min(aligned.zs))
+        top_right = Vector3D(max(aligned.xs), max(aligned.ys), max(aligned.zs))
+        
+        bbox = Polygon3D([top_left, bottom_left, bottom_right, top_right])
+        return invert_align_face(self, bbox)
+        
     def insert(self, key, value):
         self.vertices.insert(key, value)
                 
@@ -560,10 +572,22 @@ class Polygon3D(Polygon):
         Polygon3D
         
         """
-        try:
-            return reorder_ULC(self)
-        except AttributeError:
-            raise AttributeError("reorder_ULC requires numpy to be installed")
+        if starting_position == 'upperleftcorner':
+            bbox_corner = self.bounding_box[0]
+        elif starting_position == 'lowerleftcorner':
+            bbox_corner = self.bounding_box[1]
+        elif starting_position == 'lowerrightcorner':
+            bbox_corner = self.bounding_box[2]
+        elif starting_position == 'upperrightcorner':
+            bbox_corner = self.bounding_box[3]
+        else:
+            raise ValueError(
+                '%s is not a valid starting position' % starting_position)
+        start_index = self.index(bbox_corner.closest(self))
+        new_vertices = [self[(start_index + i) % len(self)]
+                        for i in range(len(self))]
+
+        return Polygon3D(new_vertices)
     
     def project_to_2D(self):
         """Project the 3D polygon into 2D space.
@@ -634,14 +658,12 @@ class Polygon3D(Polygon):
         """
         return difference_3D_polys(self, poly)
     
-    def normalize_coords(self, entry_direction, ggr):
+    def normalize_coords(self, ggr):
         """Order points, respecting the global geometry rules
         
         Parameters
         ----------
-        entry_direction : str
-            Clockwise or counterclockwise.
-        ggr : EPBunch
+        ggr : EpPBunch
             GlobalGeometryRules object.
         
         Returns
@@ -649,10 +671,40 @@ class Polygon3D(Polygon):
         Polygon3D
         
         """
+        try:
+            entry_direction = ggr.Vertex_Entry_Direction
+        except AttributeError:
+            entry_direction = 'counterclockwise'            
         outside_point = self.outside_point(entry_direction)
         return normalize_coords(self, outside_point, ggr)
 
+def test_order_points():
+    polygon = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    starting_position = 'upperleftcorner'
+    expected = Polygon3D([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'lowerleftcorner'
+    expected = Polygon3D([(1,0,0), (0,0,0), (0,1,1), (1,1,1)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'lowerrightcorner'
+    expected = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'upperrightcorner'
+    expected = Polygon3D([(0,1,1), (1,1,1), (1,0,0), (0,0,0)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
 
+    
 def normal_vector(poly):
     """Return the unit normal vector of a polygon.
     
@@ -1029,3 +1081,11 @@ def set_starting_position(poly, outside_pt, ggr=None):
     return poly
 
 
+def test_bounding_box():
+    poly = Polygon([(0,0), (0,1), (1,1), (1,0)])
+    poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    
+    expected = Polygon([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
+
+    result = poly3d.bounding_box
+    assert almostequal(result, expected)

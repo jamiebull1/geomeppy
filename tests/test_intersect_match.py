@@ -372,49 +372,49 @@ class TestIntersectMatch():
         inv_offset_poly = Polygon3D(
             reversed([(1,0,1), (0,0,1), (0,0,0), (1,0,0)]))
 
-        entry_direction = 'counterclockwise'
+        ggr.Vertex_Entry_Direction = 'counterclockwise'
         expected = Polygon3D([(0,0,1), (0,0,0), (1,0,0), (1,0,1)])
         
         # expect no change
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
         
         # expect direction to be reversed
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
         
-        entry_direction = 'clockwise'
-        result = poly.normalize_coords(entry_direction, ggr)
+        ggr.Vertex_Entry_Direction = 'clockwise'
+        result = poly.normalize_coords(ggr)
         expected = inv_poly
         
         # expect no change
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
         
         # expect direction to be reversed
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
         
-        entry_direction = 'counterclockwise'
+        ggr.Vertex_Entry_Direction = 'counterclockwise'
         expected = Polygon3D([(0,0,1), (0,0,0), (1,0,0), (1,0,1)])
         
         # expect to move entry point
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
 
         # expect direction to reverse and to move entry point
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
                 
-        entry_direction = 'clockwise'
+        ggr.Vertex_Entry_Direction = 'clockwise'
         expected = inv_poly
         
         # expect to move entry point
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
 
         # expect direction to reverse and to move entry point
-        result = poly.normalize_coords(entry_direction, ggr)
+        result = poly.normalize_coords(ggr)
         assert result == expected
         
         
