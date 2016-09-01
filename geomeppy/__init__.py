@@ -9,4 +9,3 @@ __all__ = ['intersect_idf_surfaces',
            'set_wwr',
            'view_idf',
            ]
-__version__ = '0.0.1'
