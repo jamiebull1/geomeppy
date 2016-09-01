@@ -18,7 +18,7 @@ from geomeppy.transformations import Transformation
 from geomeppy.transformations import reorder_ULC
 from geomeppy.vectors import Vector3D
 import numpy as np
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 
 class TestTransormations():

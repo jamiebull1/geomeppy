@@ -15,7 +15,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from geomeppy.vectors import Vector3D
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 
 class Segment(object):
