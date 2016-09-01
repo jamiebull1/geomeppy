@@ -19,7 +19,7 @@ from itertools import product
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import break_polygons
 from geomeppy.vectors import Vector3D
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 from six.moves import zip_longest
 

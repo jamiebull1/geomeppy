@@ -21,7 +21,7 @@ from geomeppy.polygons import intersect_3D_polys
 from geomeppy.polygons import union_2D_polys
 from geomeppy.polygons import union_3D_polys
 from geomeppy.segments import Segment
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 
 def test_polygon_repr():

@@ -24,7 +24,7 @@ from geomeppy.transformations import reorder_ULC
 from geomeppy.vectors import Vector2D
 from geomeppy.vectors import Vector3D
 from geomeppy.vectors import normalise_vector
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 import numpy as np
 import pyclipper as pc

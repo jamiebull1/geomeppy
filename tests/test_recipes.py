@@ -16,7 +16,7 @@ from geomeppy.eppy_patches import IDF
 from geomeppy.intersect_match import intersect_idf_surfaces
 from geomeppy.intersect_match import match_idf_surfaces
 from six import StringIO
-from tests.pytest_helpers import almostequal
+from geomeppy.utilities import almostequal
 
 from geomeppy.recipes import set_wwr
 
