@@ -1,12 +1,11 @@
 from setuptools import setup
 
-
 setup(
     name='geomeppy',
     packages=['geomeppy',
               'tests',
               ],
-    version=geomeppy.__version__,
+    version='0.1.0',
     description='Geometry editing for E+ idf files',
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
