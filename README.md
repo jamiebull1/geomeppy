@@ -34,4 +34,4 @@ Still to come:
 - Scaling and rotating buildings and blocks
 - Geometry validation and correction
 - Geometry simplification
-- Geometry visualisation
+- Better geometry visualisation
