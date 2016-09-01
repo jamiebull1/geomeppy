@@ -10,7 +10,7 @@ setup(
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.0.1',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.1.0',
     license='MIT License',
     keywords=['EnergyPlus', 
               'geometry',
