@@ -28,6 +28,7 @@ def set_wwr(idf, wwr=0.2):
         The window to wall ratio.
         
     """
+    ggr = idf.idfobjects['GLOBALGEOMETRYRULES']
     walls = [s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
              if s.Surface_Type.lower() == 'wall'
              and s.Outside_Boundary_Condition.lower() == 'outdoors']
@@ -40,7 +41,7 @@ def set_wwr(idf, wwr=0.2):
             Building_Surface_Name = wall.Name,
             View_Factor_to_Ground = 'autocalculate', # from the surface angle
             )
-        set_coords(window, coords)
+        set_coords(window, coords, ggr)
     
     
 def window_vertices_given_wall(wall, wwr):

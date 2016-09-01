@@ -634,14 +634,12 @@ class Polygon3D(Polygon):
         """
         return difference_3D_polys(self, poly)
     
-    def normalize_coords(self, entry_direction, ggr):
+    def normalize_coords(self, ggr):
         """Order points, respecting the global geometry rules
         
         Parameters
         ----------
-        entry_direction : str
-            Clockwise or counterclockwise.
-        ggr : EPBunch
+        ggr : EpPBunch
             GlobalGeometryRules object.
         
         Returns
@@ -649,6 +647,10 @@ class Polygon3D(Polygon):
         Polygon3D
         
         """
+        try:
+            entry_direction = ggr.Vertex_Entry_Direction
+        except AttributeError:
+            entry_direction = 'counterclockwise'            
         outside_point = self.outside_point(entry_direction)
         return normalize_coords(self, outside_point, ggr)
 
