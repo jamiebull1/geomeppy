@@ -8,16 +8,27 @@ GeomEppy
 
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
-GeomEppy aims to provide a simple Python API for actions such as:
+GeomEppy provides a simple Python API for actions on an Eppy IDF object:
 
 - Intersecting surfaces
+
 `geomeppy.intersect_idf_surfaces(idf)  # intersects all surfaces`
 
 - Matching surfaces
+
 `geomeppy.match_idf_surfaces(idf)  # sets boundary conditions of surfaces`
 
 - Adding windows to external walls
+
 `geomeppy.set_wwr(idf, wwr=0.25)  # set a WWR of 25%`
 
-- Scaling and rotating buildings and blocks
+- Viewing a simple 3D representation of an IDF
+
+`geomeppy.view_idf(idf)  # shows a zoomable, rotatable transparent model`
+
+Still to come:
 - Automated creation of IDF geometry
+- Scaling and rotating buildings and blocks
+- Geometry validation and correction
+- Geometry simplification
+- Geometry visualisation

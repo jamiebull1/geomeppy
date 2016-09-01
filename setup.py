@@ -6,7 +6,6 @@ import geomeppy
 setup(
     name='geomeppy',
     packages=['geomeppy',
-              'devtools',
               'tests',
               ],
     version=geomeppy.__version__,

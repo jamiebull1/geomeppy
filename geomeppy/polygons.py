@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 
 from collections import MutableSequence
 
-from devtools.view_geometry import view_polygons
 from eppy.geometry.surface import area
 from geomeppy.segments import Segment
 from geomeppy.transformations import reorder_ULC
