@@ -62,6 +62,21 @@ BuildingSurface:Detailed, z2 Wall 0004, Wall, , Thermal Zone 2, Outdoors, , SunE
 BuildingSurface:Detailed, z2 Roof 0001, Roof, , Thermal Zone 2, Outdoors, , SunExposed, WindExposed, , , 0.0, 0.0, 1.458, 0.0, 2.9, 1.458, -2.14, 2.9, 1.458, -2.14, 0.0, 1.458;
 """
 
+class TestSetCoords():
+
+    def setup(self):
+        iddfhandle = StringIO(iddcurrent.iddtxt)
+        if IDF.getiddname() == None:
+            IDF.setiddname(iddfhandle)
+        
+        self.idf = IDF(StringIO(idf_txt))
+            
+    def test_set_coords(self):
+        idf = self.idf
+        ggr = idf.idfobjects['GLOBALGEOMETRYRULES']        
+        wall = idf.idfobjects['BUILDINGSURFACE:DETAILED'][0]
+        poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
+        wall.setcoords(poly1, ggr)
 
 def test_unique():
     poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
