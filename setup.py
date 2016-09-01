@@ -1,4 +1,10 @@
+import os
+
 from setuptools import setup
+
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name='geomeppy',
@@ -7,6 +13,7 @@ setup(
               ],
     version='0.1.0',
     description='Geometry editing for E+ idf files',
+    long_description=read('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
@@ -18,7 +25,7 @@ setup(
               ],
     platforms='any',
     install_requires = [
-        "eppy>=0.5.2",
+        "eppy==0.5.3",
         "numpy>=1.11.1",
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # geometry intersection

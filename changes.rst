@@ -1,6 +1,11 @@
 Changes
 =======
 
+2016-09-02
+----------
+
+- add surface.set_coords function
+
 2016-09-01
 ----------
 
