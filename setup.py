@@ -4,7 +4,6 @@ from setuptools import setup
 setup(
     name='geomeppy',
     packages=['geomeppy',
-              'devtools',
               'tests',
               ],
     version=geomeppy.__version__,

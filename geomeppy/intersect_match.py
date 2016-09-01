@@ -16,7 +16,6 @@ from collections import defaultdict
 from itertools import combinations
 from itertools import product
 
-from devtools.view_geometry import view_polygons
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import break_polygons
 from geomeppy.vectors import Vector3D

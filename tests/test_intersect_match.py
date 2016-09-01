@@ -11,11 +11,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from itertools import chain
-
-from devtools.view_geometry import view_idf
-from devtools.view_geometry import view_polygons
 from eppy.iddcurrent import iddcurrent
+from geomeppy.eppy_patches import IDF
 from geomeppy.intersect_match import get_adjacencies
 from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.intersect_match import intersect
@@ -24,11 +21,7 @@ from geomeppy.intersect_match import is_hole
 from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import unique
 from geomeppy.polygons import Polygon3D
-from geomeppy.polygons import break_polygons
-import pytest
 from six import StringIO
-
-from geomeppy.eppy_patches import IDF
 
 
 idf_txt = """
