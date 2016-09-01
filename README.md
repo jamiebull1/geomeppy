@@ -11,7 +11,13 @@ GeomEppy is a scripting language for use with Eppy, which in turn is a scripting
 GeomEppy aims to provide a simple Python API for actions such as:
 
 - Intersecting surfaces
+`geomeppy.intersect_idf_surfaces(idf)  # intersects all surfaces`
+
 - Matching surfaces
-- Adding windows to specified surfaces
+`geomeppy.match_idf_surfaces(idf)  # sets boundary conditions of surfaces`
+
+- Adding windows to external walls
+`geomeppy.set_wwr(idf, wwr=0.25)  # set a WWR of 25%`
+
 - Scaling and rotating buildings and blocks
 - Automated creation of IDF geometry
