@@ -5,7 +5,7 @@ setup(
     packages=['geomeppy',
               'tests',
               ],
-    version='0.0.1',
+    version='0.1.0',
     description='Geometry editing for E+ idf files',
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
