@@ -1,6 +1,5 @@
 # Copyright (c) 2016 Jamie Bull
 # Copyright (c) 2012 Santosh Philip
-
 # =======================================================================
 #  Distributed under the MIT License.
 #  (See accompanying file LICENSE or copy at
@@ -20,41 +19,47 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from geomeppy.builder import Block
+from geomeppy.builder import Zone
+
 from eppy import bunchhelpers
 from eppy import iddgaps
-import eppy
 from eppy.EPlusInterfaceFunctions import readidf
 from eppy.bunch_subclass import EpBunch as BaseBunch
 from eppy.idf_msequence import Idf_MSequence
-from eppy.idfreader import addfunctions
 from eppy.idfreader import convertallfields
 from eppy.idfreader import iddversiontuple
 from eppy.idfreader import idfreader1
+from eppy.idfreader import makeabunch
 from eppy.modeleditor import IDDNotSetError
 from eppy.modeleditor import IDF as BaseIDF
 from eppy.modeleditor import addthisbunch
+from eppy.modeleditor import namebunch
 from eppy.modeleditor import newrawobject
 from eppy.modeleditor import obj2bunch
+from geomeppy.intersect_match import intersect_idf_surfaces
+from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import set_coords
+from py._log import warning
 
 
 class EpBunch(BaseBunch):
     """Monkey-patched EpBunch to add the setcoords function.
     """
-    
+     
     def __init__(self, *args, **kwargs):
         super(EpBunch, self).__init__(*args, **kwargs)
-    
+
     def setcoords(self, poly, ggr):
         """Set the coordinates of a surface.
-        
+         
         Parameters
         ----------
         poly : Polygon3D or list
              Either a Polygon3D object of a list of (x,y,z) tuples.
         ggr : EpBunch
             A GlobalGeometryRules IDF object.
-            
+             
         """
         surfaces = [
             "BUILDINGSURFACE:DETAILED",
@@ -69,39 +74,12 @@ class EpBunch(BaseBunch):
             set_coords(self, poly, ggr)
         else:
             raise AttributeError
+             
 
-eppy.bunch_subclass.EpBunch = EpBunch
-        
-
-def addfunctions2new(abunch, key):
-    """Monkeypatched bugfix for add functions to a new bunch/munch object"""
-    snames = [
-        "BuildingSurface:Detailed",
-        "Wall:Detailed",
-        "RoofCeiling:Detailed",
-        "Floor:Detailed",
-        "FenestrationSurface:Detailed",
-        "Shading:Site:Detailed",
-        "Shading:Building:Detailed",
-        "Shading:Zone:Detailed", ]
-    snames = [sname.upper() for sname in snames]
-    if key.upper() in snames:
-        abunch.__functions.update({
-            'area': eppy.function_helpers.area,
-            'height': eppy.function_helpers.height,
-            'width': eppy.function_helpers.width,
-            'azimuth': eppy.function_helpers.azimuth,
-            'tilt': eppy.function_helpers.tilt,
-            'coords': eppy.function_helpers.getcoords,
-        })
-    return abunch
-
-eppy.idfreader.addfunctions2new = addfunctions2new
-
-
-def idfreader1(fname, iddfile, conv=True, commdct=None, block=None):
+def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     """read idf file and return bunches"""
     versiontuple = iddversiontuple(iddfile)
+    # import pdb; pdb.set_trace()
     block, data, commdct = readidf.readdatacommdct1(
         fname,
         iddfile=iddfile,
@@ -119,13 +97,11 @@ def idfreader1(fname, iddfile, conv=True, commdct=None, block=None):
         commdct, dtls,
         skiplist=skiplist)
     iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
-  
-    bunchdt = makebunches(data, commdct)
-    addfunctions(dtls, bunchdt)
-  
+    bunchdt = makebunches(data, commdct, theidf)
     return bunchdt, block, data, commdct
-  
-def makebunches(data, commdct):
+
+
+def makebunches(data, commdct, theidf):
     """make bunches with data"""
     bunchdt = {}
     dt, dtls = data.dt, data.dtls
@@ -136,9 +112,18 @@ def makebunches(data, commdct):
         for obj in objs:
             bobj = makeabunch(commdct, obj, obj_i)
             list1.append(bobj)
-        bunchdt[key] = Idf_MSequence(list1, objs)
+        bunchdt[key] = Idf_MSequence(list1, objs, theidf)
     return bunchdt
-  
+
+
+def obj2bunch(data, commdct, obj):
+    """make a new bunch object using the data object"""
+    dtls = data.dtls
+    key = obj[0].upper()
+    key_i = dtls.index(key)
+    abunch = makeabunch(commdct, obj, key_i)
+    return abunch
+
 
 def makeabunch(commdct, obj, obj_i):
     """make a bunch from the object"""
@@ -161,42 +146,96 @@ class IDF(BaseIDF):
     
     def __init__(self, *args, **kwargs):
         super(IDF, self).__init__(*args, **kwargs)
+        
+    def intersect_match(self):
+        self.intersect()
+        self.match()
+        
+    def intersect(self):
+        intersect_idf_surfaces(self)
+        
+    def match(self):
+        match_idf_surfaces(self)
+        
+    def add_block(self, *args, **kwargs):
+        """Add a block to the IDF
+        """
+        block = Block(*args, **kwargs)
+        zoning = kwargs.get('zoning', 'by_storey')
+        if zoning == 'by_storey':
+            zones = [Zone('Storey %i' % storey['storey_no'], storey) 
+                        for storey in block.stories]
+        else:
+            raise ValueError('%s is not a valid zoning rule' % zoning)
+        for zone in zones:
+            self.add_zone(zone)
+        self.intersect_match()
     
+    def add_zone(self, zone):
+        ggr = self.idfobjects['GLOBALGEOMETRYRULES']
+        # add zone object
+        self.newidfobject('ZONE', zone.name)
+        # add wall objects
+        for i, surface_coords in enumerate(zone.walls, 1):
+            if not surface_coords:
+                continue
+            name = '%s Wall %04d' % (zone.name, i)
+            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
+                    Surface_Type = 'wall',
+                    Zone_Name = zone.name)
+            s.setcoords(surface_coords, ggr)
+        # add floor objects
+        for i, surface_coords in enumerate(zone.floors, 1):
+            if not surface_coords:
+                continue
+            name = '%s Floor %04d' % (zone.name, i)
+            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
+                    Surface_Type = 'floor',
+                    Zone_Name = zone.name)
+            s.setcoords(surface_coords, ggr)
+        # add ceiling objects
+        for i, surface_coords in enumerate(zone.ceilings, 1):
+            if not surface_coords:
+                continue
+            name = '%s Ceiling %04d' % (zone.name, i)
+            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
+                    Surface_Type = 'ceiling',
+                    Zone_Name = zone.name)
+            s.setcoords(surface_coords, ggr)
+        # add roof objects
+        for i, surface_coords in enumerate(zone.roofs, 1):
+            if not surface_coords:
+                continue
+            name = '%s Roof %04d' % (zone.name, i)
+            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
+                    Surface_Type = 'roof',
+                    Zone_Name = zone.name)
+            s.setcoords(surface_coords, ggr)
+
     def read(self):
         """Read the IDF file and the IDD file.
-        
+         
         Monkey-patched by GeomEppy to allow us to add additional functions to
         IDF objects.
-        
+         
         If the idd file had been already read, it will not be read again.
         Read populates the following data structures:
-
+ 
         - idfobjects
         - model
         - idd_info # done only once
-        
+         
         """
         if self.getiddname() == None:
             errortxt = "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)"
             raise IDDNotSetError(errortxt)
         readout = idfreader1(
-            self.idfname, self.iddname,
+            self.idfname, self.iddname, self,
             commdct=self.idd_info, block=self.block)
         self.idfobjects, block, self.model, idd_info = readout
-
+ 
         self.__class__.setidd(idd_info, block)
-            
-    def copyidfobject(self, idfobject):
-        """Monkey-patched to add the return value.
-        """
-        abunch = addthisbunch(self.idfobjects,
-                              self.model,
-                              self.idd_info,
-                              idfobject)
-        abunch = addfunctions2new(abunch, abunch.key)
-        
-        return abunch
-
+             
     def newidfobject(self, key, aname='', **kwargs):
         """
         Add a new idfobject to the model. If you don't specify a value for a
@@ -228,9 +267,32 @@ class IDF(BaseIDF):
         """
         obj = newrawobject(self.model, self.idd_info, key)
         abunch = obj2bunch(self.model, self.idd_info, obj)
+        if aname:
+            warning.warn("The aname parameter should no longer be used.")
+            namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)
-        for k, v in list(kwargs.items()):
+        for k, v in kwargs.items():
             abunch[k] = v
-        abunch = addfunctions2new(abunch, abunch.key)
         return abunch
+
+    def copyidfobject(self, idfobject):
+        """Add an IDF object to the IDF.
+
+        Parameters
+        ----------
+        idfobject : EpBunch object
+            The IDF object to remove. This usually comes from another idf file,
+            or it can be used to copy within this idf file.
         
+        Returns
+        -------
+        EpBunch object
+
+        """
+        abunch = addthisbunch(self.idfobjects,
+                             self.model,
+                             self.idd_info,
+                             idfobject,
+                             self)
+         
+        return abunch

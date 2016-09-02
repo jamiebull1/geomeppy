@@ -10,4 +10,6 @@ __all__ = ['intersect_idf_surfaces',
            'set_wwr',
            'view_idf',
            'IDF',
+           'Block',
+           'Zone',
            ]

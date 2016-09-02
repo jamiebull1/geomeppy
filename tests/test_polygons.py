@@ -31,6 +31,7 @@ def test_polygon_repr():
     s3D = Polygon3D([(0,0,0), (2,0,0), (2,2,0), (0,2,0)])  # vertical
     assert eval(repr(s3D)) == s3D
 
+
 def test_equal_polygon():
     poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
     poly2 = Polygon([(1,1),(1,0),(0,0),(0,1)])
@@ -39,6 +40,7 @@ def test_equal_polygon():
     poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
     poly2 = Polygon(reversed([(1,1),(1,0),(0,0),(0,1)]))
     assert poly1 != poly2
+    
     
 def test_equal_polygon3D():
     poly1 = Polygon([(1,0,0),(0,0,0),(0,1,0),(1,1,0)])
@@ -49,10 +51,12 @@ def test_equal_polygon3D():
     poly2 = Polygon(reversed([(1,1,0),(1,0,0),(0,0,0),(0,1,0)]))
     assert poly1 != poly2
     
+    
 def test_polygon_index():
     poly = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
     assert poly[1] == Vector3D(0,0,0)
     assert poly.index(Vector3D(0,0,0)) == 1
+
 
 def test_polygon_attributes():
     poly2d = Polygon([(0,0), (0,1), (1,1), (1,0)])
@@ -62,6 +66,7 @@ def test_polygon_attributes():
     assert poly2d.zs == [0,0,0,0]
     assert poly2d.vertices_list == [(0,0), (0,1), (1,1), (1,0)]
     assert poly2d.vertices == [Vector2D(*v) for v in poly2d]
+    
     
 def test_polygon3d_attributes():
     poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
@@ -80,6 +85,44 @@ def test_polygon3d_attributes():
     result = poly3d.is_coplanar(poly3d_2)
     assert result
     
+    
+def test_add_polygon_to_polygon():
+    # 2D
+    poly1 = Polygon([(1,0), (0,0), (0,1)])
+    poly2 = Polygon([(1,0), (1,0), (1,0)])
+    expected = Polygon([(2,0), (1,0), (1,1)])
+    result = poly1 + poly2
+    assert almostequal(result, expected)
+
+    vector = Vector2D(1,0)    
+    result = poly1 + vector
+    assert almostequal(result, expected)
+    
+    vector = Vector3D(1,0,0)
+    try:
+        result = poly1 + vector  # should fail
+        assert False
+    except ValueError:
+        pass
+    # 3D
+    poly1 = Polygon([(1,0,1), (0,0,1), (0,1,1)])
+    poly2 = Polygon([(1,0,1), (1,0,1), (1,0,1)])
+    expected = Polygon([(2,0,2), (1,0,2), (1,1,2)])
+    result = poly1 + poly2
+    assert almostequal(result, expected)
+
+    vector = Vector3D(1,0,1)    
+    result = poly1 + vector
+    assert almostequal(result, expected)
+    
+    vector = Vector2D(1,0)
+    try:
+        result = poly1 + vector  # should fail
+        assert False
+    except ValueError:
+        pass
+
+
 def test_polygons_not_equal():
     """Test the check for equality between polygons.
     """
@@ -95,6 +138,44 @@ def test_polygons_not_equal():
     assert poly3d.distance != poly3d_2.distance
     assert poly3d != poly3d_2
     
+
+def test_order_points():
+    polygon = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    starting_position = 'upperleftcorner'
+    expected = Polygon3D([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'lowerleftcorner'
+    expected = Polygon3D([(1,0,0), (0,0,0), (0,1,1), (1,1,1)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'lowerrightcorner'
+    expected = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+    
+    starting_position = 'upperrightcorner'
+    expected = Polygon3D([(0,1,1), (1,1,1), (1,0,0), (0,0,0)])
+    result = polygon.order_points(starting_position)
+    assert result == expected
+    assert result[0] == expected[0]
+
+
+def test_bounding_box():
+    poly = Polygon([(0,0), (0,1), (1,1), (1,0)])
+    poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
+    
+    expected = Polygon([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
+
+    result = poly3d.bounding_box
+    assert almostequal(result, expected)
+
+
 def test_reflect():
     """
     Test that a polygon with inverted orientation is seen as coplanar with the
@@ -106,6 +187,7 @@ def test_reflect():
     assert poly3d != poly3d_inv
     assert poly3d.is_coplanar(poly3d_inv)
     
+
 def test_rotate():
     """Test for rotating 3D polygons into 2D and back again
     """
@@ -269,6 +351,7 @@ def test_difference_3D_polys_single():
     result = [difference_3D_polys(s1, s2), difference_3D_polys(s2, s1)]
     assert result[0] == expected[0]
     assert result[1] == expected[1]
+    
     
 def test_intersect_3D_polys_angled():
     s1 = Polygon3D([(2.5,1.95,0.5), (2.5,1.95,0), (1.5,2.05,0), (1.5,2.05,0.5)])  # clockwise
@@ -466,6 +549,7 @@ def test_on_poly_edge():
     edge2 = Segment(Vector3D(1,1,0), Vector3D(1,2,0))
     assert edge1.on_poly_edge(poly)
     assert not edge2.on_poly_edge(poly)
+
 
 def test_closest():
     pt = Vector3D(0,0,0)

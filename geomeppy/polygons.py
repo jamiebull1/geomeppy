@@ -65,6 +65,17 @@ class Polygon(MutableSequence):
                 return True
         return False
     
+    def __add__(self, other):
+        if len(self) == len(other) and hasattr(other[0], '__len__'):
+            # add together two equal polygons
+            vertices = [v1 + v2 for v1, v2 in zip(self, other)]
+        elif len(self[0]) == len(other):
+            # translate by a vector
+            vertices = [v + other for v in self]
+        else:
+            raise ValueError("Incompatible objects: %s + %s" % (self, other))
+        return self.__class__(vertices)
+    
     @property
     def normal_vector(self):
         as_3d = Polygon3D((v.x, v.y, 0) for v in self)
@@ -100,9 +111,10 @@ class Polygon(MutableSequence):
         """A list of edges represented as Segment objects.
         """
         vertices = self.vertices
-        return [Segment(vertices[i], vertices[(i+1) % len(self)])
+        edges = [Segment(vertices[i], vertices[(i+1) % len(self)])
                 for i in range(len(self))]
-
+        return edges
+    
     @property
     def xs(self):
         return [pt.x for pt in self.vertices]
@@ -678,32 +690,6 @@ class Polygon3D(Polygon):
         outside_point = self.outside_point(entry_direction)
         return normalize_coords(self, outside_point, ggr)
 
-def test_order_points():
-    polygon = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
-    starting_position = 'upperleftcorner'
-    expected = Polygon3D([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
-    result = polygon.order_points(starting_position)
-    assert result == expected
-    assert result[0] == expected[0]
-    
-    starting_position = 'lowerleftcorner'
-    expected = Polygon3D([(1,0,0), (0,0,0), (0,1,1), (1,1,1)])
-    result = polygon.order_points(starting_position)
-    assert result == expected
-    assert result[0] == expected[0]
-    
-    starting_position = 'lowerrightcorner'
-    expected = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
-    result = polygon.order_points(starting_position)
-    assert result == expected
-    assert result[0] == expected[0]
-    
-    starting_position = 'upperrightcorner'
-    expected = Polygon3D([(0,1,1), (1,1,1), (1,0,0), (0,0,0)])
-    result = polygon.order_points(starting_position)
-    assert result == expected
-    assert result[0] == expected[0]
-
     
 def normal_vector(poly):
     """Return the unit normal vector of a polygon.
@@ -1059,7 +1045,7 @@ def set_entry_direction(poly, outside_pt, ggr=None):
     if not ggr:
         entry_direction = 'counterclockwise' # EnergyPlus default
     else:
-        entry_direction = ggr[0].Vertex_Entry_Direction.lower()
+        entry_direction = ggr.Vertex_Entry_Direction.lower()
     if entry_direction == 'counterclockwise':
         if poly.is_clockwise(outside_pt):
             poly = poly.invert_orientation()
@@ -1075,17 +1061,7 @@ def set_starting_position(poly, outside_pt, ggr=None):
     if not ggr:
         starting_position = 'upperleftcorner' # EnergyPlus default
     else:
-        starting_position = ggr[0].Starting_Vertex_Position.lower()
+        starting_position = ggr.Starting_Vertex_Position.lower()
     poly = poly.order_points(starting_position)
 
     return poly
-
-
-def test_bounding_box():
-    poly = Polygon([(0,0), (0,1), (1,1), (1,0)])
-    poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
-    
-    expected = Polygon([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
-
-    result = poly3d.bounding_box
-    assert almostequal(result, expected)

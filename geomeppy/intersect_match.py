@@ -231,7 +231,7 @@ def set_coords(surface, poly, ggr):
     ggr : EpBunch
         Global geometry rules.
 
-    """  
+    """
     poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
     # find the vertex fields
