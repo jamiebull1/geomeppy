@@ -17,7 +17,7 @@ The API for GeomEppy depends on replacing an Eppy IDF object with a GeomEppy IDF
 
 In your scripts, use `from geomeppy import IDF` instead of `from eppy.modeleditor import IDF`. All other features of the current release version of Eppy will still be available.
 
-GeomEppy then provides a simple Python API for actions on an Eppy IDF object:
+GeomEppy then provides a simple Python API for actions on the IDF object:
 
 - Intersecting and matching surfaces
 
@@ -25,7 +25,7 @@ GeomEppy then provides a simple Python API for actions on an Eppy IDF object:
 
 `IDF.match()  # sets boundary conditions of surfaces`
 
-`IDF.intersect_match()  # intersect surfaces then set/update boundary conditions
+`IDF.intersect_match()  # intersect surfaces then set/update boundary conditions`
 
 - Adding windows to external walls
 
@@ -50,14 +50,20 @@ This method requires some explanation. The parameters required are:
     below_ground_storey_height : float, optional
         The height of each basement storey. Default : 2.5.
 	zoning : str, optional
-		The rules to use in creating zones. Currently the only option is
-		`by_storey` which sets each storey in the block as a Zone.
+		The rules to use in creating zones. Currently the only option is `by_storey` which sets each storey in the block as a Zone.
 
 The block generated will have boundary conditions set correctly and any intersections with adjacent blocks will be handled automatically.
 The surface type will be set to `wall`, `floor`, `ceiling` or `roof` for each surface.
 Constructions are not set automatically so these will need to be added afterwards in the normal way for Eppy.
 
 GeomEppy also provides some additional functions such as `surface.setcoords(...)`
+
+```
+wall = idf.newidfobject(
+    'BUILDINGSURFACE:DETAILED', 'awall',
+    Surface_Type = 'wall')
+wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
+```
 
 
 ##Forthcoming
