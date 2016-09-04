@@ -28,7 +28,7 @@ before_install:
   - pip install codecov
 
 install:
-  - python setup.py install 
+  - python setup.py install
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir

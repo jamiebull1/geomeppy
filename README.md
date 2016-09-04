@@ -65,7 +65,6 @@ wall = idf.newidfobject(
 wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 ```
 
-
 ##Forthcoming
 
 - Scaling and rotating buildings and blocks
@@ -77,4 +76,10 @@ wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 
 Installing GeomEppy for Python 2.7 is a simple as calling `pip install geomeppy`.
 
-Python 3 is currently unsupported while we await a fully-compatible version of Eppy to be released to PyPI.
+Python 3 is also supported, though `pip install` is not currently working for Eppy on Python 3.
+
+After running `pip install geomeppy` you will need to replace the default installation of Eppy with one specifically configured to run on both Python 2 and Python 3.
+
+The command you need is:
+
+`pip install https://github.com/santoshphilip/eppy/archive/i87_six.zip  --force-reinstall --no-deps`
