@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 
 from geomeppy.builder import Block
 from geomeppy.builder import Zone
+from geomeppy.recipes import set_wwr
+from geomeppy.view_geometry import view_idf
 
 from eppy import bunchhelpers
 from eppy import iddgaps
@@ -50,15 +52,15 @@ class EpBunch(BaseBunch):
     def __init__(self, *args, **kwargs):
         super(EpBunch, self).__init__(*args, **kwargs)
 
-    def setcoords(self, poly, ggr):
+    def setcoords(self, poly, ggr=None):
         """Set the coordinates of a surface.
          
         Parameters
         ----------
         poly : Polygon3D or list
              Either a Polygon3D object of a list of (x,y,z) tuples.
-        ggr : EpBunch
-            A GlobalGeometryRules IDF object.
+        ggr : EpBunch, optional
+            A GlobalGeometryRules IDF object. Defaults to None.
              
         """
         surfaces = [
@@ -148,14 +150,36 @@ class IDF(BaseIDF):
         super(IDF, self).__init__(*args, **kwargs)
         
     def intersect_match(self):
+        """Intersect all surfaces in the IDF, then set boundary conditions.
+        """
         self.intersect()
         self.match()
         
     def intersect(self):
+        """Intersect all surfaces in the IDF.
+        """
         intersect_idf_surfaces(self)
         
     def match(self):
+        """Set boundary conditions for all surfaces in the IDF.
+        """
         match_idf_surfaces(self)
+    
+    def set_wwr(self, wwr):
+        """Add strip windows to all external walls.
+        
+        Parameters
+        ----------
+        wwr : float
+            Window to wall ratio in the range 0-1.
+            
+        """
+        set_wwr(self, wwr)
+    
+    def view_model(self):
+        """Show a zoomable, rotatable representation of the IDF.
+        """
+        view_idf(idf_txt=self.idfstr())
         
     def add_block(self, *args, **kwargs):
         """Add a block to the IDF
@@ -170,7 +194,7 @@ class IDF(BaseIDF):
         for zone in zones:
             self.add_zone(zone)
         self.intersect_match()
-    
+
     def add_zone(self, zone):
         ggr = self.idfobjects['GLOBALGEOMETRYRULES']
         # add zone object
@@ -214,9 +238,6 @@ class IDF(BaseIDF):
 
     def read(self):
         """Read the IDF file and the IDD file.
-         
-        Monkey-patched by GeomEppy to allow us to add additional functions to
-        IDF objects.
          
         If the idd file had been already read, it will not be read again.
         Read populates the following data structures:
@@ -277,6 +298,8 @@ class IDF(BaseIDF):
 
     def copyidfobject(self, idfobject):
         """Add an IDF object to the IDF.
+        
+        This has been monkey-patched to add the return value.
 
         Parameters
         ----------
