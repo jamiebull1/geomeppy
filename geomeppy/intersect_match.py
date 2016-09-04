@@ -42,27 +42,29 @@ def match_idf_surfaces(idf):
                 continue
             poly2 = Polygon3D(s2.coords)
             if poly1 == poly2.invert_orientation():
+                # matched surfaces
                 s1.Outside_Boundary_Condition = 'surface'
                 s1.Outside_Boundary_Condition_Object = s2.Name
                 s1.Sun_Exposure = 'NoSun'
                 s1.Wind_Exposure = 'NoWind'
                 break
-
-            if almostequal(poly1.normal_vector, Vector3D(0.0, 0.0, -1.0)):
+            elif min(poly1.zs) < 0 or all(z == 0 for z in poly1.zs):
+                # below ground or ground-adjacent surfaces
                 s1.Outside_Boundary_Condition_Object = ''
-                if min(poly1.zs) <= 0:  # adjacent to ground
-                    s1.Outside_Boundary_Condition = 'ground'
-                    s1.Sun_Exposure = 'NoSun'
-                    s1.Wind_Exposure = 'NoWind'
-                else:
-                    s1.Outside_Boundary_Condition = 'outdoors'
-                    s1.Sun_Exposure = 'NoSun'
-                    s1.Wind_Exposure = 'WindExposed'
+                s1.Outside_Boundary_Condition = 'ground'
+                s1.Sun_Exposure = 'NoSun'
+                s1.Wind_Exposure = 'NoWind'
             else:
+                # outside surfaces
                 s1.Outside_Boundary_Condition = 'outdoors'
                 s1.Outside_Boundary_Condition_Object = ''
-                s1.Sun_Exposure = 'SunExposed'
                 s1.Wind_Exposure = 'WindExposed'
+                if almostequal(poly1.normal_vector, Vector3D(0.0, 0.0, -1.0)):
+                    # downward facing surfaces
+                    s1.Sun_Exposure = 'NoSun'
+                else:
+                    # other external surfaces
+                    s1.Sun_Exposure = 'SunExposed'
 
             
 def intersect_idf_surfaces(idf):

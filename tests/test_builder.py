@@ -46,7 +46,6 @@ class TestAddBlock():
         idf.add_block(coordinates, height, num_stories,
                   below_ground_stories, below_ground_storey_height)
         
-        
 def test_block():
     height = 7.5
     num_stories = 4
