@@ -1,9 +1,10 @@
 Changes
 =======
-
-2016-09-02
+2016-09-04
 ----------
 
+- Reduce the API to only expose methods via the IDF object
+- add IDF.add_block(...) method to automatically build a block
 - add surface.set_coords function
 
 2016-09-01
