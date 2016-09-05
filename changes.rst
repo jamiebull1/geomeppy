@@ -3,7 +3,7 @@ Changes
 2016-09-05
 ----------
 
-- release v0.2.4
+- release v0.2.5
 - roll back Python 3 support as not yet working properly
 - add translate methods to IDF
 - add getsurfaces by surface type method to IDF

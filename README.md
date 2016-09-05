@@ -31,9 +31,9 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 
 `IDF.translate_to_origin()  # move the whole IDF close to 0,0 on the x, y axes` 
 
-`IDF.translate([50, 20])  # move the whole IDF to x + 50, y + 20
+`IDF.translate([50, 20])  # move the whole IDF to x + 50, y + 20`
 
-`IDF.translate([0, 0, 10])  # move the whole IDF to z + 10
+`IDF.translate([0, 0, 10])  # move the whole IDF to z + 10`
 
 - Adding windows to external walls
 
