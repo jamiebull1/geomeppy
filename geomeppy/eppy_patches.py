@@ -85,8 +85,7 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     """read idf file and return bunches"""
     versiontuple = iddversiontuple(iddfile)
     # import pdb; pdb.set_trace()
-#     bunchdt, block, data, commdct, idd_index
-    idfobjects, block, data, idd_info = readidf.readdatacommdct1(
+    block, data, commdct = readidf.readdatacommdct1(
         fname,
         iddfile=iddfile,
         commdct=commdct,
@@ -103,6 +102,7 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
         commdct, dtls,
         skiplist=skiplist)
     iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
+    # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
     return bunchdt, block, data, commdct
 
@@ -269,24 +269,25 @@ class IDF(BaseIDF):
             s.setcoords(surface_coords, ggr)
 
     def read(self):
-        """Read the IDF file and the IDD file.
-         
-        If the idd file had been already read, it will not be read again.
+        """
+        Read the IDF file and the IDD file. If the IDD file had already been
+        read, it will not be read again.
+
         Read populates the following data structures:
- 
-        - idfobjects
-        - model
-        - idd_info # done only once
-         
+
+        - idfobjects : list
+        - model : list
+        - idd_info : list
+
         """
         if self.getiddname() == None:
-            errortxt = "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)"
+            errortxt = ("IDD file needed to read the idf file. "
+                        "Set it using IDF.setiddname(iddfile)")
             raise IDDNotSetError(errortxt)
         readout = idfreader1(
             self.idfname, self.iddname, self,
             commdct=self.idd_info, block=self.block)
         self.idfobjects, block, self.model, idd_info = readout
- 
         self.__class__.setidd(idd_info, block)
              
     def newidfobject(self, key, aname='', **kwargs):
