@@ -1,5 +1,11 @@
 Changes
 =======
+2016-09-05
+----------
+
+- add translate methods to IDF
+- add getsurfaces by surface type method to IDF
+
 2016-09-04
 ----------
 

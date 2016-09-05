@@ -221,7 +221,7 @@ def is_hole(surface, possible_hole):
     return not any(collinear_edges)
 
 
-def set_coords(surface, poly, ggr):
+def set_coords(surface, coords, ggr):
     """Update the coordinates of a surface.
       
     Parameters
@@ -234,6 +234,7 @@ def set_coords(surface, poly, ggr):
         Global geometry rules.
 
     """
+    poly = Polygon3D(coords)
     poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
     # find the vertex fields
@@ -249,8 +250,18 @@ def set_coords(surface, poly, ggr):
             pass
             
 
-def getidfsurfaces(idf):
+def getidfsurfaces(idf, surface_type=None):
     """Return all surfaces in an IDF.
+    
+    Parameters
+    ----------
+    idf : IDF object
+        The IDF to search.
+    surface_type : str, optional
+        A surface type to specify. Default is None, which returns all surfaces.
+        
     """
     surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
+    if surface_type:
+        surfaces = [s for s in surfaces if s.Surface_type == surface_type]
     return surfaces

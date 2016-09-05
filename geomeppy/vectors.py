@@ -105,7 +105,7 @@ class Vector2D(object):
 
 class Vector3D(Vector2D):
     """Three dimensional point."""
-    def __init__(self, x, y, z):
+    def __init__(self, x, y, z=0):
         super(Vector3D, self).__init__(x, y)
         self.z = float(z)
         self.args = (self.x, self.y, self.z)

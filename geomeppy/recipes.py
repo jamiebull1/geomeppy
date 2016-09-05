@@ -14,9 +14,43 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.intersect_match import set_coords
+from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.polygons import Polygon3D
 
+from geomeppy.vectors import Vector3D
+
+
+def translate_to_origin(idf):
+    """
+    Move an IDF close to the origin so that it can be viewed in SketchUp.
+    
+    Parameters
+    ----------
+    idf : IDF object
+    
+    """
+    surfaces = getidfsurfaces(idf)
+        
+    min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
+    min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
+
+    translate(surfaces, (-min_x, -min_y))
+
+def translate(surfaces, vector):
+    """Translate all surfaces by a vector.
+    
+    Parameters
+    ----------
+    surfaces : list
+        A list of EpBunch objects.
+    vector : Vector2D, Vector3D, (x,y) or (x,y,z) list-like
+        Representation of a vector to translate by.
+        
+    """
+    vector = Vector3D(*vector)
+    for s in surfaces:
+        new_coords = [Vector3D(*v) + vector for v in s.coords]
+        s.setcoords(new_coords)
 
 def set_wwr(idf, wwr=0.2):
     """Set the window to wall ratio on all external walls.
@@ -42,7 +76,7 @@ def set_wwr(idf, wwr=0.2):
             Building_Surface_Name = wall.Name,
             View_Factor_to_Ground = 'autocalculate', # from the surface angle
             )
-        set_coords(window, coords, ggr)
+        window.setcoords(coords, ggr)
     
     
 def window_vertices_given_wall(wall, wwr):

@@ -27,6 +27,14 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 
 `IDF.intersect_match()  # intersect surfaces then set/update boundary conditions`
 
+- Moving an IDF
+
+`IDF.translate_to_origin()  # move the whole IDF close to 0,0 on the x, y axes` 
+
+`IDF.translate([50, 20])  # move the whole IDF to x + 50, y + 20
+
+`IDF.translate([0, 0, 10])  # move the whole IDF to z + 10
+
 - Adding windows to external walls
 
 `IDF.set_wwr(wwr=0.25)  # set a WWR of 25% for all external walls`
@@ -34,6 +42,16 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 - Viewing a simple 3D representation of an IDF
 
 `IDF.view_model()  # shows a zoomable, rotatable transparent model`
+
+- Get all surfaces in a model
+
+`IDF.getsurfaces()`
+
+- Get all surfaces in a model of a given type
+
+`IDF.getsurfaces('wall')  # only works if the surface type has been set in the IDF`
+
+- Automatic geometry building
 
 `IDF.add_block(...)  # automatically adds a building block to the IDF`
 
@@ -55,6 +73,8 @@ This method requires some explanation. The parameters required are:
 The block generated will have boundary conditions set correctly and any intersections with adjacent blocks will be handled automatically.
 The surface type will be set to `wall`, `floor`, `ceiling` or `roof` for each surface.
 Constructions are not set automatically so these will need to be added afterwards in the normal way for Eppy.
+
+## Other functions
 
 GeomEppy also provides some additional functions such as `surface.setcoords(...)`
 

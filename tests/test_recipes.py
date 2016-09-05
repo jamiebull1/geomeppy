@@ -11,14 +11,20 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from eppy.iddcurrent import iddcurrent
-from geomeppy.eppy_patches import IDF
+from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.intersect_match import intersect_idf_surfaces
 from geomeppy.intersect_match import match_idf_surfaces
-from six import StringIO
+from geomeppy.polygons import Polygon3D
+from geomeppy.recipes import set_wwr
+from geomeppy.recipes import translate
+from geomeppy.recipes import translate_to_origin
 from geomeppy.utilities import almostequal
 
-from geomeppy.recipes import set_wwr
+from eppy.iddcurrent import iddcurrent
+from geomeppy.eppy_patches import IDF
+from geomeppy.vectors import Vector2D
+from geomeppy.vectors import Vector3D
+from six import StringIO
 
 
 idf_txt = """
@@ -39,6 +45,52 @@ BuildingSurface:Detailed, z2_WALL_0002, WALL, , z2 Thermal Zone, outdoors, , Sun
 BuildingSurface:Detailed, z2_WALL_0003, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.5, 2.95, 0.5, 2.5, 2.95, 0.0, 2.5, 1.95, 0.0, 2.5, 1.95, 0.5;
 BuildingSurface:Detailed, z2_WALL_0004, Wall, , z2 Thermal Zone, Outdoors, , SunExposed, WindExposed, , , 2.5, 1.95, 0.5, 2.5, 1.95, 0.0, 1.5, 2.05, 0.0, 1.5, 2.05, 0.5;
 """
+
+
+class TestTranslate():
+    
+    def setup(self):
+        iddfhandle = StringIO(iddcurrent.iddtxt)
+        if IDF.getiddname() == None:
+            IDF.setiddname(iddfhandle)
+        
+        self.idf = IDF(StringIO(idf_txt))
+            
+    def test_translate(self):
+        idf = self.idf
+        surfaces = getidfsurfaces(idf)
+        translate(surfaces, (50, 100))  # move to x + 50, y + 100
+        result = Polygon3D(surfaces[0].coords).xs
+        expected = [52.0, 52.0, 51.0, 51.0]
+        assert result == expected
+        translate(surfaces, (-50, -100))  # move back
+        
+        translate(surfaces, Vector2D(50, 100))  # move to x + 50, y + 100
+        result = Polygon3D(surfaces[0].coords).xs
+        expected = [52.0, 52.0, 51.0, 51.0]
+        assert result == expected
+        translate(surfaces, (-50, -100))  # move back
+        
+        translate(surfaces, Vector3D(50, 100, 0))  # move to x + 50, y + 100
+        result = Polygon3D(surfaces[0].coords).xs
+        expected = [52.0, 52.0, 51.0, 51.0]
+        assert result == expected
+
+
+    def test_translate_to_origin(self):
+        idf = self.idf
+        surfaces = getidfsurfaces(idf)
+        translate(surfaces, (50000, 10000))  # move to x + 50, y + 100
+        result = Polygon3D(surfaces[0].coords).xs
+        expected = [50002.0, 50002.0, 50001.0, 50001.0]
+        assert result == expected
+        
+        translate_to_origin(idf)
+        surfaces = getidfsurfaces(idf)
+        min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
+        min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
+        assert min_x == 0
+        assert min_y == 0
 
 
 class TestMatchSurfaces():

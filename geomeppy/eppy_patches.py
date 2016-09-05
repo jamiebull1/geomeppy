@@ -21,7 +21,13 @@ from __future__ import unicode_literals
 
 from geomeppy.builder import Block
 from geomeppy.builder import Zone
+from geomeppy.intersect_match import getidfsurfaces
+from geomeppy.intersect_match import intersect_idf_surfaces
+from geomeppy.intersect_match import match_idf_surfaces
+from geomeppy.intersect_match import set_coords
 from geomeppy.recipes import set_wwr
+from geomeppy.recipes import translate
+from geomeppy.recipes import translate_to_origin
 from geomeppy.view_geometry import view_idf
 
 from eppy import bunchhelpers
@@ -39,9 +45,6 @@ from eppy.modeleditor import addthisbunch
 from eppy.modeleditor import namebunch
 from eppy.modeleditor import newrawobject
 from eppy.modeleditor import obj2bunch
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.intersect_match import set_coords
 from py._log import warning
 
 
@@ -164,6 +167,34 @@ class IDF(BaseIDF):
         """Set boundary conditions for all surfaces in the IDF.
         """
         match_idf_surfaces(self)
+    
+    def translate_to_origin(self):
+        """
+        Move an IDF close to the origin so that it can be viewed in SketchUp.
+        """
+        translate_to_origin(self)
+    
+    def translate(self, vector):
+        """Move the IDF in the direction given by a vector.
+        
+        Parameters
+        ----------
+        vector : Vector2D, Vector3D, (x,y) or (x,y,z) list-like
+            Representation of a vector to translate by.
+            
+        """
+        surfaces = self.getsurfaces()
+        translate(surfaces, vector)
+    
+    def getsurfaces(self):
+        """Return all surfaces in the IDF.
+        
+        Returns
+        -------
+        list
+        
+        """
+        return getidfsurfaces(self)
     
     def set_wwr(self, wwr):
         """Add strip windows to all external walls.
