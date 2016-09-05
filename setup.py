@@ -26,7 +26,7 @@ setup(
               ],
     platforms='any',
     install_requires = [
-        "eppy==0.5.3",
+        "eppy==0.5.31",
         "numpy>=1.11.1",
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # geometry intersection
