@@ -35,7 +35,7 @@ setup(
         ],
     classifiers = [
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',  # on hold until Eppy updates
+#        'Programming Language :: Python :: 3',  # on hold until Eppy updates
         'Development Status :: 3 - Alpha',
         'Natural Language :: English',
         'Environment :: Console',

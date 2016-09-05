@@ -3,6 +3,7 @@ Changes
 2016-09-05
 ----------
 
+- Python 3 support not yet working properly
 - add translate methods to IDF
 - add getsurfaces by surface type method to IDF
 

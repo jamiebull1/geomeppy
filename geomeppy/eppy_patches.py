@@ -85,7 +85,8 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     """read idf file and return bunches"""
     versiontuple = iddversiontuple(iddfile)
     # import pdb; pdb.set_trace()
-    block, data, commdct = readidf.readdatacommdct1(
+#     bunchdt, block, data, commdct, idd_index
+    idfobjects, block, data, idd_info = readidf.readdatacommdct1(
         fname,
         iddfile=iddfile,
         commdct=commdct,
