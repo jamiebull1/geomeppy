@@ -67,6 +67,9 @@ def set_wwr(idf, wwr=0.2):
     walls = [s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
              if s.Surface_Type.lower() == 'wall'
              and s.Outside_Boundary_Condition.lower() == 'outdoors']
+    windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
+    for window in windows:
+        idf.removeidfobject(window)
     for wall in walls:
         coords = window_vertices_given_wall(wall, wwr)
         window = idf.newidfobject(
