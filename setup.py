@@ -1,24 +1,29 @@
+import os
+
 from setuptools import setup
+
 
 try:
     from pypandoc import convert
-    read_md = lambda f: convert(f, 'rst')
+    read_md = lambda f: convert(os.path.join(THIS_DIR, f), 'rst')
 except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
-    read_md = lambda f: open(f, 'r').read()
-    
+    read_md = lambda f: open(os.path.join(THIS_DIR, f), 'r').read()
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
 setup(
     name='geomeppy',
     packages=['geomeppy',
               'tests',
               ],
-    version='0.2.5',
+    version='0.2.6',
     description='Geometry editing for E+ idf files',
     long_description=read_md('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.5',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.6',
     license='MIT License',
     keywords=['EnergyPlus', 
               'geometry',
