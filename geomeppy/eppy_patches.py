@@ -85,7 +85,7 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     """read idf file and return bunches"""
     versiontuple = iddversiontuple(iddfile)
     # import pdb; pdb.set_trace()
-    block, data, commdct = readidf.readdatacommdct1(
+    block, data, commdct, idd_index = readidf.readdatacommdct1(
         fname,
         iddfile=iddfile,
         commdct=commdct,
@@ -102,9 +102,8 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
         commdct, dtls,
         skiplist=skiplist)
     iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
-    # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
-    return bunchdt, block, data, commdct
+    return bunchdt, block, data, commdct, idd_index
 
 
 def makebunches(data, commdct, theidf):
@@ -278,6 +277,7 @@ class IDF(BaseIDF):
         - idfobjects : list
         - model : list
         - idd_info : list
+        - idd_index : dict
 
         """
         if self.getiddname() == None:
@@ -287,9 +287,9 @@ class IDF(BaseIDF):
         readout = idfreader1(
             self.idfname, self.iddname, self,
             commdct=self.idd_info, block=self.block)
-        self.idfobjects, block, self.model, idd_info = readout
-        self.__class__.setidd(idd_info, block)
-             
+        self.idfobjects, block, self.model, idd_info, idd_index = readout
+        self.__class__.setidd(idd_info, idd_index, block)
+            
     def newidfobject(self, key, aname='', **kwargs):
         """
         Add a new idfobject to the model. If you don't specify a value for a
