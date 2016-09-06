@@ -19,16 +19,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.builder import Block
-from geomeppy.builder import Zone
-from geomeppy.intersect_match import getidfsurfaces
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.intersect_match import set_coords
-from geomeppy.recipes import set_wwr
-from geomeppy.recipes import translate
-from geomeppy.recipes import translate_to_origin
-from geomeppy.view_geometry import view_idf
+import copy
 
 from eppy import bunchhelpers
 from eppy import iddgaps
@@ -45,6 +36,16 @@ from eppy.modeleditor import addthisbunch
 from eppy.modeleditor import namebunch
 from eppy.modeleditor import newrawobject
 from eppy.modeleditor import obj2bunch
+from geomeppy.builder import Block
+from geomeppy.builder import Zone
+from geomeppy.intersect_match import getidfsurfaces
+from geomeppy.intersect_match import intersect_idf_surfaces
+from geomeppy.intersect_match import match_idf_surfaces
+from geomeppy.intersect_match import set_coords
+from geomeppy.recipes import set_wwr
+from geomeppy.recipes import translate
+from geomeppy.recipes import translate_to_origin
+from geomeppy.view_geometry import view_idf
 from py._log import warning
 
 
@@ -105,6 +106,17 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
     return bunchdt, block, data, commdct
+
+
+def addthisbunch(bunchdt, data, commdct, thisbunch, theidf):
+    """add a bunch to model.
+    abunch usually comes from another idf file
+    or it can be used to copy within the idf file"""
+    key = thisbunch.key.upper()
+    obj = copy.copy(thisbunch.obj)
+    abunch = obj2bunch(data, commdct, obj)
+    bunchdt[key].append(abunch)
+    return abunch
 
 
 def makebunches(data, commdct, theidf):
