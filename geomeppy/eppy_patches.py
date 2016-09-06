@@ -237,7 +237,6 @@ class IDF(BaseIDF):
             raise ValueError('%s is not a valid zoning rule' % zoning)
         for zone in zones:
             self.add_zone(zone)
-        self.intersect_match()
 
     def add_zone(self, zone):
         ggr = self.idfobjects['GLOBALGEOMETRYRULES']
