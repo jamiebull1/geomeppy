@@ -85,12 +85,7 @@ class EpBunch(BaseBunch):
 def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     """read idf file and return bunches"""
     versiontuple = iddversiontuple(iddfile)
-    # import pdb; pdb.set_trace()
-#<<<<<<< HEAD
-#    block, data, commdct = readidf.readdatacommdct1(
-#=======
     block, data, commdct, idd_index = readidf.readdatacommdct1(
-#>>>>>>> refs/heads/develop
         fname,
         iddfile=iddfile,
         commdct=commdct,
@@ -109,8 +104,7 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
     # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
-#<<<<<<< HEAD
-#    return bunchdt, block, data, commdct
+
     return bunchdt, block, data, commdct, idd_index
 
 
@@ -123,8 +117,6 @@ def addthisbunch(bunchdt, data, commdct, thisbunch, theidf):
     abunch = obj2bunch(data, commdct, obj)
     bunchdt[key].append(abunch)
     return abunch
-#=======
-#>>>>>>> refs/heads/develop
 
 
 def makebunches(data, commdct, theidf):
