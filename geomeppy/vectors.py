@@ -34,7 +34,7 @@ class Vector2D(object):
             if a != b:
                 return False
         return True
-        
+    
     def __sub__(self, other):
         return self.__class__(*[self[i] - other[i] for i in range(len(self))])
     
@@ -52,6 +52,9 @@ class Vector2D(object):
 
     def __setitem__(self, key, value):
         self.args[key] = value
+    
+    def __hash__(self):
+        return hash(self.x) ^ hash(self.y)
         
     def dot(self, other):
         return np.dot(self, other)
@@ -114,6 +117,9 @@ class Vector3D(Vector2D):
         class_name = type(self).__name__
         return '{}({!r}, {!r}, {!r})'.format(class_name, *self.args)
     
+    def __hash__(self):
+        return hash(self.x) ^ hash(self.y) ^ hash(self.z)
+        
 
 def normalise_vector(v):
     """Convert a vector to a unit vector
