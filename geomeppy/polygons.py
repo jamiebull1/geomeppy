@@ -17,15 +17,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import MutableSequence
-from geomeppy.utilities import almostequal
-
-from eppy.geometry.surface import area
 from geomeppy.segments import Segment
 from geomeppy.transformations import align_face
 from geomeppy.transformations import invert_align_face
+from geomeppy.utilities import almostequal
 from geomeppy.vectors import Vector2D
 from geomeppy.vectors import Vector3D
 from geomeppy.vectors import normalise_vector
+from itertools import product
+
+from eppy.geometry.surface import area
 
 import numpy as np
 import pyclipper as pc
@@ -228,12 +229,49 @@ class Polygon(MutableSequence):
         """
         return difference_2D_polys(self, poly)
 
-
-def break_polygons(poly, hole):
-    section_on_poly = poly[:2]
-    first_on_hole = section_on_poly[1].closest(hole)
-    last_on_hole = section_on_poly[0].closest(hole)
+def distance(pt1, pt2):
+    direction = pt1 - pt2
+    return sum(x ** 2 for x in direction)
     
+    
+def break_polygons(poly, hole):
+    """Break up a surface with a hole in it.
+    
+    This produces two surfaces, neither of which have a hole in them.
+    
+    Parameters
+    ----------
+    poly : Polygon3D
+        The surface with a hole in.
+    hole : Polygon3D
+        The hole.
+    
+    Returns
+    -------
+    list
+        Two Polygon3D objects.
+        
+    """
+    # take the two closest points on the surface perimeter
+    links = product(poly, hole)
+    links = sorted(links, key=lambda x: distance(x[0], x[1]))
+
+    first_on_poly = links[0][0]
+    last_on_poly = links[1][0]
+
+    first_on_hole = links[1][1]
+    last_on_hole = links[0][1]
+
+    coords = poly[:] + poly[:]  # a double loop
+    section_on_poly = []
+    for item in coords:
+        if item == first_on_poly:
+            section_on_poly.append(item)
+        elif section_on_poly:
+            section_on_poly.append(item)
+            if item == last_on_poly:
+                break
+
     coords = reversed(hole[:] + hole[:])  # a double loop
     section_on_hole = []
     for item in coords:
@@ -242,7 +280,7 @@ def break_polygons(poly, hole):
         elif section_on_hole:
             section_on_hole.append(item)
             if item == last_on_hole:
-                break
+                break    
 
     new_poly = section_on_poly + section_on_hole
         
