@@ -126,7 +126,10 @@ def intersect_idf_surfaces(idf):
     
     """
     surfaces = getidfsurfaces(idf)
-    ggr = idf.idfobjects['GLOBALGEOMETRYRULES']
+    try:
+        ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
+    except IndexError:
+        ggr = None
     # get all the intersected surfaces
     adjacencies = get_adjacencies(surfaces)
     for surface in adjacencies:

@@ -231,7 +231,8 @@ class IDF(BaseIDF):
         block = Block(*args, **kwargs)
         zoning = kwargs.get('zoning', 'by_storey')
         if zoning == 'by_storey':
-            zones = [Zone('Storey %i' % storey['storey_no'], storey) 
+            zones = [Zone('Block %s Storey %i' %
+                          (block.name, storey['storey_no']), storey) 
                         for storey in block.stories]
         else:
             raise ValueError('%s is not a valid zoning rule' % zoning)
@@ -239,7 +240,10 @@ class IDF(BaseIDF):
             self.add_zone(zone)
 
     def add_zone(self, zone):
-        ggr = self.idfobjects['GLOBALGEOMETRYRULES']
+        try:
+            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
+        except IndexError:
+            ggr = None
         # add zone object
         self.newidfobject('ZONE', zone.name)
         # add wall objects

@@ -30,12 +30,14 @@ class Zone(object):
 
 class Block(object):
     
-    def __init__(self, coordinates, height, num_stories=1, below_ground_stories=0, 
-                 below_ground_storey_height=2.5):
+    def __init__(self, name, coordinates, height, num_stories=1,
+                 below_ground_stories=0, below_ground_storey_height=2.5):
         """Represents a single block for translation into an IDF.
         
         Parameters
         ----------
+        name : str
+            A name for the block.
         coordinates : list
             A list of (x, y) tuples representing the building outline.
         height : float
@@ -47,6 +49,7 @@ class Block(object):
         below_ground_storey_height : float, optional
             The height of each basement storey. Default : 2.5.
         """
+        self.name = name
         if coordinates[0] == coordinates[-1]:
             coordinates.pop()
         self.coordinates = coordinates

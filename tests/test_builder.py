@@ -34,6 +34,7 @@ class TestAddBlock():
             
     def test_add_block(self):
         idf = self.idf
+        name = "test"
         height = 7.5
         num_stories = 4
         below_ground_stories = 1
@@ -43,10 +44,11 @@ class TestAddBlock():
             (89.55,31.55),(89.15,31.35),(85.1,29.8),
             (86.1,27.2),(84.6,26.65),(85.8,23.5),
             (87.25,24.0)]
-        idf.add_block(coordinates, height, num_stories,
+        idf.add_block(name, coordinates, height, num_stories,
                   below_ground_stories, below_ground_storey_height)
         
 def test_block():
+    name = "test"
     height = 7.5
     num_stories = 4
     below_ground_stories = 1
@@ -57,7 +59,7 @@ def test_block():
         (524286.1,181427.2),(524284.6,181426.65),(524285.8,181423.5),
         (524287.25,181424.0)]
     
-    block = Block(coordinates, height, num_stories,
+    block = Block(name, coordinates, height, num_stories,
                   below_ground_stories, below_ground_storey_height)
     # number of surfaces
     assert len(block.surfaces['roofs']) == block.num_stories

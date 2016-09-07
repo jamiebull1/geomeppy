@@ -30,12 +30,14 @@ def translate_to_origin(idf):
     
     """
     surfaces = getidfsurfaces(idf)
+    windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
         
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
-
+    translate(windows, (-min_x, -min_y))
+    
 def translate(surfaces, vector):
     """Translate all surfaces by a vector.
     
@@ -63,7 +65,10 @@ def set_wwr(idf, wwr=0.2):
         The window to wall ratio.
         
     """
-    ggr = idf.idfobjects['GLOBALGEOMETRYRULES']
+    try:
+        ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
+    except IndexError:
+        ggr = []
     walls = [s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
              if s.Surface_Type.lower() == 'wall'
              and s.Outside_Boundary_Condition.lower() == 'outdoors']
