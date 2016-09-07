@@ -24,7 +24,79 @@ from geomeppy.utilities import almostequal
 from six.moves import zip_longest
 
 
-def set_unmatched_surface(s, poly, vector):
+def getidfplanes(surfaces):
+    """Fast access data structure for potentially matched surfaces.
+    
+    Get a data structure populated with all the surfaces in the IDF, keyed by
+    their distance from the origin, and their normal vector.
+    
+    Parameters
+    ----------
+    surfaces : list
+        List of all the surfaces.
+    
+    Returns
+    -------
+    dict
+        
+    """
+    planes = {}
+    for s in surfaces:
+        poly = Polygon3D(s.coords)
+        planes.setdefault(poly.distance, 
+                          {}).setdefault(poly.normal_vector, 
+                                         []).append(s)
+    return planes
+
+def match_idf_surfaces(idf):
+    """Match all surfaces in an IDF.
+    
+    Parameters
+    ----------
+    idf : IDF object
+        The IDF.
+    
+    """
+    surfaces = getidfsurfaces(idf)
+    planes = getidfplanes(surfaces)
+    for distance in planes:
+        for vector in planes[distance]:
+            surfaces = planes[distance][vector]
+            matches = planes.get(-distance, {}).get(-vector, [])
+            if not matches:
+                # default set all the surfaces boundary conditions
+                for s in surfaces:
+                    poly = Polygon3D(s.coords)
+                    set_unmatched_surface(s, vector)
+            else:
+                # check which are matches
+                for s, m in product(surfaces, matches):
+                    poly1 = Polygon3D(s.coords)
+                    poly2 = Polygon3D(m.coords)
+                    if poly1 == poly2.invert_orientation():
+                        # matched surfaces
+                        s.Outside_Boundary_Condition = 'surface'
+                        s.Outside_Boundary_Condition_Object = m.Name
+                        s.Sun_Exposure = 'NoSun'
+                        s.Wind_Exposure = 'NoWind'
+                        break
+                    else:
+                        # unmatched surfaces
+                        set_unmatched_surface(s, vector)
+                        set_unmatched_surface(m, vector)
+
+
+def set_unmatched_surface(s, vector):
+    """Set boundary conditions for a surface which does not adjoin another one.
+    
+    Parameters
+    ----------
+    s : EpBunch
+        The surface.
+    vector : Vector3D
+        The surface normal vector
+        
+    """
     s.View_Factor_to_Ground = 'autocalculate'
     poly = Polygon3D(s.coords)
     if min(poly.zs) < 0 or all(z == 0 for z in poly.zs):
@@ -42,61 +114,6 @@ def set_unmatched_surface(s, poly, vector):
             s.Sun_Exposure = 'NoSun'
         else:
             s.Sun_Exposure = 'SunExposed' # other external surfaces
-
-
-def match_idf_surfaces(idf):
-    """Match all surfaces in an IDF.
-    
-    Parameters
-    ----------
-    idf : IDF object
-        The IDF.
-    
-    """
-    surfaces = getidfsurfaces(idf)
-    planes = {}
-    for s in surfaces:
-        poly = Polygon3D(s.coords)
-        planes.setdefault(poly.distance, 
-                          {}).setdefault(poly.normal_vector,
-                                         []).append(s)
-    for distance in planes:
-        for vector in planes[distance]:
-            surfaces = planes[distance][vector]
-            matches = planes.get(-distance, {}).get(-vector, None)
-            if not matches:
-                # default set all the surfaces boundary conditions
-                for s in surfaces:
-                    set_unmatched_surface(s, poly, vector)
-            else:
-                 
-                for s, m in product(surfaces, matches):
-                    poly1 = Polygon3D(s.coords)
-                    poly2 = Polygon3D(m.coords)
-                    if poly1 == poly2.invert_orientation():
-                        # matched surfaces
-                        s.Outside_Boundary_Condition = 'surface'
-                        s.Outside_Boundary_Condition_Object = m.Name
-                        s.Sun_Exposure = 'NoSun'
-                        s.Wind_Exposure = 'NoWind'
-                        break
-                    elif min(poly1.zs) < 0 or all(z == 0 for z in poly1.zs):
-                        # below ground or ground-adjacent surfaces
-                        s.Outside_Boundary_Condition_Object = ''
-                        s.Outside_Boundary_Condition = 'ground'
-                        s.Sun_Exposure = 'NoSun'
-                        s.Wind_Exposure = 'NoWind'
-                    else:
-                        # outside surfaces
-                        s.Outside_Boundary_Condition = 'outdoors'
-                        s.Outside_Boundary_Condition_Object = ''
-                        s.Wind_Exposure = 'WindExposed'
-                        if almostequal(poly1.normal_vector, (0, 0, -1)):
-                            # downward facing surfaces
-                            s.Sun_Exposure = 'NoSun'
-                        else:
-                            # other external surfaces
-                            s.Sun_Exposure = 'SunExposed'
 
             
 def intersect_idf_surfaces(idf):
