@@ -183,6 +183,12 @@ def populate_adjacencies(adjacencies, s1, s2):
     """
     poly1 = Polygon3D(s1.coords)
     poly2 = Polygon3D(s2.coords)
+    if abs(poly1.distance) != abs(poly2.distance):
+        return adjacencies
+    if not almostequal(poly1.normal_vector, poly2.normal_vector):
+        if not almostequal(poly1.normal_vector, -poly2.normal_vector):
+            return adjacencies
+            
     intersection = poly1.intersect(poly2)
     if intersection:
         new_surfaces = intersect(poly1, poly2)
