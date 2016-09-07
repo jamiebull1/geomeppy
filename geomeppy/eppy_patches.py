@@ -20,6 +20,17 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import copy
+from geomeppy.builder import Block
+from geomeppy.builder import Zone
+from geomeppy.intersect_match import getidfsubsurfaces
+from geomeppy.intersect_match import getidfsurfaces
+from geomeppy.intersect_match import intersect_idf_surfaces
+from geomeppy.intersect_match import match_idf_surfaces
+from geomeppy.intersect_match import set_coords
+from geomeppy.recipes import set_wwr
+from geomeppy.recipes import translate
+from geomeppy.recipes import translate_to_origin
+from geomeppy.view_geometry import view_idf
 
 from eppy import bunchhelpers
 from eppy import iddgaps
@@ -36,16 +47,6 @@ from eppy.modeleditor import addthisbunch
 from eppy.modeleditor import namebunch
 from eppy.modeleditor import newrawobject
 from eppy.modeleditor import obj2bunch
-from geomeppy.builder import Block
-from geomeppy.builder import Zone
-from geomeppy.intersect_match import getidfsurfaces
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.intersect_match import set_coords
-from geomeppy.recipes import set_wwr
-from geomeppy.recipes import translate
-from geomeppy.recipes import translate_to_origin
-from geomeppy.view_geometry import view_idf
 from py._log import warning
 
 
@@ -199,7 +200,7 @@ class IDF(BaseIDF):
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
     
-    def getsurfaces(self):
+    def getsurfaces(self, surface_type=None):
         """Return all surfaces in the IDF.
         
         Returns
@@ -207,7 +208,17 @@ class IDF(BaseIDF):
         list
         
         """
-        return getidfsurfaces(self)
+        return getidfsurfaces(self, surface_type)
+    
+    def getsubsurfaces(self, surface_type=None):
+        """Return all subsurfaces in the IDF.
+        
+        Returns
+        -------
+        list
+        
+        """
+        return getidfsubsurfaces(self, surface_type)
     
     def set_wwr(self, wwr):
         """Add strip windows to all external walls.

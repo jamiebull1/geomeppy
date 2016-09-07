@@ -20,6 +20,36 @@ from geomeppy.polygons import Polygon3D
 from geomeppy.vectors import Vector3D
 
 
+def set_default_constructions(idf):
+    for surface in idf.getsurfaces():
+        set_default_construction(surface)
+    for subsurface in idf.getsubsurfaces():
+        set_default_construction(subsurface)
+
+
+def set_default_construction(surface):
+    if surface.Surface_Type.lower() == 'wall':
+        if surface.Outside_Boundary_Condition.lower() == 'outdoors':
+            surface.Construction_Name = 'Project Wall'
+        elif surface.Outside_Boundary_Condition.lower() == 'ground':
+            surface.Construction_Name = 'Project Wall'
+        else:
+            surface.Construction_Name = 'Project Partition'
+    if surface.Surface_Type.lower() == 'floor':
+        if surface.Outside_Boundary_Condition.lower() == 'ground':
+            surface.Construction_Name = 'Project Floor'
+        else:
+            surface.Construction_Name = 'Project Floor'
+    if surface.Surface_Type.lower() == 'roof':
+        surface.Construction_Name = 'Project Flat Roof'
+    if surface.Surface_Type.lower() == 'ceiling':
+        surface.Construction_Name = 'Project Ceiling'
+    if surface.Surface_Type == 'window':
+        surface.Construction_Name = 'Project External Window'
+    if surface.Surface_Type == 'door':
+        surface.Construction_Name = 'Project Door'
+
+
 def translate_to_origin(idf):
     """
     Move an IDF close to the origin so that it can be viewed in SketchUp.
