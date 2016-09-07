@@ -323,3 +323,20 @@ def getidfsurfaces(idf, surface_type=None):
     if surface_type:
         surfaces = [s for s in surfaces if s.Surface_type == surface_type]
     return surfaces
+
+
+def getidfsubsurfaces(idf, surface_type=None):
+    """Return all subsurfaces in an IDF.
+    
+    Parameters
+    ----------
+    idf : IDF object
+        The IDF to search.
+    surface_type : str, optional
+        A surface type to specify. Default is None, which returns all surfaces.
+        
+    """
+    surfaces = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
+    if surface_type:
+        surfaces = [s for s in surfaces if s.Surface_type == surface_type]
+    return surfaces

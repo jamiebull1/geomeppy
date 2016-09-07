@@ -27,6 +27,7 @@ from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.intersect_match import intersect_idf_surfaces
 from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import set_coords
+from geomeppy.recipes import set_default_constructions
 from geomeppy.recipes import set_wwr
 from geomeppy.recipes import translate
 from geomeppy.recipes import translate_to_origin
@@ -199,6 +200,9 @@ class IDF(BaseIDF):
         """
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
+    
+    def setdefaultsurfaces(self):
+        set_default_constructions(self)
     
     def getsurfaces(self, surface_type=None):
         """Return all surfaces in the IDF.
