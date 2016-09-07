@@ -201,7 +201,7 @@ class IDF(BaseIDF):
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
     
-    def setdefaultsurfaces(self):
+    def set_default_constructions(self):
         set_default_constructions(self)
     
     def getsurfaces(self, surface_type=None):

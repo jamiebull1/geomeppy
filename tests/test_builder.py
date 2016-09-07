@@ -32,7 +32,7 @@ class TestAddBlock():
         
         self.idf = IDF(StringIO(idf_txt))
             
-    def test_add_block(self):
+    def test_add_block_smoke_test(self):
         idf = self.idf
         name = "test"
         height = 7.5
@@ -47,6 +47,65 @@ class TestAddBlock():
         idf.add_block(name, coordinates, height, num_stories,
                   below_ground_stories, below_ground_storey_height)
         
+    def test_add_two_blocks(self):
+        idf = self.idf
+        height = 5
+        num_stories = 2
+        block1 = [(0,0),(3,0),(3,3),(0,3)]
+        block2 = [(3,1),(7,1),(7,5),(3,5)]
+        idf.add_block('left', block1, height, num_stories)
+        idf.add_block('right', block2, height, num_stories)
+        idf.intersect_match()
+        idf.set_wwr(0.25)
+        idf.set_default_constructions()
+        # Storey 0
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block left Storey 0 Wall 0002_1')
+        assert wall.Construction_Name == 'Project Partition'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block left Storey 0 Wall 0002_2')
+        assert wall.Construction_Name == 'Project Wall'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block right Storey 0 Wall 0004_1')
+        assert wall.Construction_Name == 'Project Partition'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block right Storey 0 Wall 0004_2')
+        assert wall.Construction_Name == 'Project Wall'
+        # Storey 1
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block left Storey 1 Wall 0002_1')
+        assert wall.Construction_Name == 'Project Partition'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block left Storey 1 Wall 0002_2')
+        assert wall.Construction_Name == 'Project Wall'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block right Storey 1 Wall 0004_1')
+        assert wall.Construction_Name == 'Project Partition'
+        
+        wall = idf.getobject(
+            'BUILDINGSURFACE:DETAILED', 'Block right Storey 1 Wall 0004_2')
+        assert wall.Construction_Name == 'Project Wall'
+        
+    def test_add_two_concentric_blocks(self):
+        idf = self.idf
+        height = 5
+        num_stories = 2
+        block1 = [(0,0),(4,0),(4,4),(0,4)]
+        block2 = [(1,1),(2,1),(2,2),(1,2)]
+        idf.add_block('outer', block1, height, num_stories)
+        idf.add_block('inner', block2, height, num_stories)
+        idf.intersect_match()
+        idf.set_wwr(0.25)
+        idf.set_default_constructions()
+        idf.printidf()
+        idf.view_model()
+
+
 def test_block():
     name = "test"
     height = 7.5

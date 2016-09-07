@@ -66,21 +66,28 @@ def match_idf_surfaces(idf):
             if not matches:
                 # default set all the surfaces boundary conditions
                 for s in surfaces:
-                    poly = Polygon3D(s.coords)
                     set_unmatched_surface(s, vector)
             else:
                 # check which are matches
-                for s, m in product(surfaces, matches):
-                    poly1 = Polygon3D(s.coords)
-                    poly2 = Polygon3D(m.coords)
-                    if poly1 == poly2.invert_orientation():
-                        # matched surfaces
-                        s.Outside_Boundary_Condition = 'surface'
-                        s.Outside_Boundary_Condition_Object = m.Name
-                        s.Sun_Exposure = 'NoSun'
-                        s.Wind_Exposure = 'NoWind'
-                        break
-                    else:
+                for s in surfaces:
+                    for m in matches:
+                        matched = False
+                        poly1 = Polygon3D(s.coords)
+                        poly2 = Polygon3D(m.coords)
+                        if poly1 == poly2.invert_orientation():
+                            matched = True
+                            # matched surfaces
+                            s.Outside_Boundary_Condition = 'surface'
+                            s.Outside_Boundary_Condition_Object = m.Name
+                            s.Sun_Exposure = 'NoSun'
+                            s.Wind_Exposure = 'NoWind'
+                            # matched surfaces
+                            m.Outside_Boundary_Condition = 'surface'
+                            m.Outside_Boundary_Condition_Object = s.Name
+                            m.Sun_Exposure = 'NoSun'
+                            m.Wind_Exposure = 'NoWind'
+                            break
+                    if not matched:
                         # unmatched surfaces
                         set_unmatched_surface(s, vector)
                         set_unmatched_surface(m, vector)
