@@ -2,28 +2,35 @@ import os
 
 from setuptools import setup
 
-
-try:
-    from pypandoc import convert
-    read_md = lambda f: convert(os.path.join(THIS_DIR, f), 'rst')
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
-    read_md = lambda f: open(os.path.join(THIS_DIR, f), 'r').read()
-
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+def read_md(f):
+    try:
+        from pypandoc import convert
+        try:
+            return convert(os.path.join(THIS_DIR, f), 'rst')
+        except:
+            return "GeomEppy"
+    except ImportError:
+        print("warning: pypandoc module not found, could not convert Markdown to RST")
+        try:
+            with open(os.path.join(THIS_DIR, f), 'r') as f_in:
+                return f_in.read()
+        except:
+            return "GeomEppy"
+    
 setup(
     name='geomeppy',
     packages=['geomeppy',
               'tests',
               ],
-    version='0.2.6',
+    version='0.2.7',
     description='Geometry editing for E+ idf files',
     long_description=read_md('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.6',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.7',
     license='MIT License',
     keywords=['EnergyPlus', 
               'geometry',
@@ -40,7 +47,7 @@ setup(
         ],
     classifiers = [
         'Programming Language :: Python :: 2',
-#        'Programming Language :: Python :: 3',  # on hold until Eppy updates
+        'Programming Language :: Python :: 3',
         'Development Status :: 3 - Alpha',
         'Natural Language :: English',
         'Environment :: Console',

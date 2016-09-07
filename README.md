@@ -11,6 +11,12 @@ GeomEppy
 
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
+It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.
+
+##Installation
+
+Installing GeomEppy for Python 2.7 or 3.5 is a simple as calling `pip install geomeppy`.
+
 ##API
 
 The API for GeomEppy depends on replacing an Eppy IDF object with a GeomEppy IDF object. To use this, you will need to import IDF from GeomEppy rather than directly from Eppy.
@@ -39,6 +45,10 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 
 `IDF.set_wwr(wwr=0.25)  # set a WWR of 25% for all external walls`
 
+- Setting constructions
+
+`IDF.set_default_constructions()  # set a name for each construction in the model`
+ 
 - Viewing a simple 3D representation of an IDF
 
 `IDF.view_model()  # shows a zoomable, rotatable transparent model`
@@ -51,12 +61,22 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 
 `IDF.getsurfaces('wall')  # only works if the surface type has been set in the IDF`
 
+- Get all subsurfaces in a model
+
+`IDF.getsubsurfaces()`
+
+- Get all subsurfaces in a model of a given type
+
+`IDF.getsubsurfaces('window')  # only works if the surface type has been set in the IDF`
+
 - Automatic geometry building
 
 `IDF.add_block(...)  # automatically adds a building block to the IDF`
 
 This method requires some explanation. The parameters required are:
 
+    name : str
+        A name for the block.
     coordinates : list
         A list of (x, y) tuples representing the building outline.
     height : float
@@ -91,9 +111,4 @@ wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 - Geometry validation and correction
 - Geometry simplification
 - Better geometry visualisation
-
-##Installation
-
-Installing GeomEppy for Python 2.7 is a simple as calling `pip install geomeppy`.
-
-Since `pip install` is not currently working for Eppy on Python 3, Python 3 is not currently supported. We hope to rectify this soon.
+- More robust surface intersection and matching in edge cases

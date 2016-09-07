@@ -1,5 +1,13 @@
 Changes
 =======
+2016-09-08
+----------
+
+- release v0.2.7
+- reintroduce Python 3
+- speed up surface matching
+- add set_default_constructions method to IDF
+
 2016-09-05
 ----------
 
