@@ -102,8 +102,8 @@ class TestAddBlock():
         idf.intersect_match()
         idf.set_wwr(0.25)
         idf.set_default_constructions()
-        idf.printidf()
-        idf.view_model()
+        #idf.printidf()
+        #idf.view_model()
 
 
 def test_block():
