@@ -338,6 +338,7 @@ class TestIntersectMatchRing():
         idf = self.idf        
         starting = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         intersect_idf_surfaces(idf)
+        idf.set_default_constructions()
         print(idf.idfstr())
         ending = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         assert starting == 12
