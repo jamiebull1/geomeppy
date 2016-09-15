@@ -345,5 +345,6 @@ def getidfsubsurfaces(idf, surface_type=None):
     """
     surfaces = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
     if surface_type:
-        surfaces = [s for s in surfaces if s.Surface_type == surface_type]
+        surfaces = [s for s in surfaces 
+                    if s.Surface_Type.lower() == surface_type.lower()]
     return surfaces
