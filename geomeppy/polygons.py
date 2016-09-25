@@ -459,7 +459,7 @@ class Polygon3D(Polygon):
         # check they're in the same plane
         if not almostequal(self.normal_vector, other.normal_vector):
             return False
-        if self.distance != other.distance:
+        if not almostequal(self.distance, other.distance):
             return False
         # if they are in the same plane, check they completely overlap in 2D
         return (self.project_to_2D() == other.project_to_2D())

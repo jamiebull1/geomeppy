@@ -13,13 +13,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import defaultdict
+from geomeppy.utilities import almostequal
 from itertools import combinations
 from itertools import product
 
 from geomeppy.polygons import Polygon3D
 from geomeppy.polygons import break_polygons
 from geomeppy.vectors import Vector3D
-from geomeppy.utilities import almostequal
 
 from six.moves import zip_longest
 
@@ -43,8 +43,11 @@ def getidfplanes(surfaces):
     planes = {}
     for s in surfaces:
         poly = Polygon3D(s.coords)
-        planes.setdefault(poly.distance, 
-                          {}).setdefault(poly.normal_vector, 
+        rounded_distance = round(poly.distance, 8) 
+        rounded_normal_vector = Vector3D(*[round(axis, 8)
+                                           for axis in poly.normal_vector])
+        planes.setdefault(rounded_distance, 
+                          {}).setdefault(rounded_normal_vector, 
                                          []).append(s)
     return planes
 
@@ -74,7 +77,7 @@ def match_idf_surfaces(idf):
                         matched = False
                         poly1 = Polygon3D(s.coords)
                         poly2 = Polygon3D(m.coords)
-                        if poly1 == poly2.invert_orientation():
+                        if almostequal(poly1, poly2.invert_orientation()):
                             matched = True
                             # matched surfaces
                             s.Outside_Boundary_Condition = 'surface'
@@ -141,7 +144,7 @@ def intersect_idf_surfaces(idf):
     adjacencies = get_adjacencies(surfaces)
     for surface in adjacencies:
         key, name = surface
-        new_surfaces = adjacencies[surface][0]
+        new_surfaces = adjacencies[surface]
         old_obj = idf.getobject(key.upper(), name)
         for i, new_coords in enumerate(new_surfaces, 1):
             new = idf.copyidfobject(old_obj)
@@ -193,19 +196,19 @@ def populate_adjacencies(adjacencies, s1, s2):
     """
     poly1 = Polygon3D(s1.coords)
     poly2 = Polygon3D(s2.coords)
-    if abs(poly1.distance) != abs(poly2.distance):
+    if not almostequal(abs(poly1.distance), abs(poly2.distance), 4):
         return adjacencies
-    if not almostequal(poly1.normal_vector, poly2.normal_vector):
-        if not almostequal(poly1.normal_vector, -poly2.normal_vector):
+    if not almostequal(poly1.normal_vector, poly2.normal_vector, 4):
+        if not almostequal(poly1.normal_vector, -poly2.normal_vector, 4):
             return adjacencies
             
     intersection = poly1.intersect(poly2)
     if intersection:
         new_surfaces = intersect(poly1, poly2)
         new_s1 = [s for s in new_surfaces 
-                  if almostequal(s.normal_vector, poly1.normal_vector)]
+                  if almostequal(s.normal_vector, poly1.normal_vector, 4)]
         new_s2 = [s for s in new_surfaces 
-                  if almostequal(s.normal_vector, poly2.normal_vector)]
+                  if almostequal(s.normal_vector, poly2.normal_vector, 4)]
         adjacencies[(s1.key, s1.Name)] += new_s1
         adjacencies[(s2.key, s2.Name)] += new_s2
     return adjacencies
@@ -237,27 +240,35 @@ def intersect(poly1, poly2):
     else:
         polys.extend(poly1.difference(poly2))
         polys.extend(poly2.difference(poly1))
-    polys = unique(*polys)
+    polys = unique(polys)
     return polys
 
 
-def unique(*polys):
+def unique(polys):
     """Make a unique set of polygons.
     
     Parameters
     ----------
-    *polys : 
+    polys : list
     
     Returns
     -------
     list
     
     """
-    result = []
-    for poly in polys:
-        if poly not in result:
-            result.append(poly)
-    return result
+    flattened = []
+    for item in polys:
+        if isinstance(item, Polygon3D):
+            flattened.append(item)
+        elif isinstance(item, list):
+            flattened.extend(item)
+
+    results = []
+    for poly in flattened:
+        if not any(poly == result for result in results):
+            results.append(poly)
+    
+    return results
 
 
 def is_hole(surface, possible_hole):
@@ -324,7 +335,7 @@ def getidfsurfaces(idf, surface_type=None):
     """
     surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
     if surface_type:
-        surfaces = [s for s in surfaces if s.Surface_type == surface_type]
+        surfaces = [s for s in surfaces if s.Surface_Type == surface_type]
     return surfaces
 
 

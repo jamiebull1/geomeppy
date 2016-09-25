@@ -165,7 +165,7 @@ class TestAddBlock():
         idf.add_block('breaker', coordinates, height, num_stories)
         idf.intersect_match()
 
-
+        
 def test_block():
     name = "test"
     height = 7.5
@@ -194,5 +194,4 @@ def test_block():
     assert block.stories[0]['storey_no'] == -below_ground_stories
     assert block.stories[-1]['storey_no'] == (
         num_stories - below_ground_stories - 1)
-    
     
