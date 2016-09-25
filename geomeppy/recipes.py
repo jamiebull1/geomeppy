@@ -21,6 +21,20 @@ from geomeppy.vectors import Vector3D
 
 
 def set_default_constructions(idf):
+    constructions = ['Project Wall', 'Project Partition','Project Floor',
+                     'Project Flat Roof', 'Project Ceiling',
+                     'Project External Window', 'Project Door']
+    for construction in constructions:
+        idf.newidfobject('CONSTRUCTION', construction,
+                         Outside_Layer='DefaultMaterial')
+    idf.newidfobject('MATERIAL', 'DefaultMaterial',
+                     Roughness='Rough',
+                     Thickness=0.1,
+                     Conductivity=0.1,
+                     Density=1000,
+                     Specific_Heat=1000,
+                     )
+
     for surface in idf.getsurfaces():
         set_default_construction(surface)
     for subsurface in idf.getsubsurfaces():
@@ -47,7 +61,7 @@ def set_default_construction(surface):
     if surface.Surface_Type == 'window':
         surface.Construction_Name = 'Project External Window'
     if surface.Surface_Type == 'door':
-        surface.Construction_Name = 'Project Door'
+        surface.Construction_Name = 'Project Door' 
 
 
 def translate_to_origin(idf):
@@ -68,6 +82,7 @@ def translate_to_origin(idf):
     translate(surfaces, (-min_x, -min_y))
     translate(windows, (-min_x, -min_y))
     
+    
 def translate(surfaces, vector):
     """Translate all surfaces by a vector.
     
@@ -81,8 +96,27 @@ def translate(surfaces, vector):
     """
     vector = Vector3D(*vector)
     for s in surfaces:
-        new_coords = [Vector3D(*v) + vector for v in s.coords]
+        new_coords = translate_coords(s.coords, vector)
         s.setcoords(new_coords)
+
+
+def translate_coords(coords, vector):
+    """Translate a set of coords by a direction vector.
+    
+    Parameters
+    ----------
+    coords : list
+        A list of points.
+    vector : Vector2D, Vector3D, (x,y) or (x,y,z) list-like
+        Representation of a vector to translate by.
+    
+    Returns
+    -------
+    list of Vector3D objects
+    
+    """
+    return [Vector3D(*v) + vector for v in coords]
+
 
 def set_wwr(idf, wwr=0.2):
     """Set the window to wall ratio on all external walls.
