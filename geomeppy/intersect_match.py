@@ -309,13 +309,9 @@ def set_coords(surface, coords, ggr):
     # find the vertex fields
     n_vertices_index = surface.objls.index('Number_of_Vertices')
     first_x = n_vertices_index + 1  # X of first coordinate
-    last_z = first_x + len(coords)  # Z of final coordinate
-    vertex_fields = surface.objls[first_x:last_z]
-    surface.obj = surface.obj[:first_x]
-    
+    surface.obj = surface.obj[:first_x]    
     # set the vertex field values
-    for field, val in zip_longest(vertex_fields, coords, fillvalue="gotcha"):
-        surface[field] = val            
+    surface.fieldvalues.extend(coords)
 
 
 def getidfsurfaces(idf, surface_type=None):
