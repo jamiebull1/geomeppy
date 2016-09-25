@@ -12,6 +12,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from geomeppy.recipes import translate
+from geomeppy.recipes import translate_coords
 from geomeppy.view_geometry import view_polygons
 
 from eppy.iddcurrent import iddcurrent
@@ -336,9 +337,12 @@ def test_real_intersect():
         (526492.65, 185910.65, 2.5), (526492.65, 185910.65, 5.0)])
     min_x = min(min(s.xs) for s in [poly1, poly2])
     min_y = min(min(s.ys) for s in [poly1, poly2])
-    poly1, poly2 = translate([poly1, poly2], [-min_x, -min_y, 0])
-    intersection = translate(poly1.intersect(poly2), [min_x, min_y, 0])[0]
-    poly1, poly2 = translate([poly1, poly2], [min_x, min_y, 0])
+    poly1 = Polygon3D(translate_coords(poly1, [-min_x, -min_y, 0]))
+    poly2 = Polygon3D(translate_coords(poly2, [-min_x, -min_y, 0]))
+    intersection = Polygon3D(translate_coords(
+        poly1.intersect(poly2)[0], [min_x, min_y, 0]))
+    poly1 = Polygon3D(translate_coords(poly1, [min_x, min_y, 0]))
+    poly2 = Polygon3D(translate_coords(poly2, [min_x, min_y, 0]))
 #    view_polygons({'blue': [poly1, poly2]})#, 'red': [intersection]})
     assert not is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
@@ -376,7 +380,6 @@ def test_is_hole():
     assert not is_hole(poly2, intersection)
 
 
-
 class TestIntersectMatchRing():
     
     def setup(self):
@@ -391,8 +394,6 @@ class TestIntersectMatchRing():
         starting = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         intersect_idf_surfaces(idf)
         idf.set_default_constructions()
-        idf.view_model()
-        print(idf.idfstr())
         ending = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         assert starting == 12
         assert ending == 14
@@ -402,6 +403,7 @@ class TestIntersectMatchRing():
                      'z2 Floor 0001_1']:
             obj = idf.getobject('BUILDINGSURFACE:DETAILED', name)
             assert obj
+
 
 class TestIntersectMatch():
     
