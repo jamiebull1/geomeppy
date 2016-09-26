@@ -24,6 +24,7 @@ from geomeppy.intersect_match import is_hole
 from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import unique
 from geomeppy.polygons import Polygon3D
+from geomeppy.utilities import almostequal
 from six import StringIO
 
 
@@ -89,7 +90,7 @@ def test_unique():
     assert poly1 != poly2
     assert poly2 == poly3
     polys = [poly1, poly2, poly3]
-    unique_polys = unique(*polys)
+    unique_polys = unique(polys)
     assert len(unique_polys) == 2
     for poly in polys:
         assert poly in unique_polys
@@ -195,7 +196,7 @@ class TestSimpleTestPolygons():
         
         result = intersect(*adjacencies[0])
         result.extend(intersect(*adjacencies[1]))
-        result = unique(*result)
+        result = unique(result)
 
         assert len(result) == len(expected)
         for poly in expected:
@@ -479,7 +480,27 @@ def test_real_scale():
     wall_2 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block small Storey 0 Wall 0001_4')
     
-    assert wall_1.coords != wall_2.coords
+    if wall_1 and wall_2:
+        assert not almostequal(wall_1.coords, wall_2.coords)
+    
+    # look for two walls which are being incorrectly duplicated
+    wall_1 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0005_3')
+    wall_2 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0005_2')
+    
+    if wall_1 and wall_2:
+        assert not almostequal(wall_1.coords, wall_2.coords)
+    
+    # look for two walls which are being incorrectly duplicated
+    wall_1 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0004_3')
+    wall_2 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0004_1')
+    
+    if wall_1 and wall_2:
+        assert not almostequal(wall_1.coords, wall_2.coords)
+
     
     idf.saveas('tmp.idf')
 

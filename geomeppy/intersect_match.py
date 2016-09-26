@@ -144,7 +144,7 @@ def intersect_idf_surfaces(idf):
     adjacencies = get_adjacencies(surfaces)
     for surface in adjacencies:
         key, name = surface
-        new_surfaces = adjacencies[surface][0]
+        new_surfaces = adjacencies[surface]
         old_obj = idf.getobject(key.upper(), name)
         for i, new_coords in enumerate(new_surfaces, 1):
             new = idf.copyidfobject(old_obj)
@@ -240,26 +240,34 @@ def intersect(poly1, poly2):
     else:
         polys.extend(poly1.difference(poly2))
         polys.extend(poly2.difference(poly1))
-    polys = unique(*polys)
+    polys = unique(polys)
     return polys
 
 
-def unique(*polys):
+def unique(polys):
     """Make a unique set of polygons.
     
     Parameters
     ----------
-    *polys : 
+    polys : list
     
     Returns
     -------
     list
     
     """
+    flattened = []
+    for item in polys:
+        if isinstance(item, Polygon3D):
+            flattened.append(item)
+        elif isinstance(item, list):
+            flattened.extend(item)
+
     result = []
-    for poly in polys:
+    for poly in flattened:
         if poly not in result:
             result.append(poly)
+    
     return result
 
 
