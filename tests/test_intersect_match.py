@@ -500,8 +500,3 @@ def test_real_scale():
     
     if wall_1 and wall_2:
         assert not almostequal(wall_1.coords, wall_2.coords)
-
-    
-    idf.saveas('tmp.idf')
-
-    
