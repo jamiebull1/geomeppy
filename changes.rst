@@ -3,6 +3,12 @@ Changes
 2016-09-08
 ----------
 
+- release v0.2.8
+- bugfixes for surface intersection and matching
+
+2016-09-08
+----------
+
 - release v0.2.7
 - reintroduce Python 3
 - speed up surface matching
