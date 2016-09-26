@@ -11,7 +11,6 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.recipes import translate
 from geomeppy.recipes import translate_coords
 from geomeppy.view_geometry import view_polygons
 
@@ -473,6 +472,15 @@ def test_real_scale():
     wall = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0003_2')
     assert wall.Outside_Boundary_Condition != 'outdoors'
+    
+    # look for two walls which are being incorrectly duplicated
+    wall_1 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block small Storey 0 Wall 0001_1')
+    wall_2 = idf.getobject(
+        'BUILDINGSURFACE:DETAILED', 'Block small Storey 0 Wall 0001_4')
+    
+    assert wall_1.coords != wall_2.coords
+    
     idf.saveas('tmp.idf')
 
     
