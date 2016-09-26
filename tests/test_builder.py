@@ -156,7 +156,6 @@ class TestAddBlock():
         idf.set_wwr(0.25)
         idf.set_default_constructions()
     
-    @pytest.mark.xfail(reason="issue #1")
     def test_known_breaking(self):
         idf = self.idf
         height = 5
