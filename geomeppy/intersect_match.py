@@ -263,12 +263,12 @@ def unique(polys):
         elif isinstance(item, list):
             flattened.extend(item)
 
-    result = []
+    results = []
     for poly in flattened:
-        if poly not in result:
-            result.append(poly)
+        if not any(poly == result for result in results):
+            results.append(poly)
     
-    return result
+    return results
 
 
 def is_hole(surface, possible_hole):
