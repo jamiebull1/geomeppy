@@ -24,13 +24,13 @@ setup(
     packages=['geomeppy',
               'tests',
               ],
-    version='0.2.8',
+    version='0.2.11',
     description='Geometry editing for E+ idf files',
     long_description=read_md('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.8',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.11',
     license='MIT License',
     keywords=['EnergyPlus', 
               'geometry',
@@ -38,7 +38,7 @@ setup(
               ],
     platforms='any',
     install_requires = [
-        "eppy>=0.5.40",
+        "eppy>=0.5.41",
         "numpy>=1.11.1",
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # geometry intersection

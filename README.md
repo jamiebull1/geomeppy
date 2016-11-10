@@ -111,4 +111,3 @@ wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 - Geometry validation and correction
 - Geometry simplification
 - Better geometry visualisation
-- More robust surface intersection and matching in edge cases

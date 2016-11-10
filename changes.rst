@@ -1,5 +1,11 @@
 Changes
 =======
+2016-11-10
+----------
+
+- release v0.2.11
+- bugfixes for avoiding holes in surfaces
+
 2016-09-08
 ----------
 
