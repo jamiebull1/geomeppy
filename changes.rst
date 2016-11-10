@@ -3,8 +3,9 @@ Changes
 2016-11-10
 ----------
 
-- release v0.2.11
+- release v0.2.12
 - bugfixes for avoiding holes in surfaces
+- make matplotlib an optional dependency
 
 2016-09-08
 ----------
