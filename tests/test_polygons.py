@@ -525,7 +525,7 @@ def test_identify_inner_ring_polygons():
     
     for item in geom:
         poly = Polygon3D([]).from_wkt(item[0])
-    view_polygons({'blue': [poly]})#, 'red': [interior]})
+#    view_polygons({'blue': [poly]})#, 'red': [interior]})
     
 
 def test_point():
