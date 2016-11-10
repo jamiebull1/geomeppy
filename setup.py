@@ -43,7 +43,7 @@ setup(
         "six>=1.10.0",  # python2/3 compatibility
         "pyclipper>=1.0.2",  # geometry intersection
         "transforms3d>=0.3",  # geometry transformations
-        "matplotlib>=1.5.1",  # simple geometry viewer
+#        "matplotlib>=1.5.1",  # simple geometry viewer
         ],
     classifiers = [
         'Programming Language :: Python :: 2',

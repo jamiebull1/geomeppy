@@ -19,12 +19,15 @@ from __future__ import unicode_literals
 from eppy.iddcurrent import iddcurrent
 from eppy.function_helpers import getcoords
 from eppy.modeleditor import IDF
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from six import StringIO
 
-import matplotlib.pyplot as plt
-
+try:
+    from mpl_toolkits.mplot3d import Axes3D
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    import matplotlib.pyplot as plt
+except ImportError:
+    # this isn't always needed so we can ignore if it's not present
+    pass
 
 def view_idf(fname=None, idf_txt=None):
     """Display an IDF for inspection.
