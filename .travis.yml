@@ -22,6 +22,7 @@ before_install:
   - conda create --yes -n geomeppy python=$PYTHON
   - source activate geomeppy
   - conda install --yes numpy matplotlib pip
+  - conda install -c ioos shapely
   
   # coverage and testing requirements
   - pip install pytest-cov
