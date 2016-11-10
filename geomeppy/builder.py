@@ -22,7 +22,7 @@ class Zone(object):
     
     def __init__(self, name, surfaces):
         self.name = name
-        self.walls = surfaces['walls']
+        self.walls = [s for s in surfaces['walls'] if s.area > 0]
         self.floors = surfaces['floors']
         self.roofs = surfaces['roofs']
         self.ceilings = surfaces['ceilings']

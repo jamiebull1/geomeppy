@@ -17,6 +17,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import MutableSequence
+from itertools import product
+
+from eppy.geometry.surface import area
 from geomeppy.segments import Segment
 from geomeppy.transformations import align_face
 from geomeppy.transformations import invert_align_face
@@ -24,9 +27,7 @@ from geomeppy.utilities import almostequal
 from geomeppy.vectors import Vector2D
 from geomeppy.vectors import Vector3D
 from geomeppy.vectors import normalise_vector
-from itertools import product
-
-from eppy.geometry.surface import area
+from shapely import wkt
 
 import numpy as np
 import pyclipper as pc
@@ -76,6 +77,54 @@ class Polygon(MutableSequence):
         else:
             raise ValueError("Incompatible objects: %s + %s" % (self, other))
         return self.__class__(vertices)
+    
+    def __sub__(self, other):
+        if len(self) == len(other) and hasattr(other[0], '__len__'):
+            # add together two equal polygons
+            vertices = [v1 - v2 for v1, v2 in zip(self, other)]
+        elif len(self[0]) == len(other):
+            # translate by a vector
+            vertices = [v - other for v in self]
+        else:
+            raise ValueError("Incompatible objects: %s + %s" % (self, other))
+        return self.__class__(vertices)
+    
+    def from_wkt(self, wkt_poly):
+        """Convert a wkt representation of a polygon to GeomEppy.
+        
+        This also accounts for the possible presence of inner rings by linking
+        them to the outer ring.
+        
+        Parameters
+        ----------
+        wkt_poly : str
+            A text representation of a polygon in well known text (wkt) format.
+        
+        Returns
+        -------
+        Polygon3D
+        
+        """
+        poly = wkt.loads(wkt_poly)
+        exterior = Polygon3D(poly.exterior.coords)
+        if poly.interiors:
+            # make the exterior into a geomeppy poly
+            for inner_ring in poly.interiors:
+                # make the interior into a geomeppy poly
+                interior = Polygon3D(inner_ring.coords)
+                # find the nearest points on the exterior and interior
+                links = product(interior, exterior)
+                links = sorted(links, key=lambda x: distance(x[0], x[1]))
+                on_interior = links[0][0]
+                on_exterior = links[0][1]
+                # join them up
+                exterior = Polygon3D(exterior[exterior.index(on_exterior):] + 
+                                     exterior[:exterior.index(on_exterior) + 1])
+                interior = Polygon3D(interior[interior.index(on_interior):] + 
+                                     interior[:interior.index(on_interior) + 1])
+                exterior = Polygon3D(exterior[:] + interior[:])
+        
+        return exterior
     
     @property
     def normal_vector(self):

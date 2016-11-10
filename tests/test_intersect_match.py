@@ -263,7 +263,7 @@ class TestSimpleTestPolygons():
         assert len(result) == len(expected)
         for poly in expected:
             assert poly in result
-        
+
         
 class TestMatchSurfaces():
 
@@ -380,6 +380,14 @@ def test_is_hole():
     assert not is_hole(poly2, intersection)
 
 
+<<<<<<< HEAD
+=======
+def test_is_not_hole():
+    """Ensure that a hole with another block inside.
+    """
+
+
+>>>>>>> refs/heads/develop
 class TestIntersectMatchRing():
     
     def setup(self):
@@ -500,8 +508,11 @@ def test_real_scale():
     
     if wall_1 and wall_2:
         assert not almostequal(wall_1.coords, wall_2.coords)
+<<<<<<< HEAD
 
     
     idf.saveas('tmp.idf')
 
     
+=======
+>>>>>>> refs/heads/develop

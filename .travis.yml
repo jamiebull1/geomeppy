@@ -22,7 +22,8 @@ before_install:
   - conda create --yes -n geomeppy python=$PYTHON
   - source activate geomeppy
   - conda install --yes numpy matplotlib pip
-  
+  - conda install --yes -c conda-forge shapely
+
   # coverage and testing requirements
   - pip install pytest-cov
   - pip install codecov
