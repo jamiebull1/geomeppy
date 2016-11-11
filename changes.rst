@@ -1,11 +1,12 @@
 Changes
 =======
-2016-11-10
+2016-11-11
 ----------
 
-- release v0.2.12
+- release v0.2.13
 - bugfixes for avoiding holes in surfaces
-- make matplotlib an optional dependency
+- make Matplotlib an optional dependency
+- add Shapely dependency
 
 2016-09-08
 ----------
