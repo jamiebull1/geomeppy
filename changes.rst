@@ -1,5 +1,11 @@
 Changes
 =======
+2016-12-05
+----------
+
+- release v0.2.14
+- experimental support for adding shading blocks
+
 2016-11-11
 ----------
 
