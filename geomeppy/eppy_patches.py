@@ -253,7 +253,28 @@ class IDF(BaseIDF):
             raise ValueError('%s is not a valid zoning rule' % zoning)
         for zone in zones:
             self.add_zone(zone)
-
+    
+    def add_shading_block(self, *args, **kwargs):
+        """Add a shading block to the IDF
+        """
+        try:
+            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
+        except IndexError:
+            ggr = None
+        block = Block(*args, **kwargs)
+        print(block.walls)
+        for wall in block.walls[0]:
+            if wall.area <= 0:
+                continue
+            print(wall)
+            s = self.newidfobject(
+                'SHADING:SITE:DETAILED',
+                block.name)
+            try:
+                s.setcoords(wall)
+            except ZeroDivisionError:
+                self.removeidfobject(s)
+        
     def add_zone(self, zone):
         try:
             ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
