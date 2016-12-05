@@ -257,12 +257,7 @@ class IDF(BaseIDF):
     def add_shading_block(self, *args, **kwargs):
         """Add a shading block to the IDF
         """
-        try:
-            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
-        except IndexError:
-            ggr = None
         block = Block(*args, **kwargs)
-        print(block.walls)
         for wall in block.walls[0]:
             if wall.area <= 0:
                 continue
