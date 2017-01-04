@@ -261,7 +261,6 @@ class IDF(BaseIDF):
         for wall in block.walls[0]:
             if wall.area <= 0:
                 continue
-            print(wall)
             s = self.newidfobject(
                 'SHADING:SITE:DETAILED',
                 block.name)
