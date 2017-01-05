@@ -1,5 +1,11 @@
 Changes
 =======
+2017-01-05
+----------
+
+- release v0.2.16
+- remove Python 3.x support - hopefully temporarily
+
 2017-01-04
 ----------
 

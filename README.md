@@ -15,7 +15,11 @@ It primarily adds functions to do with IDF geometry, including zones, surfaces, 
 
 ##Installation
 
-Installing GeomEppy for Python 2.7 or 3.5 is a simple as calling `pip install geomeppy`.
+GeomEppy requires Numpy and Shapely.
+
+Once these requirements are met, to install GeomEppy for Python 2.7 call `pip install geomeppy`.
+
+Python 3.x versions are currently unsupported.
 
 ##API
 
