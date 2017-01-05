@@ -263,7 +263,7 @@ class TestSimpleTestPolygons():
         assert len(result) == len(expected)
         for poly in expected:
             assert poly in result
-            
+
         
 class TestMatchSurfaces():
 
@@ -378,11 +378,6 @@ def test_is_hole():
     intersection = poly1.intersect(poly2)[0]
     assert not is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
-
-
-def test_is_not_hole():
-    """Ensure that a hole with another block inside.
-    """
 
 
 class TestIntersectMatchRing():

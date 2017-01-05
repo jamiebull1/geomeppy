@@ -1,5 +1,37 @@
 Changes
 =======
+2017-01-05
+----------
+
+- release v0.2.16
+- remove Python 3.x support - hopefully temporarily
+
+2017-01-04
+----------
+
+- release v0.2.15
+- bugfix
+
+2016-12-05
+----------
+
+- release v0.2.14
+- experimental support for adding shading blocks
+
+2016-11-11
+----------
+
+- release v0.2.13
+- bugfixes for avoiding holes in surfaces
+- make Matplotlib an optional dependency
+- add Shapely dependency
+
+2016-09-08
+----------
+
+- release v0.2.8
+- bugfixes for surface intersection and matching
+
 2016-09-08
 ----------
 

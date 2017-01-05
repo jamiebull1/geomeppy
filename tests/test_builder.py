@@ -5,8 +5,6 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """pytest for builder.py"""
-#from six import StringIO
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -164,7 +162,7 @@ class TestAddBlock():
         idf.add_block('breaker', coordinates, height, num_stories)
         idf.intersect_match()
 
-        
+
 def test_block():
     name = "test"
     height = 7.5
