@@ -7,12 +7,12 @@ dist: trusty
 sudo: required 
 
 env:
-  - PYTHON=2.7 
+  - PYTHON=2.7
   - PYTHON=3.5
 
 before_install:
   # miniconda
-  - travis_retry wget http://repo.continuum.io/miniconda/Miniconda-3.8.3-Linux-x86_64.sh -O miniconda.sh
+  - travis_retry wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH=/home/travis/miniconda/bin:$PATH
