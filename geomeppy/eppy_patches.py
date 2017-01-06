@@ -258,12 +258,12 @@ class IDF(BaseIDF):
         """Add a shading block to the IDF
         """
         block = Block(*args, **kwargs)
-        for wall in block.walls[0]:
+        for i, wall in enumerate(block.walls[0], 1):
             if wall.area <= 0:
                 continue
             s = self.newidfobject(
                 'SHADING:SITE:DETAILED',
-                block.name)
+                '%s_%s' % (block.name, i))
             try:
                 s.setcoords(wall)
             except ZeroDivisionError:
