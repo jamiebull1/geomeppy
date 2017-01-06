@@ -1,5 +1,11 @@
 Changes
 =======
+2017-01-06
+----------
+
+- release v0.2.18
+- fix bug where multiple shading blocks received the same name
+
 2017-01-05
 ----------
 
