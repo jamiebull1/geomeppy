@@ -103,7 +103,7 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     nofirstfields = iddgaps.missingkeys_standard(
         commdct, dtls,
         skiplist=skiplist)
-    iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
+    iddgaps.missingkeys_nonstandard(block, commdct, dtls, nofirstfields)
     # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
 
