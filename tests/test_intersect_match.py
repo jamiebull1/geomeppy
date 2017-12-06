@@ -11,10 +11,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.recipes import translate_coords
-from geomeppy.view_geometry import view_polygons
+import sys
 
 from eppy.iddcurrent import iddcurrent
+import pytest
+from six import StringIO
+
+from geomeppy.recipes import translate_coords
 from geomeppy.eppy_patches import IDF
 from geomeppy.intersect_match import get_adjacencies
 from geomeppy.intersect_match import getidfsurfaces
@@ -25,7 +28,6 @@ from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import unique
 from geomeppy.polygons import Polygon3D
 from geomeppy.utilities import almostequal
-from six import StringIO
 
 
 idf_txt = """
@@ -434,13 +436,15 @@ class TestIntersectMatch():
             obj = idf.getobject('BUILDINGSURFACE:DETAILED', name)
             assert obj
 
+
+@pytest.mark.xfail("sys.version_info.major == 3 and sys.version_info.minor == 5")
 def test_real_scale():
     """Test building, intersecting and matching from a real building footprint.
     """
     iddfhandle = StringIO(iddcurrent.iddtxt)
     if IDF.getiddname() == None:
         IDF.setiddname(iddfhandle)
-    
+
     idf = IDF(StringIO('Version, 8.5;'))
     poly1 = [(526492.65,185910.65),(526489.05,185916.45),
              (526479.15,185910.3),(526482.65,185904.6),
@@ -473,30 +477,30 @@ def test_real_scale():
     wall = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0003_2')
     assert wall.Outside_Boundary_Condition != 'outdoors'
-    
+
     # look for two walls which are being incorrectly duplicated
     wall_1 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block small Storey 0 Wall 0001_1')
     wall_2 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block small Storey 0 Wall 0001_4')
-    
+
     if wall_1 and wall_2:
         assert not almostequal(wall_1.coords, wall_2.coords)
-    
+
     # look for two walls which are being incorrectly duplicated
     wall_1 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0005_3')
     wall_2 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0005_2')
-    
+
     if wall_1 and wall_2:
         assert not almostequal(wall_1.coords, wall_2.coords)
-    
+
     # look for two walls which are being incorrectly duplicated
     wall_1 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0004_3')
     wall_2 = idf.getobject(
         'BUILDINGSURFACE:DETAILED', 'Block large Storey 1 Wall 0004_1')
-    
+
     if wall_1 and wall_2:
         assert not almostequal(wall_1.coords, wall_2.coords)
