@@ -34,6 +34,7 @@ def main():
     major, minor, patch = version.split('.')
     new_version = '%s.%s.%d' % (major, minor, int(patch) + 1)
     replace('geomeppy/__init__.py', version, new_version)
+    replace('setup.py', version, new_version)
     try:
         # convert docs to rst
         z = pypandoc.convert('README.md', 'rst', format='markdown')
@@ -56,6 +57,7 @@ def main():
         print('rolling back')
         print(e)
         replace('geomeppy/__init__.py', new_version, version)
+        replace('setup.py', new_version, version)
 
 
 if __name__ == '__main__':
