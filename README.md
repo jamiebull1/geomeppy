@@ -10,13 +10,13 @@ GeomEppy is a scripting language for use with Eppy, which in turn is a scripting
 
 It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.
 
-##Installation
+## Installation
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
 Once these requirements are met, to install GeomEppy for Python 2.7 or 3.6 call `pip install geomeppy`.
 
-##API
+## API
 
 The API for GeomEppy depends on replacing an Eppy IDF object with a GeomEppy IDF object. To use this, you will need to import IDF from GeomEppy rather than directly from Eppy.
 
@@ -104,7 +104,7 @@ wall = idf.newidfobject(
 wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 ```
 
-##Forthcoming
+## Forthcoming
 
 - Scaling and rotating buildings and blocks
 - Geometry validation and correction

@@ -2,6 +2,8 @@ import os
 
 from setuptools import setup
 
+import geomeppy
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def read_md(f):
@@ -24,13 +26,13 @@ setup(
     packages=['geomeppy',
               'tests',
               ],
-    version='0.2.21',
+    version=geomeppy.__version__,
     description='Geometry editing for E+ idf files',
     long_description=read_md('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.21',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v%s' % geomeppy.__version__,
     license='MIT License',
     keywords=['EnergyPlus', 
               'geometry',
