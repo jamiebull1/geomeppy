@@ -38,12 +38,12 @@ setup(
               ],
     platforms='any',
     install_requires = [
-        "eppy>=0.5.41",
-        "numpy>=1.11.1",
-        "six>=1.10.0",  # python2/3 compatibility
-        "pyclipper>=1.0.2",  # geometry intersection
-        "transforms3d>=0.3",  # geometry transformations
-        "shapely>=1.5.17",  # geometry transformations
+        "eppy==0.5.45",
+        "numpy==1.13",
+        "six==1.10.0",  # python2/3 compatibility
+        "pyclipper==1.0.6",  # geometry intersection
+        "transforms3d==0.3.1",  # geometry transformations
+        "shapely==1.6.2",  # geometry transformations
 #        "matplotlib>=1.5.1",  # simple geometry viewer
         ],
     classifiers = [

@@ -103,11 +103,11 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
     nofirstfields = iddgaps.missingkeys_standard(
         commdct, dtls,
         skiplist=skiplist)
-    iddgaps.missingkeys_nonstandard(commdct, dtls, nofirstfields)
+    iddgaps.missingkeys_nonstandard(block, commdct, dtls, nofirstfields)
     # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
 
-    return bunchdt, block, data, commdct, idd_index
+    return bunchdt, block, data, commdct, idd_index, versiontuple
 
 
 def addthisbunch(bunchdt, data, commdct, thisbunch, theidf):
@@ -333,8 +333,8 @@ class IDF(BaseIDF):
         readout = idfreader1(
             self.idfname, self.iddname, self,
             commdct=self.idd_info, block=self.block)
-        self.idfobjects, block, self.model, idd_info, idd_index = readout
-        self.__class__.setidd(idd_info, idd_index, block)
+        self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = readout
+        self.__class__.setidd(idd_info, idd_index, block, versiontuple)
             
 
     def newidfobject(self, key, aname='', **kwargs):
