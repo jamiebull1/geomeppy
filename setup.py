@@ -40,7 +40,7 @@ setup(
     platforms='any',
     install_requires = [
         "eppy==0.5.45",
-        "numpy==1.13",
+        "numpy>=1.13",
         "six==1.10.0",  # python2/3 compatibility
         "pyclipper==1.0.6",  # geometry intersection
         "transforms3d==0.3.1",  # geometry transformations
