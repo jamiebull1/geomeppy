@@ -23,11 +23,11 @@ def replace(file_path, pattern, subst):
 
 def main():
     # check we're on master
-    assert b'* master' in subprocess.check_output(['git', 'branch'])
+    assert b'* master' in subprocess.check_output(['git', 'branch']), 'Not on master branch'
     # check we're up-to-date
     status = subprocess.check_output(['git', 'status'])
-    assert b'modified' not in status
-    assert b'Untracked' not in status
+    assert b'modified' not in status, 'Repository contains modified files'
+    assert b'Untracked' not in status, 'Repository contains untracked files'
 
     # increment version
     version = __version__
@@ -42,6 +42,7 @@ def main():
             outfile.write(z)
         # add and commit changes
         print(subprocess.check_output(['git', 'add', 'geomeppy/__init__.py']))
+        print(subprocess.check_output(['git', 'add', 'setup.py']))
         print(subprocess.check_output(['git', 'add', 'README.rst']))
         print(subprocess.check_output(['git', 'commit', '-m', 'release/%s' % new_version]))
         # create a tagged release
