@@ -1,8 +1,5 @@
 GeomEppy
 ========
-[![PyPI](https://img.shields.io/pypi/dm/geomeppy.svg)](https://pypi.python.org/pypi/geomeppy)
- from PyPI
-
 [![Build Status](https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master)](https://travis-ci.org/jamiebull1/geomeppy)
  for Python 2.7 on Linux via Travis
 
