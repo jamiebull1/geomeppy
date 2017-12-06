@@ -3,7 +3,7 @@ Changes
 2017-12-06
 ----------
 
-- release v0.2.20
+- release v0.2.21
 - add 3.6 support
 - fix bug with eppy integration
 
