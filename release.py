@@ -5,7 +5,7 @@ from os import fdopen, remove
 
 import pypandoc
 
-import geomeppy
+from geomeppy import __version__
 
 
 def replace(file_path, pattern, subst):
@@ -30,7 +30,7 @@ def main():
     assert b'Untracked' not in status
 
     # increment version
-    version = geomeppy.__version__
+    version = __version__
     major, minor, patch = version.split('.')
     new_version = '%s.%s.%d' % (major, minor, int(patch) + 1)
     replace('geomeppy/__init__.py', version, new_version)
@@ -40,17 +40,17 @@ def main():
         with open('README.rst', 'w') as outfile:
             outfile.write(z)
         # add and commit changes
-        subprocess.check_call(['git', 'add', 'geomeppy/__init__.py'])
-        subprocess.check_call(['git', 'add', 'README.rst'])
+        print(subprocess.check_output(['git', 'add', 'geomeppy/__init__.py']))
+        print(subprocess.check_output(['git', 'add', 'README.rst']))
+        print(subprocess.check_output(['git', 'commit', '-m', 'release/%s' % new_version]))
         # create a tagged release
-        subprocess.check_call(['git', 'tag', '-m', 'Release %s' % new_version, 'v%s' % new_version])
-
-        # TODO: push to github
-        subprocess.check_call(['git', 'push', 'origin', 'master'])
+        print(subprocess.check_output(['git', 'tag', '-m', 'release/%s' % new_version, 'v%s' % new_version]))
+        # push to github
+        print(subprocess.check_output(['git', 'push', 'origin', 'master', '-f']))
         # create dist
-        # subprocess.call(['python', 'setup.py', 'sdist'])
+        print(subprocess.check_output(['python', 'setup.py', 'sdist']))
         # release
-        # subprocess.call(['twine' 'upload' 'dist/*'])
+        print(subprocess.check_output(['twine' 'upload' 'dist/*']))
     except Exception as e:
         # rollback
         print('rolling back')
