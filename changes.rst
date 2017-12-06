@@ -1,5 +1,12 @@
 Changes
 =======
+2017-12-06
+----------
+
+- release v0.2.20
+- add 3.6 support
+- fix bug with eppy integration
+
 2017-01-06
 ----------
 

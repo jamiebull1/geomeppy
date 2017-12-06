@@ -1,22 +1,27 @@
+========
 GeomEppy
 ========
-[![Build Status](https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master)](https://travis-ci.org/jamiebull1/geomeppy)
- for Python 2.7, 3.5, 3.6 via Travis
+**Build Status**
+.. image:: https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master
+for Python 2.7, 3.5, 3.6 via Travis
 
-[![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg)](https://codecov.io/github/jamiebull1/geomeppy)
- via CodeCov
+**Coverage Status**
+.. image:: https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg
+via CodeCov
 
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
 It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.
 
-##Installation
+Installation
+""""""""""""
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
 Once these requirements are met, to install GeomEppy for Python 2.7 or 3.6 call `pip install geomeppy`.
 
-##API
+API
+"""
 
 The API for GeomEppy depends on replacing an Eppy IDF object with a GeomEppy IDF object. To use this, you will need to import IDF from GeomEppy rather than directly from Eppy.
 
@@ -93,19 +98,20 @@ The block generated will have boundary conditions set correctly and any intersec
 The surface type will be set to `wall`, `floor`, `ceiling` or `roof` for each surface.
 Constructions are not set automatically so these will need to be added afterwards in the normal way for Eppy.
 
-## Other functions
+Other functions
+"""""""""""""""
 
 GeomEppy also provides some additional functions such as `surface.setcoords(...)`
 
-```
-wall = idf.newidfobject(
-    'BUILDINGSURFACE:DETAILED', 'awall',
-    Surface_Type = 'wall')
-wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-```
+.. code-block:: python
 
-##Forthcoming
+    wall = idf.newidfobject(
+        'BUILDINGSURFACE:DETAILED', 'awall',
+        Surface_Type = 'wall')
+    wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 
+Forthcoming
+"""""""""""
 - Scaling and rotating buildings and blocks
 - Geometry validation and correction
 - Geometry simplification
