@@ -50,7 +50,7 @@ def main():
         # create dist
         print(subprocess.check_output(['python', 'setup.py', 'sdist']))
         # release
-        print(subprocess.check_output(['twine' 'upload' 'dist/*']))
+        print(subprocess.check_output(['twine', 'upload', 'dist/*']))
     except Exception as e:
         # rollback
         print('rolling back')
