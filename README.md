@@ -14,9 +14,7 @@ It primarily adds functions to do with IDF geometry, including zones, surfaces, 
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
-Once these requirements are met, to install GeomEppy for Python 2.7 or 3.5 call `pip install geomeppy`.
-
-Version 3.6 is currently not supported since it is not supported by Matplotlib.
+Once these requirements are met, to install GeomEppy for Python 2.7 or 3.6 call `pip install geomeppy`.
 
 ##API
 
