@@ -15,6 +15,7 @@ from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.intersect_match import intersect_idf_surfaces
 from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.polygons import Polygon3D
+from geomeppy.recipes import rotate
 from geomeppy.recipes import set_wwr
 from geomeppy.recipes import translate
 from geomeppy.recipes import translate_to_origin
@@ -76,7 +77,6 @@ class TestTranslate():
         expected = [52.0, 52.0, 51.0, 51.0]
         assert result == expected
 
-
     def test_translate_to_origin(self):
         idf = self.idf
         surfaces = getidfsurfaces(idf)
@@ -84,13 +84,38 @@ class TestTranslate():
         result = Polygon3D(surfaces[0].coords).xs
         expected = [50002.0, 50002.0, 50001.0, 50001.0]
         assert result == expected
-        
+
         translate_to_origin(idf)
         surfaces = getidfsurfaces(idf)
         min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
         min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
         assert min_x == 0
         assert min_y == 0
+
+    def test_rotate_360(self):
+        idf = self.idf
+        surface = getidfsurfaces(idf)[0]
+        coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
+        surface.setcoords(coords)
+        expected = surface.coords
+        rotate([surface], 360)
+        result = surface.coords
+        assert almostequal(result, expected)
+
+    def test_rotate_idf_360(self):
+        idf1 = self.idf
+        idf2 = IDF()
+        idf2.initreadtxt(idf1.idfstr())
+        idf1.rotate(360)
+        floor1 = Polygon3D(idf1.getsurfaces('floor')[0].coords).normalize_coords(None)
+        floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
+        assert almostequal(floor1, floor2)
+
+    def test_centre(self):
+        idf = self.idf
+        result = idf.centre()
+        expected = Vector2D(1.75, 2.025)
+        assert result == expected
 
 
 class TestMatchSurfaces():

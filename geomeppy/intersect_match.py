@@ -335,7 +335,7 @@ def getidfsurfaces(idf, surface_type=None):
     """
     surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
     if surface_type:
-        surfaces = [s for s in surfaces if s.Surface_Type == surface_type]
+        surfaces = [s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
     return surfaces
 
 

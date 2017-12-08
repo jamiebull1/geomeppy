@@ -14,9 +14,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import numpy as np
+
 from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.polygons import Polygon3D
-
+from geomeppy.transformations import Transformation
 from geomeppy.vectors import Vector3D
 
 
@@ -116,6 +118,44 @@ def translate_coords(coords, vector):
     
     """
     return [Vector3D(*v) + vector for v in coords]
+
+
+def rotate(surfaces, angle):
+    """Rotate all surfaces by an angle.
+
+    Parameters
+    ----------
+    surfaces : list
+        A list of EpBunch objects.
+    angle : numeric
+        An angle in degrees.
+
+    """
+    radians = np.deg2rad(angle)
+    for s in surfaces:
+        new_coords = rotate_coords(s.coords, radians)
+        s.setcoords(new_coords)
+
+
+def rotate_coords(coords, radians):
+    """Rotate a set of coords by an angle in radians.
+
+    Parameters
+    ----------
+    coords : list
+        A list of points.
+    radians : float
+        The angle to rotate by.
+
+    Returns
+    -------
+    list of Vector3D objects
+
+    """
+    coords = Polygon3D(coords)
+    rotation = Transformation().rotation(Vector3D(0, 0, 1), radians)
+    coords = rotation * coords
+    return coords
 
 
 def set_wwr(idf, wwr=0.2):

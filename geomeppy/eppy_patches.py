@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import copy
+
 from geomeppy.builder import Block
 from geomeppy.builder import Zone
 from geomeppy.intersect_match import getidfsubsurfaces
@@ -27,10 +28,13 @@ from geomeppy.intersect_match import getidfsurfaces
 from geomeppy.intersect_match import intersect_idf_surfaces
 from geomeppy.intersect_match import match_idf_surfaces
 from geomeppy.intersect_match import set_coords
+from geomeppy.polygons import Polygon
 from geomeppy.recipes import set_default_constructions
 from geomeppy.recipes import set_wwr
+from geomeppy.recipes import rotate
 from geomeppy.recipes import translate
 from geomeppy.recipes import translate_to_origin
+from geomeppy.vectors import Vector2D
 from geomeppy.view_geometry import view_idf
 
 from eppy import bunchhelpers
@@ -200,7 +204,22 @@ class IDF(BaseIDF):
         """
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
-    
+
+    def rotate(self, angle):
+        """Rotate the IDF counterclockwise by the angle given.
+
+        Parameters
+        ----------
+        angle : numeric
+            Angle (in degrees) to rotate by.
+
+        """
+        surfaces = self.getsurfaces()
+        centre = self.centre()
+        self.translate(-centre)
+        rotate(surfaces, angle)
+        self.translate(centre)
+
     def set_default_constructions(self):
         set_default_constructions(self)
     
@@ -213,7 +232,46 @@ class IDF(BaseIDF):
         
         """
         return getidfsurfaces(self, surface_type)
-    
+
+    def bounding_box(self):
+        """Return the site bounding box.
+
+        Returns
+        -------
+        Polygon
+
+        """
+        floors = self.getsurfaces('floor')
+        top_left = Vector2D(
+            min(min(Polygon(f.coords).xs) for f in floors),
+            max(max(Polygon(f.coords).ys) for f in floors)
+        )
+        bottom_left = Vector2D(
+            min(min(Polygon(f.coords).xs) for f in floors),
+            min(min(Polygon(f.coords).ys) for f in floors)
+        )
+        bottom_right = Vector2D(
+            max(max(Polygon(f.coords).xs) for f in floors),
+            min(min(Polygon(f.coords).ys) for f in floors)
+        )
+        top_right = Vector2D(
+            max(max(Polygon(f.coords).xs) for f in floors),
+            max(max(Polygon(f.coords).ys) for f in floors)
+        )
+        return Polygon([top_left, bottom_left, bottom_right, top_right])
+
+    def centre(self):
+        """Return the centre of the site bounding box.
+
+        Returns
+        -------
+        Vector2D
+
+        """
+        bbox = self.bounding_box()
+        pt = bbox.vertices[0] + bbox.vertices[1] + bbox.vertices[2] + bbox.vertices[3]
+        return Vector2D(pt.x / 4, pt.y / 4)
+
     def getsubsurfaces(self, surface_type=None):
         """Return all subsurfaces in the IDF.
         
