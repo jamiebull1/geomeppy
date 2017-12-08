@@ -204,6 +204,8 @@ class IDF(BaseIDF):
         """
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
+        subsurfaces = self.getsubsurfaces()
+        translate(subsurfaces, vector)
 
     def rotate(self, angle):
         """Rotate the IDF counterclockwise by the angle given.
@@ -214,10 +216,12 @@ class IDF(BaseIDF):
             Angle (in degrees) to rotate by.
 
         """
-        surfaces = self.getsurfaces()
         centre = self.centre()
+        surfaces = self.getsurfaces()
+        subsurfaces = self.getsubsurfaces()
         self.translate(-centre)
         rotate(surfaces, angle)
+        rotate(subsurfaces, angle)
         self.translate(centre)
 
     def set_default_constructions(self):

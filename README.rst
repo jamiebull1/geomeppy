@@ -49,6 +49,10 @@ object:
 
 ``IDF.translate([0, 0, 10])  # move the whole IDF to z + 10``
 
+-  Rotating an IDF
+
+``IDF.rotate(90)  # rotate the IDF 90 degrees counterclockwise around the centre of its bounding box``
+
 -  Adding windows to external walls
 
 ``IDF.set_wwr(wwr=0.25)  # set a WWR of 25% for all external walls``
@@ -122,7 +126,7 @@ GeomEppy also provides some additional functions such as
 Forthcoming
 -----------
 
--  Scaling and rotating buildings and blocks
+-  Scaling buildings and blocks
 -  Geometry validation and correction
 -  Geometry simplification
 -  Better geometry visualisation
