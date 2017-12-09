@@ -32,6 +32,7 @@ from geomeppy.polygons import Polygon
 from geomeppy.recipes import set_default_constructions
 from geomeppy.recipes import set_wwr
 from geomeppy.recipes import rotate
+from geomeppy.recipes import scale
 from geomeppy.recipes import translate
 from geomeppy.recipes import translate_to_origin
 from geomeppy.vectors import Vector2D
@@ -207,22 +208,34 @@ class IDF(BaseIDF):
         subsurfaces = self.getsubsurfaces()
         translate(subsurfaces, vector)
 
-    def rotate(self, angle):
+    def rotate(self, angle, anchor=None):
         """Rotate the IDF counterclockwise by the angle given.
 
         Parameters
         ----------
         angle : numeric
             Angle (in degrees) to rotate by.
+        anchor : Vector2D, Vector3D, optional
+            Point around which to rotate. Default is the centre of the the IDF's bounding box.
 
         """
-        centre = self.centre()
+        anchor = anchor or self.centroid
         surfaces = self.getsurfaces()
         subsurfaces = self.getsubsurfaces()
-        self.translate(-centre)
+        self.translate(-anchor)
         rotate(surfaces, angle)
         rotate(subsurfaces, angle)
-        self.translate(centre)
+        self.translate(anchor)
+
+    def scale(self, factor, anchor=None):
+        anchor = anchor or self.centroid
+        surfaces = self.getsurfaces()
+        subsurfaces = self.getsubsurfaces()
+        self.translate(-anchor)
+        scale(surfaces, factor)
+        scale(subsurfaces, factor)
+        self.translate(anchor)
+
 
     def set_default_constructions(self):
         set_default_constructions(self)
@@ -264,8 +277,9 @@ class IDF(BaseIDF):
         )
         return Polygon([top_left, bottom_left, bottom_right, top_right])
 
-    def centre(self):
-        """Return the centre of the site bounding box.
+    @property
+    def centroid(self):
+        """Return the centroid of the site bounding box.
 
         Returns
         -------
@@ -273,8 +287,7 @@ class IDF(BaseIDF):
 
         """
         bbox = self.bounding_box()
-        pt = bbox.vertices[0] + bbox.vertices[1] + bbox.vertices[2] + bbox.vertices[3]
-        return Vector2D(pt.x / 4, pt.y / 4)
+        return bbox.centroid
 
     def getsubsurfaces(self, surface_type=None):
         """Return all subsurfaces in the IDF.

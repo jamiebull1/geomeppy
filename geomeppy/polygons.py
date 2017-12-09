@@ -141,7 +141,20 @@ class Polygon(MutableSequence):
         
         bbox = Polygon3D([top_left, bottom_left, bottom_right, top_right])
         return invert_align_face(self, bbox)
-        
+
+    @property
+    def centroid(self):
+        """The centroid of a polygon.
+
+        Returns
+        -------
+        Vector2D
+
+        """
+        return Vector2D(
+            sum(self.xs) / len(self),
+            sum(self.ys) / len(self))
+
     def insert(self, key, value):
         self.vertices.insert(key, value)
                 
@@ -338,14 +351,10 @@ def break_polygons(poly, hole):
     union = union[0]
     new_poly2 = poly.difference(union)[0]
     if not almostequal(new_poly.normal_vector, poly.normal_vector):
-        print("inverting 1")
         new_poly = new_poly.invert_orientation()
     if not almostequal(new_poly2.normal_vector, poly.normal_vector):
-        print("inverting 2")
         new_poly2 = new_poly2.invert_orientation()
-#    view_polygons({'blue': [new_poly], 'red': [hole]})
-#    view_polygons({'blue': [new_poly, new_poly2], 'red': [hole]})
-    
+
     return [new_poly, new_poly2]
     
     

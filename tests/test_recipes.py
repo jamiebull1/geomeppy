@@ -113,9 +113,19 @@ class TestTranslate():
 
     def test_centre(self):
         idf = self.idf
-        result = idf.centre()
+        result = idf.centroid
         expected = Vector2D(1.75, 2.025)
         assert result == expected
+
+    def test_scale_idf(self):
+        idf1 = self.idf
+        idf2 = IDF()
+        idf2.initreadtxt(idf1.idfstr())
+        idf1.scale(10)
+        idf1.scale(0.1)
+        floor1 = Polygon3D(idf1.getsurfaces('floor')[0].coords).normalize_coords(None)
+        floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
+        assert almostequal(floor1, floor2)
 
 
 class TestMatchSurfaces():

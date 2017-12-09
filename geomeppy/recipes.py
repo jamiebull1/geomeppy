@@ -120,6 +120,51 @@ def translate_coords(coords, vector):
     return [Vector3D(*v) + vector for v in coords]
 
 
+def scale(surfaces, factor, axes='xy'):
+    """Scale all surfaces by a factor.
+
+    Parameters
+    ----------
+    surfaces : list
+        A list of EpBunch objects.
+    factor : numeric
+        Factor to scale the surfaces by.
+    axes : str, optional
+        Axes to scale on. Default 'xy'.
+
+    """
+    for s in surfaces:
+        new_coords = scale_coords(s.coords, factor, axes)
+        s.setcoords(new_coords)
+
+
+def scale_coords(coords, factor, axes):
+    """Rotate a set of coords by an angle in radians.
+
+    Parameters
+    ----------
+    coords : list
+        A list of points.
+    factor : numeric
+        Factor to scale the surfaces by.
+    axes : str
+        Axes to scale on.
+
+    Returns
+    -------
+    list of Vector3D objects
+
+    """
+    coords = Polygon3D(coords)
+    vertices = []
+    for coord in coords:
+        x = coord[0] * factor if 'x' in axes else coord[0]
+        y = coord[1] * factor if 'y' in axes else coord[1]
+        z = coord[2] * factor if 'z' in axes else coord[2]
+        vertices.append(Vector3D(x, y, z))
+    return Polygon3D(vertices)
+
+
 def rotate(surfaces, angle):
     """Rotate all surfaces by an angle.
 

@@ -40,9 +40,12 @@ GeomEppy then provides a simple Python API for actions on the IDF object:
 
 `IDF.translate([0, 0, 10])  # move the whole IDF to z + 10`
 
--  Rotating an IDF
+-  Rotating and scaling an IDF
 
 `IDF.rotate(90)  # rotate the IDF 90 degrees counterclockwise around the centre of its bounding box`
+`IDF.scale(2)  # scale the IDF to double its size (default is on the xy axes)`
+`IDF.scale(2, axes='xy')  # scale the IDF to double its size (in the xy axes)`
+`IDF.scale(2, axes='z')  # scale the IDF to double its size (in the z axis)`
 
 - Adding windows to external walls
 
@@ -110,7 +113,7 @@ wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 
 ## Forthcoming
 
-- Scaling buildings and blocks
+- Scaling blocks
 - Geometry validation and correction
 - Geometry simplification
 - Better geometry visualisation
