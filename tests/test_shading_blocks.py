@@ -5,17 +5,16 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """pytest for builder.py"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tests.test_builder import idf_txt
-
 from eppy.iddcurrent import iddcurrent
-from geomeppy.eppy_patches import IDF
 from six import StringIO
+
+from geomeppy.eppy_patches import IDF
+from tests.test_builder import idf_txt
 
 
 idf_txt = """
@@ -26,6 +25,7 @@ Version, 8.5;
 class TestAddShadingBlock():
 
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -33,6 +33,7 @@ class TestAddShadingBlock():
         self.idf = IDF(StringIO(idf_txt))
 
     def test_add_shading_block_smoke_test(self):
+        # type: () -> None
         idf = self.idf
         name = "test"
         height = 7.5

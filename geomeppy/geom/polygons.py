@@ -10,27 +10,25 @@ Heavy lifting geometry for IDF surfaces.
 PyClipper is used for clipping.
 
 """
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import pyclipper as pc
 from collections import MutableSequence
 from itertools import product
-
-from eppy.geometry.surface import area
-from geomeppy.segments import Segment
-from geomeppy.transformations import align_face
-from geomeppy.transformations import invert_align_face
-from geomeppy.utilities import almostequal
-from geomeppy.vectors import Vector2D
-from geomeppy.vectors import Vector3D
-from geomeppy.vectors import normalise_vector
-from shapely import wkt
+from typing import Any, List, Tuple, Union
 
 import numpy as np
-import pyclipper as pc
+from eppy.geometry.surface import area
+from eppy.idf_msequence import Idf_MSequence
+from shapely import wkt
+
+from .segments import Segment
+from .transformations import align_face, invert_align_face
+from .vectors import normalise_vector, Vector2D, Vector3D
+from ..utilities import almostequal
 
 
 class Polygon(MutableSequence):
@@ -38,26 +36,31 @@ class Polygon(MutableSequence):
     n_dims = 2
 
     def __init__(self, vertices):
+        # type: (Any) -> None
         super(Polygon, self).__init__()
         self.vertices = [Vector2D(*v) for v in vertices]
     
     def __repr__(self):
+        # type: () -> str
         class_name = type(self).__name__
         return '{}({!r})'.format(class_name, self.vertices)
 
     def __len__(self):
+        # type: () -> int
         return len(self.vertices)
-            
+
     def __delitem__(self, key):
         del self.vertices[key]
     
     def __getitem__(self, key):
+        # type: (Union[int, slice]) -> Any
         return self.vertices[key]
     
     def __setitem__(self, key, value):
         self.vertices[key] = value
 
     def __eq__(self, other):
+        # type: (Polygon) -> bool
         if self.__dict__ == other.__dict__:  # try the simple case first
             return True
         else:  # also cover same shape in different rotation
@@ -67,7 +70,10 @@ class Polygon(MutableSequence):
                 return True
         return False
     
-    def __add__(self, other):
+    def __add__(self,
+                other  # type: Union[Polygon, Vector2D, Vector3D]
+                ):
+        # type: (...) -> Union[None, Polygon, Polygon3D]
         if len(self) == len(other) and hasattr(other[0], '__len__'):
             # add together two equal polygons
             vertices = [v1 + v2 for v1, v2 in zip(self, other)]
@@ -90,20 +96,13 @@ class Polygon(MutableSequence):
         return self.__class__(vertices)
     
     def from_wkt(self, wkt_poly):
+        # type: (str) -> Polygon3D
         """Convert a wkt representation of a polygon to GeomEppy.
         
-        This also accounts for the possible presence of inner rings by linking
-        them to the outer ring.
+        This also accounts for the possible presence of inner rings by linking them to the outer ring.
         
-        Parameters
-        ----------
-        wkt_poly : str
-            A text representation of a polygon in well known text (wkt) format.
-        
-        Returns
-        -------
-        Polygon3D
-        
+        :param wkt_poly: A text representation of a polygon in well known text (wkt) format.
+        :returns: A polygon.
         """
         poly = wkt.loads(wkt_poly)
         exterior = Polygon3D(poly.exterior.coords)
@@ -128,11 +127,13 @@ class Polygon(MutableSequence):
     
     @property
     def normal_vector(self):
+        # type: () -> Vector3D
         as_3d = Polygon3D((v.x, v.y, 0) for v in self)
         return as_3d.normal_vector
     
     @property
     def bounding_box(self):
+        # type: () -> Polygon3D
         aligned = align_face(self)
         top_left = Vector3D(min(aligned.xs), max(aligned.ys), max(aligned.zs))
         bottom_left = Vector3D(min(aligned.xs), min(aligned.ys), min(aligned.zs))
@@ -144,13 +145,8 @@ class Polygon(MutableSequence):
 
     @property
     def centroid(self):
-        """The centroid of a polygon.
-
-        Returns
-        -------
-        Vector2D
-
-        """
+        # type: () -> Vector2D
+        """The centroid of a polygon."""
         return Vector2D(
             sum(self.xs) / len(self),
             sum(self.ys) / len(self))
@@ -160,9 +156,14 @@ class Polygon(MutableSequence):
                 
     @property
     def points_matrix(self):
-        """[[x1, x2,... xn]
+        # type: () -> np.ndarray
+        """Matrix representing the points in a polygon.
+
+        Format::
+            [[x1, x2,... xn]
             [y1, y2,... yn]
             [z1, z2,... zn]  # all 0 for 2D polygon
+
         """
         points = np.zeros((len(self.vertices), self.n_dims))
         for i, v in enumerate(self.vertices):
@@ -171,8 +172,8 @@ class Polygon(MutableSequence):
     
     @property
     def edges(self):
-        """A list of edges represented as Segment objects.
-        """
+        # type: () -> List[Segment]
+        """A list of edges represented as Segment objects."""
         vertices = self.vertices
         edges = [Segment(vertices[i], vertices[(i+1) % len(self)])
                 for i in range(len(self))]
@@ -180,60 +181,52 @@ class Polygon(MutableSequence):
     
     @property
     def xs(self):
+        # type: () -> List[float]
         return [pt.x for pt in self.vertices]
 
     @property
     def ys(self):
+        # type: () -> List[float]
         return [pt.y for pt in self.vertices]
    
     @property
     def zs(self):
+        # type: () -> List[float]
         return [0.0] * len(self.vertices)
    
     @property
     def vertices_list(self):
+        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float, float]]]
         """A list of the vertices in the format required by pyclipper.
-        
-        Returns
-        -------
-        list of tuples
-            Like [(x1, y1), (x2, y2),... (xn, yn)].
-        
+
+        :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
         """
         return [pt_to_tuple(pt, dims=self.n_dims) for pt in self.vertices]
     
     @property
     def area(self):
+        # type: () -> np.float64
         return area(self)
     
     def invert_orientation(self):
+        # type: () -> Union[Polygon, Polygon3D]
         """Reverse the order of the vertices.
         
-        This is to create a matching surface, e.g. the other side of a wall.
+        This can be used to create a matching surface, e.g. the other side of a wall.
         
-        Returns
-        -------
-        Polygon3D
-        
+        :returns: A polygon.
         """
         return self.__class__(reversed(self.vertices))
         
     def project_to_3D(self, example3d):
+        # type: (Polygon3D) -> Polygon3D
         """Project the 2D polygon rotated into 3D space.
         
-        This is used to return a previously rotated 3D polygon back to its
-        original orientation, or to to put polygons generated from pyclipper
-        into the desired orientation.
+        This is used to return a previously rotated 3D polygon back to its original orientation, or to to put polygons
+        generated from pyclipper into the desired orientation.
         
-        Parameters
-        ----------
-        example3D : Polygon3D
-            A 3D polygon in the desired plane.
-                
-        Returns
-        -------
-        Polygon3D
-        
+        :param example3D: A 3D polygon in the desired plane.
+        :returns: A 3D polygon.
         """
         points = self.points_matrix
         proj_axis = example3d.projection_axis
@@ -243,6 +236,7 @@ class Polygon(MutableSequence):
         return Polygon3D(projected_points)
     
     def union(self, poly):
+        # type: (Polygon) -> List[Polygon]
         """Union with another 2D polygon.
         
         Parameters
@@ -258,6 +252,7 @@ class Polygon(MutableSequence):
         return union_2D_polys(self, poly)
         
     def intersect(self, poly):
+        # type: (Polygon) -> Union[bool, List[Polygon]]
         """Intersect with another 2D polygon.
         
         Parameters
@@ -275,6 +270,7 @@ class Polygon(MutableSequence):
         return intersect_2D_polys(self, poly)
         
     def difference(self, poly):
+        # type: (Polygon) -> Union[bool, List[Polygon]]
         """Intersect with another 2D polygon.
         
         Parameters
@@ -291,12 +287,15 @@ class Polygon(MutableSequence):
         """
         return difference_2D_polys(self, poly)
 
+
 def distance(pt1, pt2):
+    # type: (Vector3D, Vector3D) -> float
     direction = pt1 - pt2
     return sum(x ** 2 for x in direction)
     
     
 def break_polygons(poly, hole):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
     """Break up a surface with a hole in it.
     
     This produces two surfaces, neither of which have a hole in them.
@@ -359,6 +358,7 @@ def break_polygons(poly, hole):
     
     
 def prep_2D_polys(poly1, poly2):
+    # type: (Polygon, Polygon) -> pc.Pyclipper
     """Prepare two 2D polygons for clipping operations.
     
     Parameters
@@ -370,7 +370,7 @@ def prep_2D_polys(poly1, poly2):
     
     Returns
     -------
-    Pyclipper object
+    pc.Pyclipper object
     
     """
     s1 = pc.scale_to_clipper(poly1.vertices_list)
@@ -382,6 +382,7 @@ def prep_2D_polys(poly1, poly2):
 
 
 def union_2D_polys(poly1, poly2):
+    # type: (Polygon, Polygon) -> List[Polygon]
     """Union of two 2D polygons.
     
     Find the combined shape of poly1 and poly2.
@@ -415,6 +416,7 @@ def union_2D_polys(poly1, poly2):
 
 
 def intersect_2D_polys(poly1, poly2):
+    # type: (Polygon, Polygon) -> List[Polygon]
     """Intersect two 2D polygons.
     
     Find the area/s that poly1 shares with poly2.
@@ -429,13 +431,11 @@ def intersect_2D_polys(poly1, poly2):
     Returns
     -------
     list or False
-        False if no intersection, otherwise a list of lists of 2D coordinates
-        representing each intersection.
+        False if no intersection, otherwise a list of Polygons representing each intersection.
         
     """
     clipper = prep_2D_polys(poly1, poly2)        
-    intersections = clipper.Execute(
-        pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
+    intersections = clipper.Execute(pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
     polys = process_clipped_2D_polys(intersections)
     results = []
     for poly in polys:
@@ -448,6 +448,7 @@ def intersect_2D_polys(poly1, poly2):
 
 
 def difference_2D_polys(poly1, poly2):
+    # type: (Polygon, Polygon) -> List[Polygon]
     """Difference from two 2D polygons.
     
     Equivalent to subtracting poly2 from poly1.
@@ -481,6 +482,7 @@ def difference_2D_polys(poly1, poly2):
 
 
 def process_clipped_2D_polys(results):
+    # type: (List[List[List[int]]]) -> List[Polygon]
     """Process and return the results of a clipping operation.
     
     Parameters
@@ -508,12 +510,14 @@ class Polygon3D(Polygon):
     n_dims = 3
 
     def __init__(self, vertices):
+        # type: (Any) -> None
         try:
             self.vertices = [Vector3D(*v) for v in vertices]
         except TypeError:
             self.vertices = vertices
 
     def __eq__(self, other):
+        # type: (Polygon3D) -> bool
         # check they're in the same plane
         if not almostequal(self.normal_vector, other.normal_vector):
             return False
@@ -524,10 +528,12 @@ class Polygon3D(Polygon):
     
     @property
     def zs(self):
+        # type: () -> List[float]
         return [pt.z for pt in self.vertices]
 
     @property
     def normal_vector(self):
+        # type: () -> Vector3D
         """Vector perpendicular to the polygon in the outward direction.
         
         Uses Newell's Method.
@@ -541,6 +547,7 @@ class Polygon3D(Polygon):
 
     @property
     def distance(self):
+        # type: () -> np.float64
         """
         A number where v[0] * x + v[1] * y + v[2] * z = a is the equation of
         the plane containing the polygon (where v is the polygon normal vector).
@@ -557,6 +564,7 @@ class Polygon3D(Polygon):
     
     @property
     def projection_axis(self):
+        # type: () -> int
         """Return an axis which will not lead to degenerate surface.
         
         Returns
@@ -569,6 +577,7 @@ class Polygon3D(Polygon):
     
     @property
     def is_horizontal(self):
+        # type: () -> np.bool_
         """Check if polygon is in the xy plane.
         
         Returns
@@ -579,6 +588,7 @@ class Polygon3D(Polygon):
         return np.array(self.zs).std() < 1e-8
     
     def is_clockwise(self, viewpoint):
+        # type: (Vector3D) -> np.bool_
         """Check if vertices are ordered clockwise
         
         This function checks the vertices as seen from the viewpoint.
@@ -599,6 +609,7 @@ class Polygon3D(Polygon):
         return sign > 0
     
     def is_coplanar(self, other):
+        # type: (Polygon3D) -> bool
         """Check if polygon is in the same plane as another polygon.
         
         This includes the same plane but opposite orientation.
@@ -640,6 +651,7 @@ class Polygon3D(Polygon):
             sum(self.zs) / len(self))
     
     def outside_point(self, entry_direction='counterclockwise'):
+        # type: (str) -> Vector3D
         """Return a point outside the zone to which the surface belongs.
         
         The point will be outside the zone, respecting the global geometry rules
@@ -668,6 +680,7 @@ class Polygon3D(Polygon):
         return inside
     
     def order_points(self, starting_position):
+        # type: (str) -> Polygon3D
         """Reorder the vertices based on a starting position rule.
         
         Parameters
@@ -698,6 +711,7 @@ class Polygon3D(Polygon):
         return Polygon3D(new_vertices)
     
     def project_to_2D(self):
+        # type: () -> Polygon
         """Project the 3D polygon into 2D space.
         
         This is so that we can perform operations on it using pyclipper library.
@@ -716,6 +730,7 @@ class Polygon3D(Polygon):
         return Polygon([pt[:2] for pt in projected_points])
     
     def union(self, poly):
+        # type: (Polygon3D) -> List[Polygon3D]
         """Union with another 3D polygon.
         
         Parameters
@@ -733,6 +748,7 @@ class Polygon3D(Polygon):
         return union_3D_polys(self, poly)
         
     def intersect(self, poly):
+        # type: (Polygon3D) -> List[Polygon3D]
         """Intersect with another 3D polygon.
         
         Parameters
@@ -750,6 +766,7 @@ class Polygon3D(Polygon):
         return intersect_3D_polys(self, poly)
         
     def difference(self, poly):
+        # type: (Polygon3D) -> List[Polygon3D]
         """Difference from another 3D polygon.
         
         Parameters
@@ -767,6 +784,7 @@ class Polygon3D(Polygon):
         return difference_3D_polys(self, poly)
     
     def normalize_coords(self, ggr):
+        # type: (Union[List, None, Idf_MSequence]) -> Polygon3D
         """Order points, respecting the global geometry rules
         
         Parameters
@@ -788,6 +806,7 @@ class Polygon3D(Polygon):
 
     
 def normal_vector(poly):
+    # type: (List[Vector3D]) -> List[float]
     """Return the unit normal vector of a polygon.
     
     We use Newell's Method since the cross-product of two edge vectors is not
@@ -810,6 +829,7 @@ def normal_vector(poly):
 
 
 def prep_3D_polys(poly1, poly2):
+    # type: (Polygon3D, Polygon3D) -> pc.Pyclipper
     """Prepare two 3D polygons for clipping operations.
     
     Parameters
@@ -821,7 +841,7 @@ def prep_3D_polys(poly1, poly2):
     
     Returns
     -------
-    Pyclipper object
+    pc.Pyclipper object
     
     """
     if not poly1.is_coplanar(poly2):
@@ -839,6 +859,7 @@ def prep_3D_polys(poly1, poly2):
 
 
 def union_3D_polys(poly1, poly2):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
     """Union of two 3D polygons.
     
     Parameters
@@ -874,6 +895,7 @@ def union_3D_polys(poly1, poly2):
 
 
 def intersect_3D_polys(poly1, poly2):    
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
     """Intersection of two 3D polygons.
     
     Parameters
@@ -909,6 +931,7 @@ def intersect_3D_polys(poly1, poly2):
 
 
 def difference_3D_polys(poly1, poly2):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
     """Difference between two 3D polygons.
     
     Parameters
@@ -945,6 +968,7 @@ def difference_3D_polys(poly1, poly2):
 
 
 def process_clipped_3D_polys(results, example3d):
+    # type: (List[List[List[int]]], Polygon3D) -> List[Polygon3D]
     """Convert 2D clipping results back to 3D.
     
     Parameters
@@ -966,6 +990,7 @@ def process_clipped_3D_polys(results, example3d):
 
         
 def project_to_2D(vertices, proj_axis):
+    # type: (np.ndarray, int) -> List[Tuple[np.float64, np.float64]]
     """Project a 3D polygon into 2D space.
     
     Parameters
@@ -990,6 +1015,7 @@ def project_to_2D(vertices, proj_axis):
 
 
 def project(pt, proj_axis):
+    # type: (np.ndarray, int) -> Tuple[np.float64, np.float64]
     """Project point pt onto either the xy, yz, or xz plane
     
     We choose the one that avoids degenerate configurations, which is the
@@ -1000,7 +1026,12 @@ def project(pt, proj_axis):
     return tuple(c for i, c in enumerate(pt) if i != proj_axis)
 
 
-def project_to_3D(vertices, proj_axis, a, v):
+def project_to_3D(vertices,  # type: np.ndarray
+                  proj_axis,  # type: int
+                  a,  # type: np.float64
+                  v  # type: Vector3D
+                  ):
+    # type: (...) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
     
     Parameters
@@ -1023,7 +1054,12 @@ def project_to_3D(vertices, proj_axis, a, v):
     return [project_inv(pt, proj_axis, a, v) for pt in vertices]
 
 
-def project_inv(pt, proj_axis, a, v):
+def project_inv(pt,  # type: np.ndarray
+                proj_axis,  # type: int
+                a,  # type: np.float64
+                v  # type: Vector3D
+                ):
+    # type: (...) -> Tuple[np.float64, np.float64, np.float64]
     """Returns the vector w in the surface's plane such that project(w) equals
     x.
     
@@ -1057,6 +1093,7 @@ def project_inv(pt, proj_axis, a, v):
 
 
 def pt_to_tuple(pt, dims=3):
+    # type: (Union[Vector2D, Vector3D], int) -> Tuple[float, ]
     """Convert a point to a numpy array.
     
     Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
@@ -1084,6 +1121,7 @@ def pt_to_tuple(pt, dims=3):
 
 
 def pt_to_array(pt, dims=3):
+    # type: (Union[Vector2D, Vector3D], int) -> np.ndarray
     """Convert a point to a numpy array.
     
     Converts a Vector3D to a numpy.array([x,y,z]) or a Vector2D to a 
@@ -1100,7 +1138,7 @@ def pt_to_array(pt, dims=3):
     
     Returns
     -------
-    numpy.ndarray
+    numpy.np.ndarray
 
     """
     # handle Vector3D
@@ -1111,7 +1149,11 @@ def pt_to_array(pt, dims=3):
         return np.array([float(pt.x), float(pt.y)])
     
     
-def normalize_coords(poly, outside_pt, ggr=None):
+def normalize_coords(poly,  # type: Polygon3D
+                     outside_pt,  # type: Vector3D
+                     ggr=None  # type: Union[List, None, Idf_MSequence]
+                     ):
+    # type: (...) -> Polygon3D
     """Put coordinates into the correct format for EnergyPlus.
     
     poly : Polygon3D
@@ -1135,7 +1177,11 @@ def normalize_coords(poly, outside_pt, ggr=None):
     return poly
 
 
-def set_entry_direction(poly, outside_pt, ggr=None):
+def set_entry_direction(poly,  # type: Polygon3D
+                        outside_pt,  # type: Vector3D
+                        ggr=None  # type: Union[List, None, Idf_MSequence]
+                        ):
+    # type: (...) -> Polygon3D
     """Check and set entry direction.
     """
     if not ggr:
@@ -1151,7 +1197,11 @@ def set_entry_direction(poly, outside_pt, ggr=None):
     return poly
 
 
-def set_starting_position(poly, outside_pt, ggr=None):
+def set_starting_position(poly,  # type: Polygon3D
+                          outside_pt,  # type: Vector3D
+                          ggr=None  # type: Union[List, None, Idf_MSequence]
+                          ):
+    # type: (...) -> Polygon3D
     """Check and set entry direction.
     """
     if not ggr:

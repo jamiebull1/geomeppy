@@ -6,39 +6,36 @@
 # =======================================================================
 """Intersect and match all surfaces in an IDF.
 """
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import defaultdict
+from itertools import combinations, product
+from typing import Dict, List, Optional, Union
+
+from eppy.idf_msequence import Idf_MSequence
+from numpy import float64
+
+from geomeppy.geom.polygons import break_polygons, Polygon3D
+from geomeppy.geom.vectors import Vector3D
 from geomeppy.utilities import almostequal
-from itertools import combinations
-from itertools import product
 
-from geomeppy.polygons import Polygon3D
-from geomeppy.polygons import break_polygons
-from geomeppy.vectors import Vector3D
-
-from six.moves import zip_longest
+MYPY = False
+if MYPY:
+    from geomeppy.eppy_patches import EpBunch, IDF
 
 
 def getidfplanes(surfaces):
+    # type: (Idf_MSequence) -> Dict[float64, Dict[Vector3D, List[EpBunch]]]
     """Fast access data structure for potentially matched surfaces.
     
-    Get a data structure populated with all the surfaces in the IDF, keyed by
-    their distance from the origin, and their normal vector.
+    Get a data structure populated with all the surfaces in the IDF, keyed by their distance from the origin, and their
+    normal vector.
     
-    Parameters
-    ----------
-    surfaces : list
-        List of all the surfaces.
-    
-    Returns
-    -------
-    dict
-        
+    :param surfaces: List of all the surfaces.
+    :returns: Mapping to look up IDF surfaces.
     """
     planes = {}
     for s in surfaces:
@@ -51,14 +48,12 @@ def getidfplanes(surfaces):
                                          []).append(s)
     return planes
 
+
 def match_idf_surfaces(idf):
+    # type: (IDF) -> None
     """Match all surfaces in an IDF.
     
-    Parameters
-    ----------
-    idf : IDF object
-        The IDF.
-    
+    :param idf: The IDF.
     """
     surfaces = getidfsurfaces(idf)
     planes = getidfplanes(surfaces)
@@ -96,44 +91,37 @@ def match_idf_surfaces(idf):
                         set_unmatched_surface(m, vector)
 
 
-def set_unmatched_surface(s, vector):
+def set_unmatched_surface(surface, vector):
+    # type: (EpBunch, Vector3D) -> None
     """Set boundary conditions for a surface which does not adjoin another one.
     
-    Parameters
-    ----------
-    s : EpBunch
-        The surface.
-    vector : Vector3D
-        The surface normal vector
-        
+    :param surface: The surface.
+    :param vector: The surface normal vector.
     """
-    s.View_Factor_to_Ground = 'autocalculate'
-    poly = Polygon3D(s.coords)
+    surface.View_Factor_to_Ground = 'autocalculate'
+    poly = Polygon3D(surface.coords)
     if min(poly.zs) < 0 or all(z == 0 for z in poly.zs):
         # below ground or ground-adjacent surfaces
-        s.Outside_Boundary_Condition_Object = ''
-        s.Outside_Boundary_Condition = 'ground'
-        s.Sun_Exposure = 'NoSun'
-        s.Wind_Exposure = 'NoWind'
+        surface.Outside_Boundary_Condition_Object = ''
+        surface.Outside_Boundary_Condition = 'ground'
+        surface.Sun_Exposure = 'NoSun'
+        surface.Wind_Exposure = 'NoWind'
     else:
-        s.Outside_Boundary_Condition = 'outdoors'
-        s.Outside_Boundary_Condition_Object = ''
-        s.Wind_Exposure = 'WindExposed'
+        surface.Outside_Boundary_Condition = 'outdoors'
+        surface.Outside_Boundary_Condition_Object = ''
+        surface.Wind_Exposure = 'WindExposed'
         if almostequal(vector, (0, 0, -1)):
             # downward facing surfaces
-            s.Sun_Exposure = 'NoSun'
+            surface.Sun_Exposure = 'NoSun'
         else:
-            s.Sun_Exposure = 'SunExposed' # other external surfaces
+            surface.Sun_Exposure = 'SunExposed' # other external surfaces
 
             
 def intersect_idf_surfaces(idf):
+    # type: (IDF) -> None
     """Intersect all surfaces in an IDF.
     
-    Parameters
-    ----------
-    idf : IDF object
-        The IDF.
-    
+    :param idf: The IDF.
     """
     surfaces = getidfsurfaces(idf)
     try:
@@ -154,17 +142,11 @@ def intersect_idf_surfaces(idf):
 
 
 def get_adjacencies(surfaces):
+    # type: (Idf_MSequence) -> defaultdict
     """Create a dictionary mapping surfaces to their adjacent surfaces.
     
-    Parameters
-    ----------
-    surfaces : IdfMSequence
-        A mutable list of surfaces.
-    
-    Returns
-    -------
-    dict
-    
+    :param surfaces: A mutable list of surfaces.
+    :returns: Mapping of surfaces to adjacent surfaces.
     """
     adjacencies = defaultdict(list)
     # find all adjacent surfaces
@@ -178,21 +160,13 @@ def get_adjacencies(surfaces):
 
 
 def populate_adjacencies(adjacencies, s1, s2):
+    # type: (defaultdict, EpBunch, EpBunch) -> defaultdict
     """Update the adjacencies dict with any intersections between two surfaces.
     
-    Parameters
-    ----------
-    adjacencies : dict
-        Dict to contain lists of adjacent surfaces.
-    s1 : EPBunch
-        Object representing an EnergyPlus surface.
-    s2 : EPBunch
-        Object representing an EnergyPlus surface.
-    
-    Returns
-    -------
-    dict
-    
+    :param adjacencies: Dict to contain lists of adjacent surfaces.
+    :param s1: Object representing an EnergyPlus surface.
+    :param s2: Object representing an EnergyPlus surface.
+    :returns: An updated dict of adjacencies.
     """
     poly1 = Polygon3D(s1.coords)
     poly2 = Polygon3D(s2.coords)
@@ -215,20 +189,12 @@ def populate_adjacencies(adjacencies, s1, s2):
 
 
 def intersect(poly1, poly2):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
     """Calculate the polygons to represent the intersection of two polygons.
     
-    Parameters
-    ----------
-    poly1 : Polygon3D
-        The first polygon.
-    poly2 : Polygon3D
-        The second polygon.
-    
-    Returns
-    -------
-    list
-        A list of unique polygons.
-        
+    :param poly1: The first polygon.
+    :param poly2: The second polygon.
+    :returns: A list of unique polygons.
     """
     polys = []
     polys.extend(poly1.intersect(poly2))
@@ -245,16 +211,11 @@ def intersect(poly1, poly2):
 
 
 def unique(polys):
+    # type: (List[Polygon3D]) -> List[Polygon3D]
     """Make a unique set of polygons.
     
-    Parameters
-    ----------
-    polys : list
-    
-    Returns
-    -------
-    list
-    
+    :param polys: A list of polygons.
+    :returns: A unique list of polygons.
     """
     flattened = []
     for item in polys:
@@ -272,24 +233,16 @@ def unique(polys):
 
 
 def is_hole(surface, possible_hole):
+    # type: (Polygon3D, Polygon3D) -> bool
     """Identify if an intersection is a hole in the surface.
     
     Check the intersection touches an edge of the surface. If it doesn't then
     it represents a hole, and this needs further processing into valid
     EnergyPlus surfaces.
     
-    Parameters
-    ----------
-    surface : Polygon3D
-        The first surface.
-
-    possible_hole : Polygon3D
-        The intersection into the surface.
-        
-    Returns
-    -------
-    bool
-
+    :param surface: The first surface.
+    :param possible_hole: The intersection into the surface.
+    :returns: True if the possible hole is a hole in the surface.
     """
     if surface.area < possible_hole.area:
         return False
@@ -298,18 +251,16 @@ def is_hole(surface, possible_hole):
     return not any(collinear_edges)
 
 
-def set_coords(surface, coords, ggr):
+def set_coords(surface,  # type: EpBunch
+               coords,  # type: Union[List[Vector3D], Polygon3D]
+               ggr  # type: Union[List, None, Idf_MSequence]
+               ):
+    # type: (...) -> None
     """Update the coordinates of a surface.
       
-    Parameters
-    ----------
-    surface : EPBunch
-        The surface to modify.
-    coords : list
-        The new coordinates as lists of [x,y,z] lists.
-    ggr : EpBunch
-        Global geometry rules.
-
+    :param surface: The surface to modify.
+    :param coords: The new coordinates as lists of [x,y,z] lists.
+    :param ggr: Global geometry rules.
     """
     poly = Polygon3D(coords)
     poly = poly.normalize_coords(ggr)
@@ -323,15 +274,11 @@ def set_coords(surface, coords, ggr):
 
 
 def getidfsurfaces(idf, surface_type=None):
+    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
     """Return all surfaces in an IDF.
     
-    Parameters
-    ----------
-    idf : IDF object
-        The IDF to search.
-    surface_type : str, optional
-        A surface type to specify. Default is None, which returns all surfaces.
-        
+    :param idf: The IDF to search.
+    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
     """
     surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
     if surface_type:
@@ -340,15 +287,12 @@ def getidfsurfaces(idf, surface_type=None):
 
 
 def getidfsubsurfaces(idf, surface_type=None):
+    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
     """Return all subsurfaces in an IDF.
     
-    Parameters
-    ----------
-    idf : IDF object
-        The IDF to search.
-    surface_type : str, optional
-        A surface type to specify. Default is None, which returns all surfaces.
-        
+    :param idf: The IDF to search.
+    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
+    :returns: All matching subsurfaces.
     """
     surfaces = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
     if surface_type:

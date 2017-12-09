@@ -13,65 +13,50 @@ specific to geometry editing which may or may not be included future versions
 of Eppy.
 
 """
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import copy
+import warnings
+from typing import Any, Dict, List, Optional, Tuple, Union  # pylint: disable=unused-import
 
-from geomeppy.builder import Block
-from geomeppy.builder import Zone
-from geomeppy.intersect_match import getidfsubsurfaces
-from geomeppy.intersect_match import getidfsurfaces
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.intersect_match import set_coords
-from geomeppy.polygons import Polygon
-from geomeppy.recipes import set_default_constructions
-from geomeppy.recipes import set_wwr
-from geomeppy.recipes import rotate
-from geomeppy.recipes import scale
-from geomeppy.recipes import translate
-from geomeppy.recipes import translate_to_origin
-from geomeppy.vectors import Vector2D
-from geomeppy.view_geometry import view_idf
-
-from eppy import bunchhelpers
-from eppy import iddgaps
+from eppy import bunchhelpers, iddgaps
 from eppy.EPlusInterfaceFunctions import readidf
+from eppy.EPlusInterfaceFunctions.eplusdata import Eplusdata
 from eppy.bunch_subclass import EpBunch as BaseBunch
 from eppy.idf_msequence import Idf_MSequence
-from eppy.idfreader import convertallfields
-from eppy.idfreader import iddversiontuple
-from eppy.idfreader import idfreader1
-from eppy.idfreader import makeabunch
-from eppy.modeleditor import IDDNotSetError
-from eppy.modeleditor import IDF as BaseIDF
-from eppy.modeleditor import addthisbunch
-from eppy.modeleditor import namebunch
-from eppy.modeleditor import newrawobject
-from eppy.modeleditor import obj2bunch
-from py._log import warning
+from eppy.idfreader import convertallfields, iddversiontuple, idfreader1, makeabunch
+from eppy.modeleditor import IDDNotSetError, IDF as BaseIDF, addthisbunch, namebunch, newrawobject, obj2bunch
+from six import StringIO
+
+from geomeppy.geom.intersect_match import (
+    intersect_idf_surfaces, getidfsurfaces, getidfsubsurfaces, match_idf_surfaces, set_coords,
+)
+from .builder import Block, Zone
+from .geom.polygons import Polygon, Polygon3D
+from .geom.vectors import Vector2D, Vector3D
+from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
+from .view_geometry import view_idf
 
 
 class EpBunch(BaseBunch):
-    """Monkey-patched EpBunch to add the setcoords function.
-    """
+    """Monkeypatched EpBunch to add the setcoords function."""
      
     def __init__(self, *args, **kwargs):
+        # type: (*Any, **Any) -> None
         super(EpBunch, self).__init__(*args, **kwargs)
 
-    def setcoords(self, poly, ggr=None):
+    def setcoords(self,
+                  poly,  # type: Union[List[Vector3D], Polygon3D]
+                  ggr=None  # type: Union[List, None, Idf_MSequence]
+                  ):
+        # type: (...) -> None
         """Set the coordinates of a surface.
          
-        Parameters
-        ----------
-        poly : Polygon3D or list
-             Either a Polygon3D object of a list of (x,y,z) tuples.
-        ggr : EpBunch, optional
-            A GlobalGeometryRules IDF object. Defaults to None.
+        :param poly: Either a Polygon3D object of a list of (x,y,z) tuples.
+        :param ggr: A GlobalGeometryRules IDF object. Defaults to None.
              
         """
         surfaces = [
@@ -89,8 +74,29 @@ class EpBunch(BaseBunch):
             raise AttributeError
              
 
-def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
-    """read idf file and return bunches"""
+def idfreader1(fname,  # type: StringIO
+               iddfile,  # type: StringIO
+               theidf,  # type: IDF
+               conv=True,  # type: bool
+               commdct=None,  # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]]
+               block=None  # type: Optional[List[List[str]]]
+               ):
+    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int, ]]
+    """Read idf file and return bunches.
+
+    :param fname: Name of the IDF file to read.
+    :param iddfile: Name of the IDD file to use to interpret the IDF.
+    :param conv: If True, convert strings to floats and integers where marked in the IDD. Defaults to None.
+    :param commdct: Descriptions of IDF fields from the IDD. Defaults to None.
+    :param block: EnergyPlus field ID names of the IDF from the IDD. Defaults to None.
+    :returns: bunchdt Dict of lists of idf_MSequence objects in the IDF.
+    :returns: block EnergyPlus field ID names of the IDF from the IDD.
+    :returns data: Eplusdata object containing representions of IDF objects.
+    :returns: commdct List of names of IDF objects.
+    :returns: idd_index A pair of dicts used for fast lookups of names of groups of objects.
+    :returns: versiontuple Version of EnergyPlus from the IDD.
+
+    """
     versiontuple = iddversiontuple(iddfile)
     block, data, commdct, idd_index = readidf.readdatacommdct1(
         fname,
@@ -109,16 +115,30 @@ def idfreader1(fname, iddfile, theidf, conv=True, commdct=None, block=None):
         commdct, dtls,
         skiplist=skiplist)
     iddgaps.missingkeys_nonstandard(block, commdct, dtls, nofirstfields)
-    # bunchdt = makebunches(data, commdct)
     bunchdt = makebunches(data, commdct, theidf)
 
     return bunchdt, block, data, commdct, idd_index, versiontuple
 
 
-def addthisbunch(bunchdt, data, commdct, thisbunch, theidf):
-    """add a bunch to model.
-    abunch usually comes from another idf file
-    or it can be used to copy within the idf file"""
+def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
+                 data,  # type: Eplusdata
+                 commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+                 thisbunch,  # type: EpBunch
+                 _idf  # type: IDF
+                 ):
+    # type: (...) -> EpBunch
+    """Add an object to the IDF. Monkeypatched to return the object.
+
+    `thisbunch` usually comes from another idf file or it can be used to copy within the idf file.
+
+    :param bunchdt: Dict of lists of idf_MSequence objects in the IDF.
+    :param data: Eplusdata object containing representions of IDF objects.
+    :param commdct: Descriptions of IDF fields from the IDD.
+    :param thisbunch: The object to add to the model.
+    :param _idf: The IDF object. Not used either here or in Eppy but kept for consistency with Eppy.
+    :returns: The EpBunch object added.
+
+    """
     key = thisbunch.key.upper()
     obj = copy.copy(thisbunch.obj)
     abunch = obj2bunch(data, commdct, obj)
@@ -126,8 +146,19 @@ def addthisbunch(bunchdt, data, commdct, thisbunch, theidf):
     return abunch
 
 
-def makebunches(data, commdct, theidf):
-    """make bunches with data"""
+def makebunches(data,  # type: Eplusdata
+                commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+                theidf  # type: IDF
+                ):
+    # type: (...) -> Dict[str, Idf_MSequence]
+    """Make bunches with data.
+
+    :param data: Eplusdata object containing representions of IDF objects.
+    :param commdct: Descriptions of IDF fields from the IDD.
+    :param theidf: The IDF object.
+    :returns: Dict of lists of idf_MSequence objects in the IDF.
+
+    """
     bunchdt = {}
     dt, dtls = data.dt, data.dtls
     for obj_i, key in enumerate(dtls):
@@ -141,8 +172,19 @@ def makebunches(data, commdct, theidf):
     return bunchdt
 
 
-def obj2bunch(data, commdct, obj):
-    """make a new bunch object using the data object"""
+def obj2bunch(data,  # type: Eplusdata
+              commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+              obj  # type: Union[List[Union[float, str]], List[str]]
+              ):
+    # type: (...) -> EpBunch
+    """Make a new bunch object using the data object.
+
+    :param data: Eplusdata object containing representions of IDF objects.
+    :param commdct: Descriptions of IDF fields from the IDD.
+    :param obj: List of field values in an object.
+    :returns: EpBunch object.
+
+    """
     dtls = data.dtls
     key = obj[0].upper()
     key_i = dtls.index(key)
@@ -150,8 +192,19 @@ def obj2bunch(data, commdct, obj):
     return abunch
 
 
-def makeabunch(commdct, obj, obj_i):
-    """make a bunch from the object"""
+def makeabunch(commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+               obj,  # type: Union[List[Union[float, str]], List[str]]
+               obj_i  # type: int
+               ):
+    # type: (...) -> EpBunch
+    """Make a bunch from the object.
+
+    :param commdct: Descriptions of IDF fields from the IDD.
+    :param obj: List of field values in an object.
+    :param obj_i: Index of the object in commdct.
+    :returns: EpBunch object.
+
+    """
     objidd = commdct[obj_i]
     objfields = [comm.get('field') for comm in commdct[obj_i]]
     objfields[0] = ['key']
@@ -170,37 +223,40 @@ class IDF(BaseIDF):
     """
     
     def __init__(self, *args, **kwargs):
+        # type: (Optional[str], Optional[str]) -> None
         super(IDF, self).__init__(*args, **kwargs)
         
     def intersect_match(self):
+        # type: () -> None
         """Intersect all surfaces in the IDF, then set boundary conditions.
         """
         self.intersect()
         self.match()
         
     def intersect(self):
+        # type: () -> None
         """Intersect all surfaces in the IDF.
         """
         intersect_idf_surfaces(self)
         
     def match(self):
+        # type: () -> None
         """Set boundary conditions for all surfaces in the IDF.
         """
         match_idf_surfaces(self)
     
     def translate_to_origin(self):
+        # type: () -> None
         """
         Move an IDF close to the origin so that it can be viewed in SketchUp.
         """
         translate_to_origin(self)
     
     def translate(self, vector):
+        # type: (Vector2D) -> None
         """Move the IDF in the direction given by a vector.
         
-        Parameters
-        ----------
-        vector : Vector2D, Vector3D, (x,y) or (x,y,z) list-like
-            Representation of a vector to translate by.
+        :param vector: A vector to translate by.
             
         """
         surfaces = self.getsurfaces()
@@ -209,14 +265,11 @@ class IDF(BaseIDF):
         translate(subsurfaces, vector)
 
     def rotate(self, angle, anchor=None):
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
         """Rotate the IDF counterclockwise by the angle given.
 
-        Parameters
-        ----------
-        angle : numeric
-            Angle (in degrees) to rotate by.
-        anchor : Vector2D, Vector3D, optional
-            Point around which to rotate. Default is the centre of the the IDF's bounding box.
+        :param angle: Angle (in degrees) to rotate by.
+        :param anchor: Point around which to rotate. Default is the centre of the the IDF's bounding box.
 
         """
         anchor = anchor or self.centroid
@@ -228,6 +281,13 @@ class IDF(BaseIDF):
         self.translate(anchor)
 
     def scale(self, factor, anchor=None):
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
+        """Scale the IDF by a scaling factor.
+
+        :param factor: Factor to scale by.
+        :param anchor: Point to scale around. Default is the centre of the the IDF's bounding box.
+
+        """
         anchor = anchor or self.centroid
         surfaces = self.getsurfaces()
         subsurfaces = self.getsubsurfaces()
@@ -238,24 +298,24 @@ class IDF(BaseIDF):
 
 
     def set_default_constructions(self):
+        # type: () -> None
         set_default_constructions(self)
     
     def getsurfaces(self, surface_type=None):
+        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all surfaces in the IDF.
-        
-        Returns
-        -------
-        list
-        
+
+        :param surface: Type of surface to get. Defaults to all.
+        :returns: IDF surfaces.
+
         """
         return getidfsurfaces(self, surface_type)
 
     def bounding_box(self):
-        """Return the site bounding box.
+        # type: () -> Polygon
+        """Calculate the site bounding box.
 
-        Returns
-        -------
-        Polygon
+        :returns: A polygon of the bounding box.
 
         """
         floors = self.getsurfaces('floor')
@@ -279,44 +339,44 @@ class IDF(BaseIDF):
 
     @property
     def centroid(self):
-        """Return the centroid of the site bounding box.
+        # type: () -> Vector2D
+        """Calculate the centroid of the site bounding box.
 
-        Returns
-        -------
-        Vector2D
+        :returns: The centroid of the site bounding box.
 
         """
         bbox = self.bounding_box()
         return bbox.centroid
 
     def getsubsurfaces(self, surface_type=None):
+        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
         
-        Returns
-        -------
-        list
-        
+        :returns: IDF surfaces.
+
         """
         return getidfsubsurfaces(self, surface_type)
     
     def set_wwr(self, wwr):
+        # type: (float) -> None
         """Add strip windows to all external walls.
         
-        Parameters
-        ----------
-        wwr : float
-            Window to wall ratio in the range 0-1.
-            
+        :param wwr: Window to wall ratio in the range 0.0 to 1.0.
+
         """
         set_wwr(self, wwr)
     
     def view_model(self):
-        """Show a zoomable, rotatable representation of the IDF.
-        """
+        # type: () -> None
+        """Show a zoomable, rotatable representation of the IDF."""
         view_idf(idf_txt=self.idfstr())
         
     def add_block(self, *args, **kwargs):
-        """Add a block to the IDF
+        # type: (*Any, **Any) -> None
+        """Add a block to the IDF.
+
+        See Block class for parameters.
+
         """
         block = Block(*args, **kwargs)
         zoning = kwargs.get('zoning', 'by_storey')
@@ -330,7 +390,11 @@ class IDF(BaseIDF):
             self.add_zone(zone)
     
     def add_shading_block(self, *args, **kwargs):
-        """Add a shading block to the IDF
+        # type: (*Any, **Any) -> None
+        """Add a shading block to the IDF.
+
+        See Block class for parameters.
+
         """
         block = Block(*args, **kwargs)
         for i, wall in enumerate(block.walls[0], 1):
@@ -345,6 +409,12 @@ class IDF(BaseIDF):
                 self.removeidfobject(s)
         
     def add_zone(self, zone):
+        # type: (Zone) -> None
+        """Add a zone to the IDF.
+
+        :param zone:
+
+        """
         try:
             ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
         except IndexError:
@@ -389,11 +459,12 @@ class IDF(BaseIDF):
             s.setcoords(surface_coords, ggr)
 
     def read(self):
-        """
-        Read the IDF file and the IDD file. If the IDD file had already been
-        read, it will not be read again.
+        # type: () -> None
+        """Read the IDF file and the IDD file.
 
-        Read populates the following data structures:
+        If the IDD file had already been read, it will not be read again.
+
+        Populates the following data structures::
 
         - idfobjects : list
         - model : list
@@ -402,20 +473,19 @@ class IDF(BaseIDF):
 
         """
         if self.getiddname() == None:
-            errortxt = ("IDD file needed to read the idf file. "
-                        "Set it using IDF.setiddname(iddfile)")
+            errortxt = ("IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)")
             raise IDDNotSetError(errortxt)
         readout = idfreader1(
             self.idfname, self.iddname, self,
             commdct=self.idd_info, block=self.block)
         self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = readout
         self.__class__.setidd(idd_info, idd_index, block, versiontuple)
-            
 
     def newidfobject(self, key, aname='', **kwargs):
-        """
-        Add a new idfobject to the model. If you don't specify a value for a
-        field, the default value will be set.
+        # type: (str, str, **Any) -> EpBunch
+        """Add a new idfobject to the model.
+
+        If you don't specify a value for a field, the default value will be set.
 
         For example ::
 
@@ -425,26 +495,16 @@ class IDF(BaseIDF):
                 Outside_Layer='LW Concrete',
                 Layer_2='soundmat')
 
-        Parameters
-        ----------
-        key : str
-            The type of IDF object. This must be in ALL_CAPS.
-        aname : str, deprecated
-            This parameter is not used. It is left there for backward 
-            compatibility.
-        **kwargs
-            Keyword arguments in the format `field=value` used to set the value
-            of fields in the IDF object when it is created. 
-
-        Returns
-        -------
-        EpBunch object
+        :param key: The type of IDF object. This must be in ALL_CAPS.
+        :param aname: This parameter is not used. It is left there for backward compatibility.
+        :param **kwargs: Keyword arguments in the format `field=value` used to set fields in the IDF object created.
+        :returns: EpBunch object.
 
         """
         obj = newrawobject(self.model, self.idd_info, key)
         abunch = obj2bunch(self.model, self.idd_info, obj)
         if aname:
-            warning.warn("The aname parameter should no longer be used.")
+            warnings.warn("The aname parameter should no longer be used.", UserWarning)
             namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)
         for k, v in kwargs.items():
@@ -452,19 +512,13 @@ class IDF(BaseIDF):
         return abunch
 
     def copyidfobject(self, idfobject):
+        # type: (EpBunch) -> EpBunch
         """Add an IDF object to the IDF.
         
         This has been monkey-patched to add the return value.
 
-        Parameters
-        ----------
-        idfobject : EpBunch object
-            The IDF object to remove. This usually comes from another idf file,
-            or it can be used to copy within this idf file.
-        
-        Returns
-        -------
-        EpBunch object
+        :param idfobject: The IDF object to copy. Usually from another IDF, or it can be used to copy within this IDF.
+        :returns: EpBunch object.
 
         """
         abunch = addthisbunch(self.idfobjects,
@@ -472,5 +526,4 @@ class IDF(BaseIDF):
                              self.idd_info,
                              idfobject,
                              self)
-         
         return abunch

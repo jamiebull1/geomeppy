@@ -11,18 +11,19 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import numpy as np
 from transforms3d._gohlketransforms import translation_matrix
 
-from geomeppy.polygons import Polygon3D
-from geomeppy.transformations import Transformation
-from geomeppy.vectors import Vector3D
-import numpy as np
+from geomeppy.geom.polygons import Polygon3D
+from geomeppy.geom.transformations import Transformation
+from geomeppy.geom.vectors import Vector3D
 from geomeppy.utilities import almostequal
 
 
 class TestTransormations():
     
     def test_translation_transformations(self):
+        # type: () -> None
         tol = 12 # places
         trans = Vector3D(1,1,1)
         point1 = Vector3D(1,0,0)
@@ -60,6 +61,7 @@ class TestTransormations():
         assert almostequal(0.0, temp.z, tol)
     
     def test_align_z_prime_transformations(self):
+        # type: () -> None
         x_axis = Vector3D(1,0,0)
         y_axis = Vector3D(0,1,0)
         z_axis = Vector3D(0,0,1)
@@ -103,6 +105,7 @@ class TestTransormations():
         assert outward_normal == t * z_axis
     
     def test_align_face_transformations(self):
+        # type: () -> None
         tol = 12  # places
         
         vertices = Polygon3D([(1, 0, 1), (1, 0, 0), (2, 0, 0), (2, 0, 1)])
@@ -159,6 +162,7 @@ class TestTransormations():
     
     
     def test_align_face_transformations_trapezoid_floor(self):
+        # type: () -> None
         tol = 12  # places
         
         testVertices = Polygon3D([(27.69,0,0),(0,0,0),

@@ -19,7 +19,7 @@ def read_md(f):
                 return f_in.read()
         except:
             return "GeomEppy"
-    
+
 setup(
     name='geomeppy',
     packages=['geomeppy',
@@ -33,19 +33,19 @@ setup(
     url='https://github.com/jamiebull1/geomeppy',
     download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.34',
     license='MIT License',
-    keywords=['EnergyPlus', 
+    keywords=['EnergyPlus',
               'geometry',
               'building performance simulation',
               ],
     platforms='any',
-    install_requires = [
-        "eppy==0.5.45",
-        "numpy>=1.13",
-        "six==1.10.0",  # python2/3 compatibility
-        "pyclipper==1.0.6",  # geometry intersection
-        "transforms3d==0.3.1",  # geometry transformations
-        "shapely==1.6.2",  # geometry transformations
-#        "matplotlib>=1.5.1",  # simple geometry viewer
+    install_requires=[
+        'eppy==0.5.46',
+        'numpy==1.13',
+        'pyclipper==1.0.6',  # geometry intersection
+        'shapely==1.6.2',  # geometry transformations
+        'six==1.11.0',  # python2/3 compatibility
+        'transforms3d==0.3.1',  # geometry transformations
+#        'matplotlib>=1.5.1',  # simple geometry viewer
         ],
     classifiers = [
         'Programming Language :: Python :: 2',
@@ -58,4 +58,15 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Scientific/Engineering',
         ],
+    extras_require={
+        ':python_version>="3.4"': [
+            'mypy==0.550',  # static type checking
+        ],
+        'testing': [
+            'codecov',
+            'pytest-cov',
+            'typing',
+        ],
+    }
 )
+

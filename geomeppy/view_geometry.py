@@ -4,13 +4,7 @@
 #  (See accompanying file LICENSE or copy at
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
-
-"""
-Developer tool for visualising geometry during development of the eppy.geometry
-package.
-
-"""
-
+"""Tool for visualising geometry."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -95,12 +89,6 @@ def view_polygons(polygons):
     plt.show()
 
 
-"""
-Functions below this point should only be used by the first two functions in
-this module.
-"""
-
-
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
@@ -145,6 +133,7 @@ def _get_collections(idf, opacity=1):
     
     return walls, roofs, floors, windows
 
+
 def _make_collections(polygons, opacity=1):
     """Make collections from a dict of polygons.
     """
@@ -156,13 +145,10 @@ def _make_collections(polygons, opacity=1):
                              facecolor=color,
                              edgecolors='black'))
     return collection
-    
+
+
 def _get_limits(idf=None, polygons=None):
-    """
-    Get limits for the x, y and z axes so the plot is 
-    fitted to the axes.
-    
-    """
+    """Get limits for the x, y and z axes so the plot is fitted to the axes."""
     if polygons:
         x = [pt[0] for color in polygons for p in polygons[color] for pt in p]
         y = [pt[1] for color in polygons for p in polygons[color] for pt in p]
@@ -192,4 +178,3 @@ def main(fname=None, polygons=None):
 
 if __name__ == "__main__":
     main()
-        

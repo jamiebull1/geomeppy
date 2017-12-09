@@ -12,15 +12,17 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.segments import Segment
-from geomeppy.vectors import Vector3D
+from geomeppy.geom.segments import Segment
+from geomeppy.geom.vectors import Vector3D
 
 
 def test_segment_repr():
+    # type: () -> None
     edge = Segment(Vector3D(0,0,0), Vector3D(2,0,0))
     assert eval(repr(edge)) == edge
 
 def test_collinear():
+    # type: () -> None
     # same line
     edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
     edge2 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))

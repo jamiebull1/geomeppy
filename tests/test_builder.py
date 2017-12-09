@@ -10,12 +10,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from eppy.iddcurrent import iddcurrent
+from six import StringIO
+
 from geomeppy.builder import Block
 from geomeppy.eppy_patches import IDF
-
-from eppy.iddcurrent import iddcurrent
-import pytest
-from six import StringIO
 
 
 idf_txt = """
@@ -72,6 +71,7 @@ breaking_coords = [
 class TestAddBlock():
 
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -79,6 +79,7 @@ class TestAddBlock():
         self.idf = IDF(StringIO(idf_txt))
 
     def test_add_block_smoke_test(self):
+        # type: () -> None
         idf = self.idf
         name = "test"
         height = 7.5
@@ -94,6 +95,7 @@ class TestAddBlock():
                   below_ground_stories, below_ground_storey_height)
         
     def test_add_two_blocks(self):
+        # type: () -> None
         idf = self.idf
         height = 5
         num_stories = 2
@@ -143,6 +145,7 @@ class TestAddBlock():
             assert wall.Construction_Name == 'Project Wall'
         
     def test_add_two_concentric_blocks(self):
+        # type: () -> None
         idf = self.idf
         height = 5
         num_stories = 2
@@ -155,6 +158,7 @@ class TestAddBlock():
         idf.set_default_constructions()
     
     def test_known_breaking(self):
+        # type: () -> None
         idf = self.idf
         height = 5
         num_stories = 2
@@ -164,6 +168,7 @@ class TestAddBlock():
 
 
 def test_block():
+    # type: () -> None
     name = "test"
     height = 7.5
     num_stories = 4

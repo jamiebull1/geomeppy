@@ -4,15 +4,18 @@
 #  (See accompanying file LICENSE or copy at
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
-"""utilities for use in test suite"""
-
+"""Utilities for use in geomeppy."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Any
+
+
 def almostequal(first, second, places=7):
-    """Tests a range of types for near equality"""
+    # type: (Any, Any, int) -> bool
+    """Tests a range of types for near equality."""
     try:
         # try converting to float first
         first = float(first)

@@ -16,20 +16,24 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from transforms3d._gohlketransforms import concatenate_matrices
-from transforms3d._gohlketransforms import identity_matrix
-from transforms3d._gohlketransforms import inverse_matrix
-from transforms3d._gohlketransforms import rotation_matrix
-from transforms3d._gohlketransforms import translation_matrix
-
-from geomeppy.vectors import Vector3D
+from typing import Optional, Union
 
 import numpy as np
+from transforms3d._gohlketransforms import (
+    concatenate_matrices, identity_matrix, inverse_matrix, rotation_matrix, translation_matrix,
+)
+
+from .vectors import Vector3D
+
+MYPY = False
+if MYPY:
+    from .polygons import Polygon3D
 
 
 class Transformation(object):
         
     def __init__(self, mat=None):
+        # type: (Optional[ndarray]) -> None
         if mat is None:
             # initialise with a 4D identity matrix
             self.matrix = identity_matrix()
@@ -38,7 +42,10 @@ class Transformation(object):
             self.matrix = mat
         assert self.matrix.shape == (4, 4)
         
-    def __mul__(self, other):
+    def __mul__(self,
+                other  # type: Union[Polygon3D, Transformation, Vector3D]
+                ):
+        # type: (...) -> Union[Transformation, Vector3D]
         if hasattr(other, 'matrix'):
             # matrix by a matrix
             mat = concatenate_matrices(self.matrix, other.matrix)
@@ -55,6 +62,7 @@ class Transformation(object):
             return other.__class__(result)
     
     def align_z_prime(self, zp):
+        # type: (Vector3D) -> Transformation
         """Transform system with z' to regular system. Will try to align y' 
         with z, but if that fails will align y' with y
         
@@ -85,6 +93,7 @@ class Transformation(object):
         return self
         
     def align_face(self, polygon):
+        # type: (Polygon3D) -> Transformation
         """A transformation to align a polygon with the origin.
         
         Parameters
@@ -113,6 +122,7 @@ class Transformation(object):
         return self
     
     def inverse(self):
+        # type: () -> Transformation
         """The inverse of a given transformation.
         
         Returns
@@ -123,13 +133,16 @@ class Transformation(object):
         return Transformation(inverse_matrix(self.matrix))
     
     def translation(self, direction):
+        # type: (Vector3D) -> Transformation
         return Transformation(translation_matrix(direction))
 
     def rotation(self, direction, angle):
+        # type: (Vector3D, Union[int, float64]) -> Transformation
         return Transformation(rotation_matrix(angle, direction))
 
 
 def align_face(polygon):
+    # type: (Polygon3D) -> Polygon3D
     """Transformation to align face with z-axis.
 
     Parameters
@@ -149,6 +162,7 @@ def align_face(polygon):
 
 
 def invert_align_face(original, poly2):
+    # type: (Polygon3D, Polygon3D) -> Polygon3D
     """Transformation to align face with original position.
     
     Parameters

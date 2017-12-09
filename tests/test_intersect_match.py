@@ -11,24 +11,17 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
-
-from eppy.iddcurrent import iddcurrent
 import pytest
+from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
-from geomeppy.recipes import translate_coords
 from geomeppy.eppy_patches import IDF
-from geomeppy.intersect_match import get_adjacencies
-from geomeppy.intersect_match import getidfsurfaces
-from geomeppy.intersect_match import intersect
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import is_hole
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.intersect_match import unique
-from geomeppy.polygons import Polygon3D
+from geomeppy.geom.intersect_match import (
+    get_adjacencies, getidfsurfaces, intersect, intersect_idf_surfaces, is_hole, match_idf_surfaces, unique,
+)
+from geomeppy.geom.polygons import Polygon3D
+from geomeppy.recipes import translate_coords
 from geomeppy.utilities import almostequal
-
 
 idf_txt = """
 Version, 8.5;
@@ -72,6 +65,7 @@ BuildingSurface:Detailed, z2 Roof 0001, Roof, , Thermal Zone 1, Outdoors, , SunE
 class TestSetCoords():
 
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -79,6 +73,7 @@ class TestSetCoords():
         self.idf = IDF(StringIO(idf_txt))
             
     def test_set_coords(self):
+        # type: () -> None
         idf = self.idf
         ggr = idf.idfobjects['GLOBALGEOMETRYRULES']        
         wall = idf.idfobjects['BUILDINGSURFACE:DETAILED'][0]
@@ -86,6 +81,7 @@ class TestSetCoords():
         wall.setcoords(poly1, ggr)
 
 def test_unique():
+    # type: () -> None
     poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
     poly2 = Polygon3D([(1,1,0),(1,0,0),(0,0,0),(0,1,0)])
     poly3 = Polygon3D([(0,1,0),(1,1,0),(1,0,0),(0,0,0)])
@@ -101,6 +97,7 @@ def test_unique():
 class TestSimpleTestPolygons():
     
     def test_simple_match(self):
+        # type: () -> None
         """
         The intersect function should just return the two polygons.
          ___  
@@ -118,6 +115,7 @@ class TestSimpleTestPolygons():
             assert poly in result
     
     def test_simple_overlap(self):
+        # type: () -> None
         """
         The intersect function should return four surfaces.
          __ ___ __ 
@@ -143,6 +141,7 @@ class TestSimpleTestPolygons():
             assert poly in result
 
     def test_simple_hole(self):
+        # type: () -> None
         """
          _________ 
         | 1 ___   |  
@@ -173,6 +172,7 @@ class TestSimpleTestPolygons():
             assert poly in result
                 
     def test_three_overlapping(self):
+        # type: () -> None
         """
          __ ___ __ __
         | 1| 1 | 3| 3|  
@@ -205,6 +205,7 @@ class TestSimpleTestPolygons():
             assert poly in result
     
     def test_double_overlap(self):
+        # type: () -> None
         """
          __________
         |__1_______| 
@@ -240,6 +241,7 @@ class TestSimpleTestPolygons():
             assert poly in result
         
     def test_vertically_offset(self):
+        # type: () -> None
         """
          ___
         |_1_|
@@ -270,6 +272,7 @@ class TestSimpleTestPolygons():
 class TestMatchSurfaces():
 
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -277,6 +280,7 @@ class TestMatchSurfaces():
         self.idf = IDF(StringIO(idf_txt))
             
     def test_match_idf_surfaces(self):
+        # type: () -> None
         idf = self.idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
@@ -300,6 +304,7 @@ class TestMatchSurfaces():
 class TestAdjacencies():
     
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -307,6 +312,7 @@ class TestAdjacencies():
         self.idf = IDF(StringIO(idf_txt))
             
     def test_get_adjacencies(self):
+        # type: () -> None
         surfaces = getidfsurfaces(self.idf)
         adjacencies = get_adjacencies(surfaces)
         assert (u'BuildingSurface:Detailed', u'z1_WALL_0002') in adjacencies
@@ -315,6 +321,7 @@ class TestAdjacencies():
         
         
 def test_intersect():
+    # type: () -> None
     poly1 = Polygon3D([(1.0, 2.1, 0.5), (1.0, 2.1, 0.0),
                        (2.0, 2.0, 0.0), (2.0, 2.0, 0.5)])
     poly2 = Polygon3D([(2.5, 1.95, 0.5), (2.5, 1.95, 0.0),
@@ -326,6 +333,7 @@ def test_intersect():
 
 
 def test_real_intersect():
+    # type: () -> None
     """
     Test that we can make a previously failing test pass by moving to the
     origin first.
@@ -351,6 +359,7 @@ def test_real_intersect():
 
 
 def test_is_hole():
+    # type: () -> None
     """Test if a surface represents a hole in one of the surfaces.
     """
     # opposite faces (all touching edges)
@@ -385,6 +394,7 @@ def test_is_hole():
 class TestIntersectMatchRing():
     
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -392,6 +402,7 @@ class TestIntersectMatchRing():
         self.idf = IDF(StringIO(idf_txt_ring))
         
     def test_intersect_idf_surfaces(self):       
+        # type: () -> None
         idf = self.idf        
         starting = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         intersect_idf_surfaces(idf)
@@ -410,6 +421,7 @@ class TestIntersectMatchRing():
 class TestIntersectMatch():
     
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -417,11 +429,13 @@ class TestIntersectMatch():
         self.idf = IDF(StringIO(idf_txt))
             
     def test_getidfsurfaces(self):    
+        # type: () -> None
         idf = self.idf
         surfaces = getidfsurfaces(idf)
         assert len(surfaces) == 12
     
     def test_intersect_idf_surfaces(self):       
+        # type: () -> None
         idf = self.idf        
         starting = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         intersect_idf_surfaces(idf)
@@ -439,6 +453,7 @@ class TestIntersectMatch():
 
 @pytest.mark.xfail("sys.version_info.major == 3 and sys.version_info.minor == 5")
 def test_real_scale():
+    # type: () -> None
     """Test building, intersecting and matching from a real building footprint.
     """
     iddfhandle = StringIO(iddcurrent.iddtxt)

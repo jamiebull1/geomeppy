@@ -11,22 +11,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from geomeppy.intersect_match import getidfsurfaces
-from geomeppy.intersect_match import intersect_idf_surfaces
-from geomeppy.intersect_match import match_idf_surfaces
-from geomeppy.polygons import Polygon3D
-from geomeppy.recipes import rotate
-from geomeppy.recipes import set_wwr
-from geomeppy.recipes import translate
-from geomeppy.recipes import translate_to_origin
-from geomeppy.utilities import almostequal
-
 from eppy.iddcurrent import iddcurrent
-from geomeppy.eppy_patches import IDF
-from geomeppy.vectors import Vector2D
-from geomeppy.vectors import Vector3D
 from six import StringIO
 
+from geomeppy.eppy_patches import IDF
+from geomeppy.geom.intersect_match import getidfsurfaces, intersect_idf_surfaces, match_idf_surfaces
+from geomeppy.geom.polygons import Polygon3D
+from geomeppy.geom.vectors import Vector2D, Vector3D
+from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
+from geomeppy.utilities import almostequal
 
 idf_txt = """
 Version, 8.5;
@@ -51,6 +44,7 @@ BuildingSurface:Detailed, z2_WALL_0004, Wall, , z2 Thermal Zone, Outdoors, , Sun
 class TestTranslate():
     
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -58,6 +52,7 @@ class TestTranslate():
         self.idf = IDF(StringIO(idf_txt))
             
     def test_translate(self):
+        # type: () -> None
         idf = self.idf
         surfaces = getidfsurfaces(idf)
         translate(surfaces, (50, 100))  # move to x + 50, y + 100
@@ -78,6 +73,7 @@ class TestTranslate():
         assert result == expected
 
     def test_translate_to_origin(self):
+        # type: () -> None
         idf = self.idf
         surfaces = getidfsurfaces(idf)
         translate(surfaces, (50000, 10000))  # move to x + 50, y + 100
@@ -93,6 +89,7 @@ class TestTranslate():
         assert min_y == 0
 
     def test_rotate_360(self):
+        # type: () -> None
         idf = self.idf
         surface = getidfsurfaces(idf)[0]
         coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
@@ -103,6 +100,7 @@ class TestTranslate():
         assert almostequal(result, expected)
 
     def test_rotate_idf_360(self):
+        # type: () -> None
         idf1 = self.idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
@@ -112,12 +110,14 @@ class TestTranslate():
         assert almostequal(floor1, floor2)
 
     def test_centre(self):
+        # type: () -> None
         idf = self.idf
         result = idf.centroid
         expected = Vector2D(1.75, 2.025)
         assert result == expected
 
     def test_scale_idf(self):
+        # type: () -> None
         idf1 = self.idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
@@ -131,6 +131,7 @@ class TestTranslate():
 class TestMatchSurfaces():
 
     def setup(self):
+        # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
@@ -139,6 +140,7 @@ class TestMatchSurfaces():
         match_idf_surfaces(self.idf)
             
     def test_set_wwr(self):
+        # type: () -> None
         """Check that the correct WWR is set for all walls.
         """
         idf = self.idf

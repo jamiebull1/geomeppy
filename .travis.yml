@@ -3,8 +3,8 @@ language: cpp
 os: 
   - linux
 
+sudo: required
 dist: trusty
-sudo: required 
 
 env:
   - PYTHON=2.7
@@ -25,12 +25,8 @@ before_install:
   - conda install --yes numpy matplotlib pip
   - conda install --yes -c conda-forge shapely
 
-  # coverage and testing requirements
-  - pip install pytest-cov
-  - pip install codecov
-
 install:
-  - python setup.py install
+  - pip install -e .[testing]
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir
