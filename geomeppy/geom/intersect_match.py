@@ -6,11 +6,6 @@
 # =======================================================================
 """Intersect and match all surfaces in an IDF.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from collections import defaultdict
 from itertools import combinations, product
 from typing import Dict, List, Optional, Union
@@ -246,7 +241,7 @@ def is_hole(surface, possible_hole):
     """
     if surface.area < possible_hole.area:
         return False
-    collinear_edges = (edges[0].is_collinear(edges[1]) 
+    collinear_edges = (edges[0]._is_collinear(edges[1])
                        for edges in product(surface.edges, possible_hole.edges))
     return not any(collinear_edges)
 

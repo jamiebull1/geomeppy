@@ -7,11 +7,6 @@
 """
 Tests for Segment class, representing a line segment.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from geomeppy.geom.segments import Segment
 from geomeppy.geom.vectors import Vector3D
 
@@ -26,30 +21,30 @@ def test_collinear():
     # same line
     edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
     edge2 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    assert edge1.is_collinear(edge2)
+    assert edge1._is_collinear(edge2)
 
     # opposite direction line
     edge1 = Segment(Vector3D(1,1,1), Vector3D(0,0,0))
     edge2 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
-    assert edge1.is_collinear(edge2)
+    assert edge1._is_collinear(edge2)
 
     # edge1 is longer
     edge1 = Segment(Vector3D(0,0,0), Vector3D(4,4,4))
     edge2 = Segment(Vector3D(1,1,1), Vector3D(2,2,2))
-    assert edge1.is_collinear(edge2)
+    assert edge1._is_collinear(edge2)
 
     # same start point, different lengths
     edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
     edge2 = Segment(Vector3D(0,0,0), Vector3D(2,2,2))
-    assert edge1.is_collinear(edge2)
+    assert edge1._is_collinear(edge2)
     
     # something being missed
     edge1 = Segment(Vector3D(1,4,0), Vector3D(1,0,0))
     edge2 = Segment(Vector3D(1,0,0), Vector3D(1,2,0))
-    assert edge1.is_collinear(edge2)
+    assert edge1._is_collinear(edge2)
     
     # parallel
     edge1 = Segment(Vector3D(0,0,0), Vector3D(1,1,1))
     edge2 = Segment(Vector3D(1,0,0), Vector3D(2,1,1))
-    assert not edge1.is_collinear(edge2)
+    assert not edge1._is_collinear(edge2)
 

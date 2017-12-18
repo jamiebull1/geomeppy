@@ -10,11 +10,6 @@ Heavy lifting geometry for IDF surfaces.
 PyClipper is used for clipping.
 
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import pyclipper as pc
 from collections import MutableSequence
 from itertools import product
@@ -239,15 +234,8 @@ class Polygon(MutableSequence):
         # type: (Polygon) -> List[Polygon]
         """Union with another 2D polygon.
         
-        Parameters
-        ----------
-        poly : Polygon
-            The clip polygon.
-
-        Returns
-        -------
-        list
-        
+        :param poly: The clip polygon.
+        :returns: A list of Polygons.
         """
         return union_2D_polys(self, poly)
         
@@ -255,17 +243,8 @@ class Polygon(MutableSequence):
         # type: (Polygon) -> Union[bool, List[Polygon]]
         """Intersect with another 2D polygon.
         
-        Parameters
-        ----------
-        poly : Polygon
-            The clip polygon.
-
-        Returns
-        -------
-        list or False
-            False if no intersection, otherwise a list of lists of 2D
-            coordinates representing each intersection.
-        
+        :param poly: The clip polygon.
+        :returns: False if no intersection, otherwise a list of Polygons representing each intersection.
         """
         return intersect_2D_polys(self, poly)
         
@@ -273,23 +252,21 @@ class Polygon(MutableSequence):
         # type: (Polygon) -> Union[bool, List[Polygon]]
         """Intersect with another 2D polygon.
         
-        Parameters
-        ----------
-        poly : Polygon
-            The clip polygon.
-
-        Returns
-        -------
-        list or False
-            False if no intersection, otherwise a list of lists of 2D
-            coordinates representing each difference.
-        
+        :param poly: The clip polygon.
+        :returns: False if no intersection, otherwise a list of lists of Polygons representing each difference.
         """
         return difference_2D_polys(self, poly)
 
 
 def distance(pt1, pt2):
     # type: (Vector3D, Vector3D) -> float
+    """A distance function for sorting vectors by distance.
+
+    Be aware that this only provides relative distance since
+    :param pt1:
+    :param pt2:
+    :return:
+    """
     direction = pt1 - pt2
     return sum(x ** 2 for x in direction)
     

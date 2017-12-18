@@ -6,11 +6,6 @@
 # =======================================================================
 """pytest for intersect_match.py"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
@@ -284,7 +279,6 @@ class TestMatchSurfaces():
         idf = self.idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
-        idf.printidf()
         inside_wall = idf.getobject(
             'BUILDINGSURFACE:DETAILED', 'z1_WALL_0002_1')
         assert inside_wall.Outside_Boundary_Condition == 'surface'

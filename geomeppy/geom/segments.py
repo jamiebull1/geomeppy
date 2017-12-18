@@ -9,11 +9,6 @@ Segment class, representing a line segment.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from typing import Iterator
 
 from .vectors import Vector3D
@@ -26,7 +21,6 @@ if MYPY:
 
 class Segment(object):
     """Line segment in 3D."""
-    
     def __init__(self, *vertices):
         # type: (*Vector3D) -> None
         self.vertices = vertices
@@ -50,8 +44,13 @@ class Segment(object):
         # type: (Segment) -> bool
         return self.__dict__ == other.__dict__
     
-    def is_collinear(self, other):
+    def _is_collinear(self, other):
         # type: (Segment) -> bool
+        """Test if a segment is collinear with another segment
+
+        :param other: The other segment.
+        :return: True if the segments are collinear else False.
+        """
         if almostequal(other, self) or almostequal(other, -self):
             return True
         a = self.p1 - other.p1
@@ -66,21 +65,14 @@ class Segment(object):
             return True
         return False
             
-    def on_poly_edge(self, poly):
+    def _on_poly_edge(self, poly):
         # type: (Polygon3D) -> bool
         """Test if segment lies on any edge of a polygon
         
-        Parameters
-        ----------
-        poly : Polygon3D
-            The polygon to test against.
-        
-        Returns
-        -------
-        bool
-        
+        :param poly: The polygon to test against.
+        :returns: True if segment lies on any edge of the polygon, else False.
         """
         for edge in poly.edges:
-            if self.is_collinear(edge):
+            if self._is_collinear(edge):
                 return True
         return False

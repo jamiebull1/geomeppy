@@ -5,12 +5,6 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """pytest for transformations.py"""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import numpy as np
 from transforms3d._gohlketransforms import translation_matrix
 
@@ -43,19 +37,19 @@ class TestTransormations():
         assert almostequal(1.0, temp.z, tol)
         
         # move by -1, -1, -1
-        temp = t.inverse() * point1
+        temp = t._inverse() * point1
         assert almostequal(0.0, temp.x, tol)
         assert almostequal(-1.0, temp.y, tol)
         assert almostequal(-1.0, temp.z, tol)
         
         # identity transformation
-        temp = t.inverse() * t * point1
+        temp = t._inverse() * t * point1
         assert almostequal(1.0, temp.x, tol)
         assert almostequal(0.0, temp.y, tol)
         assert almostequal(0.0, temp.z, tol)
         
         # identity transformation
-        temp = t * t.inverse() * point1
+        temp = t * t._inverse() * point1
         assert almostequal(1.0, temp.x, tol)
         assert almostequal(0.0, temp.y, tol)
         assert almostequal(0.0, temp.z, tol)
@@ -68,38 +62,38 @@ class TestTransormations():
         t = Transformation()
         
         outward_normal = Vector3D(0, -1, 0)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert x_axis == t * x_axis
         assert z_axis == t * y_axis
         result = t * z_axis
         assert outward_normal == result
         
         outward_normal = Vector3D(1, 0, 0)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert y_axis == t * x_axis
         assert z_axis == t * y_axis
         assert outward_normal == t * z_axis
         
         outward_normal = Vector3D(0, 1, 0)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert -x_axis == t * x_axis
         assert z_axis == t * y_axis
         assert outward_normal == t * z_axis
         
         outward_normal = Vector3D(-1, 0, 0)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert -y_axis == t * x_axis
         assert z_axis == t * y_axis
         assert outward_normal == t * z_axis
         
         outward_normal = Vector3D(0, 0, 1)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert -x_axis == t * x_axis
         assert -y_axis == t * y_axis
         assert outward_normal == t * z_axis
         
         outward_normal = Vector3D(0, 0, -1)
-        t = t.align_z_prime(outward_normal)
+        t = t._align_z_prime(outward_normal)
         assert -x_axis == t * x_axis
         assert y_axis == t * y_axis
         assert outward_normal == t * z_axis
@@ -112,51 +106,51 @@ class TestTransormations():
         t = Transformation()
         
         # rotate 0 degrees about z
-        testVertices = t.rotation(Vector3D(0,0,1), 0) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices
+        testVertices = t._rotation(Vector3D(0, 0, 1), 0) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate 30 degrees about z
-        testVertices = t.rotation(Vector3D(0,0,1), np.deg2rad(30)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices
+        testVertices = t._rotation(Vector3D(0, 0, 1), np.deg2rad(30)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate -30 degrees about z
-        testVertices = t.rotation(Vector3D(0,0,1), -np.deg2rad(30)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices
+        testVertices = t._rotation(Vector3D(0, 0, 1), -np.deg2rad(30)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate -30 degrees about x
-        testVertices = t.rotation(Vector3D(1,0,0), -np.deg2rad(30)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices    
+        testVertices = t._rotation(Vector3D(1, 0, 0), -np.deg2rad(30)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate -90 degrees about x
-        testVertices = t.rotation(Vector3D(1,0,0), -np.deg2rad(90)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices
+        testVertices = t._rotation(Vector3D(1, 0, 0), -np.deg2rad(90)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(1,0,0),(1,1,0),(0,1,0),(0,0,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate 30 degrees about x
-        testVertices = t.rotation(Vector3D(1,0,0), np.deg2rad(30)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices    
+        testVertices = t._rotation(Vector3D(1, 0, 0), np.deg2rad(30)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
         # rotate 90 degrees about x
-        testVertices = t.rotation(Vector3D(1,0,0), np.deg2rad(90)) * vertices
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices    
+        testVertices = t._rotation(Vector3D(1, 0, 0), np.deg2rad(90)) * vertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(1,0,0),(1,1,0),(0,1,0),(0,0,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
     
@@ -167,7 +161,7 @@ class TestTransormations():
         
         testVertices = Polygon3D([(27.69,0,0),(0,0,0),
                                   (5,5,0),(22.69,5,0)])
-        t = Transformation().align_face(testVertices)
-        tempVertices = t.inverse() * testVertices
+        t = Transformation()._align_face(testVertices)
+        tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(0,0,0),(27.69,0,0),(22.69,5,0),(5,5,0)])
         assert almostequal(tempVertices, expectedVertices, tol)

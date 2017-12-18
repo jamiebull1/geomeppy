@@ -11,11 +11,6 @@ OpenStudio for the sake of consistency between tools based on EnergyPlus.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from typing import Optional, Union
 
 import numpy as np
@@ -61,7 +56,7 @@ class Transformation(object):
             result = [self * point for point in other]
             return other.__class__(result)
     
-    def align_z_prime(self, zp):
+    def _align_z_prime(self, zp):
         # type: (Vector3D) -> Transformation
         """Transform system with z' to regular system. Will try to align y' 
         with z, but if that fails will align y' with y
@@ -92,7 +87,7 @@ class Transformation(object):
         
         return self
         
-    def align_face(self, polygon):
+    def _align_face(self, polygon):
         # type: (Polygon3D) -> Transformation
         """A transformation to align a polygon with the origin.
         
@@ -106,22 +101,22 @@ class Transformation(object):
         
         """
         zp = polygon.normal_vector
-        align = self.align_z_prime(zp)
+        align = self._align_z_prime(zp)
         
-        aligned_vertices = align.inverse() * polygon
+        aligned_vertices = align._inverse() * polygon
         min_x = min(aligned_vertices.xs)
         min_y = min(aligned_vertices.ys)
         min_z = min(aligned_vertices.zs)
         assert aligned_vertices.is_horizontal
         
         direction = Vector3D(min_x, min_y, min_z)
-        translate = self.translation(direction)
+        translate = self._translation(direction)
         
         self.matrix = concatenate_matrices(align.matrix, translate.matrix)
 
         return self
     
-    def inverse(self):
+    def _inverse(self):
         # type: () -> Transformation
         """The inverse of a given transformation.
         
@@ -132,11 +127,11 @@ class Transformation(object):
         """
         return Transformation(inverse_matrix(self.matrix))
     
-    def translation(self, direction):
+    def _translation(self, direction):
         # type: (Vector3D) -> Transformation
         return Transformation(translation_matrix(direction))
 
-    def rotation(self, direction, angle):
+    def _rotation(self, direction, angle):
         # type: (Vector3D, Union[int, float64]) -> Transformation
         return Transformation(rotation_matrix(angle, direction))
 
@@ -145,39 +140,24 @@ def align_face(polygon):
     # type: (Polygon3D) -> Polygon3D
     """Transformation to align face with z-axis.
 
-    Parameters
-    ----------
-    polygon : Polygon3D
-        Polygon to be aligned.
-    
-    Returns
-    -------
-    Polygon3D
-    
+    :param polygon: Polygon to be aligned.
+    :returns: Polygon3D aligned with the z-axis.
     """
     t = Transformation()
-    t.align_face(polygon)
+    t._align_face(polygon)
     
-    return t.inverse() * polygon
+    return t._inverse() * polygon
 
 
 def invert_align_face(original, poly2):
     # type: (Polygon3D, Polygon3D) -> Polygon3D
     """Transformation to align face with original position.
-    
-    Parameters
-    ----------
-    original : Polygon3D
-        Polygon in the desired orientation.
-    poly2 : Polygon3D
-        Polygon previously aligned with `align_face`.
-    
-    Returns
-    -------
-    Polygon3D
-    
+
+    :param original: Polygon in the desired orientation.
+    :param poly2: Polygon previously aligned with `align_face`.
+    :returns: Polygon returned to the original orientation.
     """
     t = Transformation()
-    t.align_face(original)
+    t._align_face(original)
     
     return t * poly2

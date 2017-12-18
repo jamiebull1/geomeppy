@@ -13,11 +13,6 @@ specific to geometry editing which may or may not be included future versions
 of Eppy.
 
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import copy
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union  # pylint: disable=unused-import

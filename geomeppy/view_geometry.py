@@ -5,11 +5,6 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Tool for visualising geometry."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from eppy.iddcurrent import iddcurrent
 from eppy.function_helpers import getcoords
 from eppy.modeleditor import IDF

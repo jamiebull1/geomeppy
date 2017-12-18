@@ -6,11 +6,6 @@
 # =======================================================================
 """pytest for polygons.py"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from geomeppy.geom.polygons import (
     break_polygons, difference_3D_polys, intersect_3D_polys, Polygon, Polygon3D, union_2D_polys, union_3D_polys,
     Vector2D, Vector3D,
@@ -583,8 +578,8 @@ def test_on_poly_edge():
     poly = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
     edge1 = Segment(Vector3D(0,1,0), Vector3D(0,2,0))
     edge2 = Segment(Vector3D(1,1,0), Vector3D(1,2,0))
-    assert edge1.on_poly_edge(poly)
-    assert not edge2.on_poly_edge(poly)
+    assert edge1._on_poly_edge(poly)
+    assert not edge2._on_poly_edge(poly)
 
 
 def test_closest():

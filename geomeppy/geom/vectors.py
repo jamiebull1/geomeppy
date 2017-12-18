@@ -7,11 +7,6 @@
 """Utilities for IDF vectors.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from typing import Any, Iterator, List, Tuple, Union
 
 import numpy as np

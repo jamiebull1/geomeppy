@@ -5,11 +5,6 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Utilities for use in geomeppy."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from typing import Any
 
 

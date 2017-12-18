@@ -5,11 +5,6 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Recipes for making changes to EnergyPlus IDF files."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -242,6 +237,6 @@ def rotate_coords(coords, radians):
     :returns: List of Vector3D objects.
     """
     coords = Polygon3D(coords)
-    rotation = Transformation().rotation(Vector3D(0, 0, 1), radians)
+    rotation = Transformation()._rotation(Vector3D(0, 0, 1), radians)
     coords = rotation * coords
     return coords
