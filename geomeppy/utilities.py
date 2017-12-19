@@ -5,7 +5,7 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Utilities for use in geomeppy."""
-from typing import Any
+from typing import Any  # noqa
 
 
 def almostequal(first, second, places=7):
@@ -25,4 +25,4 @@ def almostequal(first, second, places=7):
         return str(first) == str(second)
     except TypeError:
         # handle iterables
-        return all([almostequal(a, b, places) for a,b in zip(first, second)])
+        return all([almostequal(a, b, places) for a, b in zip(first, second)])

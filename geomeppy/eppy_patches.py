@@ -15,33 +15,33 @@ of Eppy.
 """
 import copy
 import warnings
-from typing import Any, Dict, List, Optional, Tuple, Union  # pylint: disable=unused-import
+from typing import Any, Dict, List, Optional, Tuple, Union  # noqa
 
 from eppy import bunchhelpers, iddgaps
 from eppy.EPlusInterfaceFunctions import readidf
-from eppy.EPlusInterfaceFunctions.eplusdata import Eplusdata
+from eppy.EPlusInterfaceFunctions.eplusdata import Eplusdata  # noqa
 from eppy.bunch_subclass import EpBunch as BaseBunch
 from eppy.idf_msequence import Idf_MSequence
-from eppy.idfreader import convertallfields, iddversiontuple, idfreader1, makeabunch
-from eppy.modeleditor import IDDNotSetError, IDF as BaseIDF, addthisbunch, namebunch, newrawobject, obj2bunch
-from six import StringIO
+from eppy.idfreader import convertallfields, iddversiontuple
+from eppy.modeleditor import IDDNotSetError, IDF as BaseIDF, namebunch, newrawobject
+from six import StringIO  # noqa
 
 from geomeppy.geom.intersect_match import (
-    intersect_idf_surfaces, getidfsurfaces, getidfsubsurfaces, match_idf_surfaces, set_coords,
+    intersect_idf_surfaces,
+    getidfsurfaces,
+    getidfsubsurfaces,
+    match_idf_surfaces,
+    set_coords,
 )
 from .builder import Block, Zone
-from .geom.polygons import Polygon, Polygon3D
-from .geom.vectors import Vector2D, Vector3D
+from .geom.polygons import Polygon, Polygon3D  # noqa
+from .geom.vectors import Vector2D, Vector3D  # noqa
 from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
 from .view_geometry import view_idf
 
 
 class EpBunch(BaseBunch):
     """Monkeypatched EpBunch to add the setcoords function."""
-     
-    def __init__(self, *args, **kwargs):
-        # type: (*Any, **Any) -> None
-        super(EpBunch, self).__init__(*args, **kwargs)
 
     def setcoords(self,
                   poly,  # type: Union[List[Vector3D], Polygon3D]
@@ -49,10 +49,10 @@ class EpBunch(BaseBunch):
                   ):
         # type: (...) -> None
         """Set the coordinates of a surface.
-         
+
         :param poly: Either a Polygon3D object of a list of (x,y,z) tuples.
         :param ggr: A GlobalGeometryRules IDF object. Defaults to None.
-             
+
         """
         surfaces = [
             "BUILDINGSURFACE:DETAILED",
@@ -67,16 +67,19 @@ class EpBunch(BaseBunch):
             set_coords(self, poly, ggr)
         else:
             raise AttributeError
-             
+
 
 def idfreader1(fname,  # type: StringIO
                iddfile,  # type: StringIO
                theidf,  # type: IDF
                conv=True,  # type: bool
-               commdct=None,  # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]]
+               # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str,
+               commdct=None,
                block=None  # type: Optional[List[List[str]]]
                ):
-    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int, ]]
+    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]],
+    # Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str,
+    # Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int, ]]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -101,15 +104,14 @@ def idfreader1(fname,  # type: StringIO
     if conv:
         convertallfields(data, commdct)
     # fill gaps in idd
-    ddtt, dtls = data.dt, data.dtls
     if versiontuple < (8,):
         skiplist = ["TABLE:MULTIVARIABLELOOKUP"]
     else:
         skiplist = None
     nofirstfields = iddgaps.missingkeys_standard(
-        commdct, dtls,
+        commdct, data.dtls,
         skiplist=skiplist)
-    iddgaps.missingkeys_nonstandard(block, commdct, dtls, nofirstfields)
+    iddgaps.missingkeys_nonstandard(block, commdct, data.dtls, nofirstfields)
     bunchdt = makebunches(data, commdct, theidf)
 
     return bunchdt, block, data, commdct, idd_index, versiontuple
@@ -117,7 +119,8 @@ def idfreader1(fname,  # type: StringIO
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
                  data,  # type: Eplusdata
-                 commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+                 # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option
+                 commdct,
                  thisbunch,  # type: EpBunch
                  _idf  # type: IDF
                  ):
@@ -142,7 +145,8 @@ def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
 
 
 def makebunches(data,  # type: Eplusdata
-                commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+                # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona
+                commdct,
                 theidf  # type: IDF
                 ):
     # type: (...) -> Dict[str, Idf_MSequence]
@@ -168,7 +172,8 @@ def makebunches(data,  # type: Eplusdata
 
 
 def obj2bunch(data,  # type: Eplusdata
-              commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+              # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[
+              commdct,
               obj  # type: Union[List[Union[float, str]], List[str]]
               ):
     # type: (...) -> EpBunch
@@ -211,48 +216,48 @@ def makeabunch(commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str,
 
 class IDF(BaseIDF):
     """Monkey-patched IDF.
-    
-    Patched to add read (to add additional functionality) and to fix 
+
+    Patched to add read (to add additional functionality) and to fix
     copyidfobject and newidfobject.
-    
+
     """
-    
+
     def __init__(self, *args, **kwargs):
         # type: (Optional[str], Optional[str]) -> None
         super(IDF, self).__init__(*args, **kwargs)
-        
+
     def intersect_match(self):
         # type: () -> None
         """Intersect all surfaces in the IDF, then set boundary conditions.
         """
         self.intersect()
         self.match()
-        
+
     def intersect(self):
         # type: () -> None
         """Intersect all surfaces in the IDF.
         """
         intersect_idf_surfaces(self)
-        
+
     def match(self):
         # type: () -> None
         """Set boundary conditions for all surfaces in the IDF.
         """
         match_idf_surfaces(self)
-    
+
     def translate_to_origin(self):
         # type: () -> None
         """
         Move an IDF close to the origin so that it can be viewed in SketchUp.
         """
         translate_to_origin(self)
-    
+
     def translate(self, vector):
         # type: (Vector2D) -> None
         """Move the IDF in the direction given by a vector.
-        
+
         :param vector: A vector to translate by.
-            
+
         """
         surfaces = self.getsurfaces()
         translate(surfaces, vector)
@@ -260,7 +265,8 @@ class IDF(BaseIDF):
         translate(subsurfaces, vector)
 
     def rotate(self, angle, anchor=None):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) ->
+        # None
         """Rotate the IDF counterclockwise by the angle given.
 
         :param angle: Angle (in degrees) to rotate by.
@@ -276,7 +282,8 @@ class IDF(BaseIDF):
         self.translate(anchor)
 
     def scale(self, factor, anchor=None):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) ->
+        # None
         """Scale the IDF by a scaling factor.
 
         :param factor: Factor to scale by.
@@ -291,11 +298,10 @@ class IDF(BaseIDF):
         scale(subsurfaces, factor)
         self.translate(anchor)
 
-
     def set_default_constructions(self):
         # type: () -> None
         set_default_constructions(self)
-    
+
     def getsurfaces(self, surface_type=None):
         # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all surfaces in the IDF.
@@ -346,26 +352,26 @@ class IDF(BaseIDF):
     def getsubsurfaces(self, surface_type=None):
         # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
-        
+
         :returns: IDF surfaces.
 
         """
         return getidfsubsurfaces(self, surface_type)
-    
+
     def set_wwr(self, wwr):
         # type: (float) -> None
         """Add strip windows to all external walls.
-        
+
         :param wwr: Window to wall ratio in the range 0.0 to 1.0.
 
         """
         set_wwr(self, wwr)
-    
+
     def view_model(self):
         # type: () -> None
         """Show a zoomable, rotatable representation of the IDF."""
         view_idf(idf_txt=self.idfstr())
-        
+
     def add_block(self, *args, **kwargs):
         # type: (*Any, **Any) -> None
         """Add a block to the IDF.
@@ -377,13 +383,13 @@ class IDF(BaseIDF):
         zoning = kwargs.get('zoning', 'by_storey')
         if zoning == 'by_storey':
             zones = [Zone('Block %s Storey %i' %
-                          (block.name, storey['storey_no']), storey) 
-                        for storey in block.stories]
+                          (block.name, storey['storey_no']), storey)
+                     for storey in block.stories]
         else:
             raise ValueError('%s is not a valid zoning rule' % zoning)
         for zone in zones:
             self.add_zone(zone)
-    
+
     def add_shading_block(self, *args, **kwargs):
         # type: (*Any, **Any) -> None
         """Add a shading block to the IDF.
@@ -402,7 +408,7 @@ class IDF(BaseIDF):
                 s.setcoords(wall)
             except ZeroDivisionError:
                 self.removeidfobject(s)
-        
+
     def add_zone(self, zone):
         # type: (Zone) -> None
         """Add a zone to the IDF.
@@ -416,42 +422,18 @@ class IDF(BaseIDF):
             ggr = None
         # add zone object
         self.newidfobject('ZONE', zone.name)
-        # add wall objects
-        for i, surface_coords in enumerate(zone.walls, 1):
-            if not surface_coords:
+
+        for surface_type in zone.__dict__.keys():
+            if surface_type == 'name':
                 continue
-            name = '%s Wall %04d' % (zone.name, i)
-            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
-                    Surface_Type = 'wall',
-                    Zone_Name = zone.name)
-            s.setcoords(surface_coords, ggr)
-        # add floor objects
-        for i, surface_coords in enumerate(zone.floors, 1):
-            if not surface_coords:
-                continue
-            name = '%s Floor %04d' % (zone.name, i)
-            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
-                    Surface_Type = 'floor',
-                    Zone_Name = zone.name)
-            s.setcoords(surface_coords, ggr)
-        # add ceiling objects
-        for i, surface_coords in enumerate(zone.ceilings, 1):
-            if not surface_coords:
-                continue
-            name = '%s Ceiling %04d' % (zone.name, i)
-            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
-                    Surface_Type = 'ceiling',
-                    Zone_Name = zone.name)
-            s.setcoords(surface_coords, ggr)
-        # add roof objects
-        for i, surface_coords in enumerate(zone.roofs, 1):
-            if not surface_coords:
-                continue
-            name = '%s Roof %04d' % (zone.name, i)
-            s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
-                    Surface_Type = 'roof',
-                    Zone_Name = zone.name)
-            s.setcoords(surface_coords, ggr)
+            for i, surface_coords in enumerate(zone.__dict__[surface_type], 1):
+                if not surface_coords:
+                    continue
+                name = '{name} {s_type} {num:04d}'.format(name=zone.name, s_type=surface_type[:-1].title(), num=i)
+                s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
+                                      Surface_Type=surface_type[:-1],
+                                      Zone_Name=zone.name)
+                s.setcoords(surface_coords, ggr)
 
     def read(self):
         # type: () -> None
@@ -467,8 +449,9 @@ class IDF(BaseIDF):
         - idd_index : dict
 
         """
-        if self.getiddname() == None:
-            errortxt = ("IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)")
+        if self.getiddname() is None:
+            errortxt = (
+                "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)")
             raise IDDNotSetError(errortxt)
         readout = idfreader1(
             self.idfname, self.iddname, self,
@@ -499,7 +482,8 @@ class IDF(BaseIDF):
         obj = newrawobject(self.model, self.idd_info, key)
         abunch = obj2bunch(self.model, self.idd_info, obj)
         if aname:
-            warnings.warn("The aname parameter should no longer be used.", UserWarning)
+            warnings.warn(
+                "The aname parameter should no longer be used.", UserWarning)
             namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)
         for k, v in kwargs.items():
@@ -509,7 +493,7 @@ class IDF(BaseIDF):
     def copyidfobject(self, idfobject):
         # type: (EpBunch) -> EpBunch
         """Add an IDF object to the IDF.
-        
+
         This has been monkey-patched to add the return value.
 
         :param idfobject: The IDF object to copy. Usually from another IDF, or it can be used to copy within this IDF.
@@ -517,8 +501,8 @@ class IDF(BaseIDF):
 
         """
         abunch = addthisbunch(self.idfobjects,
-                             self.model,
-                             self.idd_info,
-                             idfobject,
-                             self)
+                              self.model,
+                              self.idd_info,
+                              idfobject,
+                              self)
         return abunch

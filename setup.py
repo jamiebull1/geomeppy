@@ -45,7 +45,6 @@ setup(
         'shapely==1.6.2',  # geometry transformations
         'six==1.11.0',  # python2/3 compatibility
         'transforms3d==0.3.1',  # geometry transformations
-#        'matplotlib>=1.5.1',  # simple geometry viewer
         ],
     classifiers = [
         'Programming Language :: Python :: 2',
@@ -64,6 +63,7 @@ setup(
         ],
         'testing': [
             'codecov',
+            'flake8',
             'pytest-cov',
             'typing',
         ],

@@ -5,19 +5,19 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Recipes for making changes to EnergyPlus IDF files."""
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union  # noqa
 
 import numpy as np
-from eppy.idf_msequence import Idf_MSequence
+from eppy.idf_msequence import Idf_MSequence  # noqa
 
 from geomeppy.geom.intersect_match import getidfsurfaces
 from .geom.polygons import Polygon3D
 from .geom.transformations import Transformation
-from .geom.vectors import Vector2D, Vector3D
+from .geom.vectors import Vector2D, Vector3D  # noqa
 
 MYPY = False
 if MYPY:
-    from .eppy_patches import EpBunch, IDF
+    from .eppy_patches import EpBunch, IDF  # noqa
 
 
 def set_default_constructions(idf):
@@ -27,7 +27,7 @@ def set_default_constructions(idf):
     :param idf: The IDF object.
 
     """
-    constructions = ['Project Wall', 'Project Partition','Project Floor',
+    constructions = ['Project Wall', 'Project Partition', 'Project Floor',
                      'Project Flat Roof', 'Project Ceiling',
                      'Project External Window', 'Project Door']
     for construction in constructions:
@@ -89,8 +89,8 @@ def set_wwr(idf, wwr=0.2):
     except IndexError:
         ggr = []
     walls = [s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
-             if s.Surface_Type.lower() == 'wall'
-             and s.Outside_Boundary_Condition.lower() == 'outdoors']
+             if s.Surface_Type.lower() == 'wall' and
+             s.Outside_Boundary_Condition.lower() == 'outdoors']
     windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
     for window in windows:
         idf.removeidfobject(window)
@@ -140,26 +140,26 @@ def window_vertices_given_wall(wall, wwr):
 def translate_to_origin(idf):
     # type: (IDF) -> None
     """Move an IDF close to the origin so that it can be viewed in SketchUp.
-    
+
     :param idf: The IDF to edit.
-    
+
     """
     surfaces = getidfsurfaces(idf)
     windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
-        
+
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
     translate(windows, (-min_x, -min_y))
-    
-    
+
+
 def translate(surfaces,  # type: Idf_MSequence
               vector  # type: Union[Tuple[float, float], Vector2D, Vector3D]
               ):
     # type: (...) -> None
     """Translate all surfaces by a vector.
-    
+
     :param surfaces: A list of EpBunch objects.
     :param vector: Representation of a vector to translate by.
 
@@ -175,7 +175,7 @@ def translate_coords(coords,  # type: Union[List[Tuple[float, float, float]], Po
                      ):
     # type: (...) -> List[Vector3D]
     """Translate a set of coords by a direction vector.
-    
+
     :param coords: A list of points.
     :param vector: Representation of a vector to translate by.
     :returns: List of translated vectors.
@@ -197,7 +197,8 @@ def scale(surfaces, factor, axes='xy'):
 
 
 def scale_coords(coords, factor, axes):
-    # type: (Union[List[Tuple[float, float, float], Polygon3D], int, str) -> Polygon3D
+    # type: (Union[List[Tuple[float, float, float], Polygon3D], int, str) ->
+    # Polygon3D
     """Scale a set of coords by a factor.
 
     :param coords: A list of points.

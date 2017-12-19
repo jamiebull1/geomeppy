@@ -5,18 +5,19 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Build IDF geometry from minimal inputs."""
-from typing import Any, Dict, List, Tuple, Union  # pylint: disable=unused-import
+from typing import Any, Dict, List, Tuple, Union  # noqa
 
 from .geom.polygons import Polygon3D
-from .geom.segments import Segment
+from .geom.segments import Segment  # noqa
 from .geom.vectors import Vector3D
 
 
 class Zone(object):
-    
+    """Represents a single zone for translation into an IDF."""
+
     def __init__(self, name, surfaces):
         # type: (str, Dict[str, Any]) -> None
-        """Represents a single zone for translation into an IDF.
+        """Initialise the zone object.
 
         :param name: A name for the zone.
         :param surfaces: The surfaces that make up the zone.
@@ -27,13 +28,14 @@ class Zone(object):
         self.floors = surfaces['floors']
         self.roofs = surfaces['roofs']
         self.ceilings = surfaces['ceilings']
-        
+
 
 class Block(object):
-
     def __init__(self,
                  name,  # type: str
-                 coordinates,  # type: Union[List[Tuple[float, float]], List[Tuple[int, int]]]
+                 # type: Union[List[Tuple[float, float]], List[Tuple[int,
+                 # int]]]
+                 coordinates,
                  height,  # type: float
                  num_stories=1,  # type: int
                  below_ground_stories=0,  # type: int
@@ -41,7 +43,7 @@ class Block(object):
                  ):
         # type: (...) -> None
         """Represents a single block for translation into an IDF.
-        
+
         :param name: A name for the block.
         :param coordinates: A list of (x, y) tuples representing the building outline.
         :param height: The height of the block roof above ground level.
@@ -58,7 +60,7 @@ class Block(object):
         self.num_stories = num_stories
         self.num_below_ground_stories = below_ground_stories
         self.below_ground_storey_height = below_ground_storey_height
-    
+
     @property
     def stories(self):
         # type: () -> List[Dict[str, Any]]
@@ -72,47 +74,47 @@ class Block(object):
              'walls': [...],
              'roofs': [...],
              }
-        
+
         """
         stories = []
         if self.num_below_ground_stories != 0:
             floor_no = -self.num_below_ground_stories
         else:
             floor_no = 0
-        for f, c, w, r in zip(
+        for floor, ceiling, wall, roof in zip(
                 self.floors, self.ceilings, self.walls, self.roofs):
             stories.append({
                 'storey_no': floor_no,
-                'floors': f, 'ceilings': c, 'walls': w, 'roofs': r})
+                'floors': floor, 'ceilings': ceiling, 'walls': wall, 'roofs': roof})
             floor_no += 1
         return stories
-    
+
     @property
     def footprint(self):
         # type: () -> Polygon3D
         """Ground level outline of the block.
-        
+
         :returns: A 2D outline of the block.
 
         """
         coordinates = [(v[0], v[1], 0) for v in self.coordinates]
         return Polygon3D(coordinates)
-    
+
     @property
     def storey_height(self):
         # type: () -> float
         """Height of above ground stories.
-        
+
         :returns: Average storey height.
 
         """
         return self.height / (self.num_stories - self.num_below_ground_stories)
-    
+
     @property
     def floor_heights(self):
         # type: () -> List[float]
         """Floor height for each storey in the block.
-        
+
         :returns: A list of floor heights.
 
         """
@@ -125,53 +127,52 @@ class Block(object):
     def ceiling_heights(self):
         # type: () -> List[float]
         """Ceiling height for each storey in the block.
-        
+
         :returns: A list of ceiling heights.
-        
+
         """
         lfl = self.lowest_floor_level
         sh = self.storey_height
-        ceiling_heights = [lfl + sh * (i+1) for i in range(self.num_stories)]
+        ceiling_heights = [lfl + sh * (i + 1) for i in range(self.num_stories)]
         return ceiling_heights
 
     @property
     def lowest_floor_level(self):
         # type: () -> float
         """Floor level of the lowest basement storey.
-        
+
         :returns: Lowest floor height.
-        
+
         """
-        return -(self.num_below_ground_stories * 
+        return -(self.num_below_ground_stories *
                  self.below_ground_storey_height)
-    
+
     @property
     def walls(self):
         # type: () -> List[List[Polygon3D]]
         """Coordinates for each wall in the block.
-        
+
         These are ordered as a list of lists, one for each storey.
-        
+
         :returns: Coordinates for all walls.
 
         """
         walls = []
         for fh, ch in zip(self.floor_heights, self.ceiling_heights):
-            
             floor_walls = [make_wall(edge, fh, ch)
                            for edge in self.footprint.edges]
             walls.append(floor_walls)
         return walls
-    
+
     @property
     def floors(self):
         # type: () -> List[List[Polygon3D]]
         """Coordinates for each floor in the block.
-        
+
         :returns: Coordinates for all floors.
-        
+
         """
-        floors = [[self.footprint.invert_orientation() + Vector3D(0,0,fh)]
+        floors = [[self.footprint.invert_orientation() + Vector3D(0, 0, fh)]
                   for fh in self.floor_heights]
         return floors
 
@@ -179,44 +180,45 @@ class Block(object):
     def ceilings(self):
         # type: () -> List[Union[List[Polygon3D], str]]
         """Coordinates for each ceiling in the block.
-        
+
         :returns: Coordinates for all ceilings.
-        
+
         """
-        ceilings = [[self.footprint + Vector3D(0,0,ch)]
+        ceilings = [[self.footprint + Vector3D(0, 0, ch)]
                     for ch in self.ceiling_heights[:-1]]
-        
+
         ceilings.append('')
         return ceilings
-    
+
     @property
     def roofs(self):
         # type: () -> List[List[Polygon3D]]
         """Coordinates for each roof of the block.
-        
+
         This returns a list with an entry for each floor for consistency with
         the other properties of the Block object, but should only have roof
         coordinates in the list in the final position.
-        
+
         :returns: Coordinates for all roofs.
-        
+
         """
         roofs = [[None] for ch in self.ceiling_heights[:-1]]
-        roofs.append([self.footprint + Vector3D(0,0,self.height)])
+        roofs.append([self.footprint + Vector3D(0, 0, self.height)])
         return roofs
 
     @property
     def surfaces(self):
         # type: () -> Dict[str, Any]
         """Coordinates for all the surfaces in the block.
-        
+
         :returns: Coordinates for all surfaces.
-        
+
         """
-        return {'walls': self.walls, 
+        return {'walls': self.walls,
                 'ceilings': self.ceilings,
                 'roofs': self.roofs,
                 'floors': self.floors}
+
 
 def make_wall(edge, floor_height, ceiling_height):
     # type: (Segment, float, float) -> Polygon3D
