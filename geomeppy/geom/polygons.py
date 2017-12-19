@@ -108,7 +108,7 @@ class Polygon(MutableSequence):
                 interior = Polygon3D(inner_ring.coords)
                 # find the nearest points on the exterior and interior
                 links = product(interior, exterior)
-                links = sorted(links, key=lambda x: distance(x[0], x[1]))
+                links = sorted(links, key=lambda x: relative_distance(x[0], x[1]))
                 on_interior = links[0][0]
                 on_exterior = links[0][1]
                 # join them up
@@ -258,11 +258,12 @@ class Polygon(MutableSequence):
         return difference_2D_polys(self, poly)
 
 
-def distance(pt1, pt2):
+def relative_distance(pt1, pt2):
     # type: (Vector3D, Vector3D) -> float
     """A distance function for sorting vectors by distance.
 
-    Be aware that this only provides relative distance since
+    This only provides relative distance, not actual distance since we only use it for sorting.
+
     :param pt1:
     :param pt2:
     :return:
@@ -277,22 +278,13 @@ def break_polygons(poly, hole):
     
     This produces two surfaces, neither of which have a hole in them.
     
-    Parameters
-    ----------
-    poly : Polygon3D
-        The surface with a hole in.
-    hole : Polygon3D
-        The hole.
-    
-    Returns
-    -------
-    list
-        Two Polygon3D objects.
-        
+    :param poly: The surface with a hole in.
+    :param hole: The hole.
+    :returns: Two Polygon3D objects.
     """
     # take the two closest points on the surface perimeter
     links = product(poly, hole)
-    links = sorted(links, key=lambda x: distance(x[0], x[1]))
+    links = sorted(links, key=lambda x: relative_distance(x[0], x[1]))
 
     first_on_poly = links[0][0]
     last_on_poly = links[1][0]
@@ -338,17 +330,9 @@ def prep_2D_polys(poly1, poly2):
     # type: (Polygon, Polygon) -> pc.Pyclipper
     """Prepare two 2D polygons for clipping operations.
     
-    Parameters
-    ----------
-    poly1 : Polygon
-        The subject polygon.
-    poly2 : Polygon
-        The clip polygon.
-    
-    Returns
-    -------
-    pc.Pyclipper object
-    
+    :param poly1: The subject polygon.
+    :param poly2: The clip polygon.
+    :returns: A Pyclipper object.
     """
     s1 = pc.scale_to_clipper(poly1.vertices_list)
     s2 = pc.scale_to_clipper(poly2.vertices_list)
@@ -364,19 +348,9 @@ def union_2D_polys(poly1, poly2):
     
     Find the combined shape of poly1 and poly2.
     
-    Parameters
-    ----------
-    poly1 : Polygon
-        The subject polygon.
-    poly2 : Polygon
-        The clip polygon.
-    
-    Returns
-    -------
-    list or False
-        False if no intersection, otherwise a list of lists of 2D coordinates
-        representing each intersection.
-        
+    :param poly1: The subject polygon.
+    :param poly2: The clip polygon.
+    :returns: False if no intersection, otherwise a list of lists of 2D coordinates representing each intersection.
     """
     clipper = prep_2D_polys(poly1, poly2)        
     intersections = clipper.Execute(
@@ -398,18 +372,9 @@ def intersect_2D_polys(poly1, poly2):
     
     Find the area/s that poly1 shares with poly2.
     
-    Parameters
-    ----------
-    poly1 : Polygon
-        The subject polygon.
-    poly2 : Polygon
-        The clip polygon.
-    
-    Returns
-    -------
-    list or False
-        False if no intersection, otherwise a list of Polygons representing each intersection.
-        
+    :param poly1: The subject polygon.
+    :param poly2: The clip polygon.
+    :returns: False if no intersection, otherwise a list of Polygons representing each intersection.
     """
     clipper = prep_2D_polys(poly1, poly2)        
     intersections = clipper.Execute(pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
@@ -430,19 +395,9 @@ def difference_2D_polys(poly1, poly2):
     
     Equivalent to subtracting poly2 from poly1.
     
-    Parameters
-    ----------
-    poly1 : Polygon
-        The subject polygon.
-    poly2 : Polygon
-        The clip polygon.
-    
-    Returns
-    -------
-    list or False
-        False if no difference, otherwise a list of lists of 2D coordinates
-        representing each difference.
-        
+    :param poly1: The subject polygon.
+    :param poly2: The clip polygon.
+    :returns: False if no difference, otherwise a list of lists of 2D coordinates representing each difference.
     """
     clipper = prep_2D_polys(poly1, poly2)        
     differences = clipper.Execute(
@@ -462,18 +417,9 @@ def process_clipped_2D_polys(results):
     # type: (List[List[List[int]]]) -> List[Polygon]
     """Process and return the results of a clipping operation.
     
-    Parameters
-    ----------
-    results : list
-        A list of results, potentially empty if the operation found no
-        interactions between polygons.
-        
-    Returns
-    -------
-    list or False
-        False if no intersection, otherwise a list of lists of 2D coordinates
-        representing each intersection.
-        
+    :param poly1: The subject polygon.
+    :param poly2: The clip polygon.
+    :returns: False if no intersection, otherwise a list of lists of 2D coordinates representing each intersection.
     """
     if results:
         results = [pc.scale_from_clipper(r) for r in results]
@@ -515,10 +461,7 @@ class Polygon3D(Polygon):
         
         Uses Newell's Method.
         
-        Returns
-        -------
-        Vector3D
-
+        :returns: The normal vector.
         """
         return Vector3D(*normal_vector(self.vertices))
 
@@ -526,13 +469,10 @@ class Polygon3D(Polygon):
     def distance(self):
         # type: () -> np.float64
         """
-        A number where v[0] * x + v[1] * y + v[2] * z = a is the equation of
-        the plane containing the polygon (where v is the polygon normal vector).
+        A number where v[0] * x + v[1] * y + v[2] * z = a is the equation of the plane containing the polygon (where v
+        is the polygon normal vector).
         
-        Returns
-        -------
-        float
-        
+        :returns: The distance from the origin to the polygon.
         """
         v = self.normal_vector
         pt = self.points_matrix[0]  # arbitrary point in the polygon
@@ -542,12 +482,9 @@ class Polygon3D(Polygon):
     @property
     def projection_axis(self):
         # type: () -> int
-        """Return an axis which will not lead to degenerate surface.
+        """An axis which will not lead to a degenerate surface.
         
-        Returns
-        -------
-        int
-        
+        :returns: The axis index.
         """
         proj_axis = max(range(3), key=lambda i: abs(self.normal_vector[i]))
         return proj_axis
@@ -556,11 +493,8 @@ class Polygon3D(Polygon):
     def is_horizontal(self):
         # type: () -> np.bool_
         """Check if polygon is in the xy plane.
-        
-        Returns
-        -------
-        bool
-        
+
+        :returns: True if the polygon is in the xy plane, else False.
         """
         return np.array(self.zs).std() < 1e-8
     
@@ -570,14 +504,8 @@ class Polygon3D(Polygon):
         
         This function checks the vertices as seen from the viewpoint.
         
-        Parameters
-        ----------
-        viewpoint : Vector3D
-        
-        Returns
-        -------
-        bool
-        
+        :param viewpoint: A point from which to view the polygon.
+        :returns: True if vertices are ordered clockwise when observed from the given viewpoint.
         """
         arbitrary_pt = self.vertices[0]
         v = arbitrary_pt - viewpoint
@@ -591,15 +519,8 @@ class Polygon3D(Polygon):
         
         This includes the same plane but opposite orientation.
         
-        Parameters
-        ----------
-        other : Polygon3D
-            Another polygon.
-        
-        Returns
-        -------
-        bool
-        
+        :param other: Another polygon.
+        :returns: True if the two polygons are coplanar, else False.
         """
         n1 = self.normal_vector
         n2 = other.normal_vector

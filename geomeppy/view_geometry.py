@@ -19,16 +19,14 @@ except ImportError:
     pass
 
 def view_idf(fname=None, idf_txt=None):
+    # type: (Optional[str], Optional[str]) -> None
     """Display an IDF for inspection.
     
-    Parameters
-    ----------
-    fname : str
-        Path to the IDF.
-    idf_txt : str
-        The string representation of an IDF.
-
+    :param fname: Path to the IDF.
+    :param idf_txt: The string representation of an IDF.
     """
+    if fname and idf_txt:
+        raise ValueError('Pass either fname or idf_txt, not both.')
     # set the IDD for the version of EnergyPlus
     iddfhandle = StringIO(iddcurrent.iddtxt)
     if IDF.getiddname() == None:
@@ -59,12 +57,7 @@ def view_idf(fname=None, idf_txt=None):
 def view_polygons(polygons):
     """Display a collection of polygons for inspection.
     
-    Parameters
-    ----------
-    polygons : dict
-        A dict keyed by colour, containing Polygon3D objects to show in that
-        colour.
-        
+    :param polygons: A dict keyed by colour, containing Polygon3D objects to show in that colour.
     """
     # create the figure and add the surfaces
     fig = plt.figure()
