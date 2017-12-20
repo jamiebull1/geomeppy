@@ -22,21 +22,23 @@ def read_md(f):
 
 setup(
     name='geomeppy',
-    packages=['geomeppy',
-              'tests',
-              ],
-    version='v0.2.34',
+    packages=[
+        'geomeppy',
+        'tests',
+    ],
+    version='0.3.9',
     description='Geometry editing for E+ idf files',
     long_description=read_md('README.md'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.2.34',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.3.7',
     license='MIT License',
-    keywords=['EnergyPlus',
-              'geometry',
-              'building performance simulation',
-              ],
+    keywords=[
+        'EnergyPlus',
+        'geometry',
+        'building performance simulation',
+    ],
     platforms='any',
     install_requires=[
         'eppy==0.5.46',
@@ -45,7 +47,7 @@ setup(
         'shapely==1.6.2',  # geometry transformations
         'six==1.11.0',  # python2/3 compatibility
         'transforms3d==0.3.1',  # geometry transformations
-        ],
+    ],
     classifiers = [
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
@@ -56,7 +58,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Topic :: Scientific/Engineering',
-        ],
+    ],
     extras_require={
         ':python_version>="3.4"': [
             'mypy==0.550',  # static type checking
@@ -67,6 +69,6 @@ setup(
             'pytest-cov',
             'typing',
         ],
-    }
+    },
 )
 

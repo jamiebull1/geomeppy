@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = geomeppy
-SOURCEDIR     = .
+SOURCEDIR     = docs
 BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".

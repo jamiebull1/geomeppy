@@ -10,15 +10,6 @@ Welcome to geomeppy's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 geomeppy
 ========
 
@@ -44,13 +35,16 @@ Once these requirements are met, to install GeomEppy for Python 2.7, 3.5 or 3.6 
 
     pip install geomeppy
 
+API
+---
+.. autoclass:: geomeppy.IDF
+    :members:
 
 Contribute
 ----------
 
 - Issue Tracker: github.com/jamiebull1/geomeppy/issues
 - Source Code: github.com/jamiebull1/geomeppy
-
 
 License
 -------
