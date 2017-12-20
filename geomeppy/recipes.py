@@ -197,8 +197,7 @@ def scale(surfaces, factor, axes='xy'):
 
 
 def scale_coords(coords, factor, axes):
-    # type: (Union[List[Tuple[float, float, float], Polygon3D], int, str) ->
-    # Polygon3D
+    # type: (Union[List[Tuple[float, float, float], Polygon3D]], int, str) -> Polygon3D
     """Scale a set of coords by a factor.
 
     :param coords: A list of points.

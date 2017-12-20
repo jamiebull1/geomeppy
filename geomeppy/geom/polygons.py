@@ -194,8 +194,7 @@ class Polygon(MutableSequence):
 
     @property
     def vertices_list(self):
-        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float,
-        # float]]]
+        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float, float]]]
         """A list of the vertices in the format required by pyclipper.
 
         :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].

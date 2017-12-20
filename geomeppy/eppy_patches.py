@@ -72,14 +72,11 @@ class EpBunch(BaseBunch):
 def idfreader1(fname,  # type: StringIO
                iddfile,  # type: StringIO
                theidf,  # type: IDF
-               conv=True,  # type: bool
-               # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str,
-               commdct=None,
+               conv=True,  # type: Optional[bool]
+               commdct=None,  # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]]
                block=None  # type: Optional[List[List[str]]]
                ):
-    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]],
-    # Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str,
-    # Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int, ]]
+    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int]]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -119,8 +116,7 @@ def idfreader1(fname,  # type: StringIO
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
                  data,  # type: Eplusdata
-                 # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option
-                 commdct,
+                 commdct, # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]
                  thisbunch,  # type: EpBunch
                  _idf  # type: IDF
                  ):
@@ -145,8 +141,7 @@ def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
 
 
 def makebunches(data,  # type: Eplusdata
-                # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona
-                commdct,
+                commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona]]]]
                 theidf  # type: IDF
                 ):
     # type: (...) -> Dict[str, Idf_MSequence]
@@ -172,8 +167,7 @@ def makebunches(data,  # type: Eplusdata
 
 
 def obj2bunch(data,  # type: Eplusdata
-              # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[
-              commdct,
+              commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona]]]]
               obj  # type: Union[List[Union[float, str]], List[str]]
               ):
     # type: (...) -> EpBunch
@@ -217,8 +211,7 @@ def makeabunch(commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str,
 class IDF(BaseIDF):
     """Monkey-patched IDF.
 
-    Patched to add read (to add additional functionality) and to fix
-    copyidfobject and newidfobject.
+    Patched to add read (to add additional functionality) and to fix copyidfobject and newidfobject.
 
     """
 
@@ -265,8 +258,7 @@ class IDF(BaseIDF):
         translate(subsurfaces, vector)
 
     def rotate(self, angle, anchor=None):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) ->
-        # None
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
         """Rotate the IDF counterclockwise by the angle given.
 
         :param angle: Angle (in degrees) to rotate by.
@@ -282,8 +274,7 @@ class IDF(BaseIDF):
         self.translate(anchor)
 
     def scale(self, factor, anchor=None):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) ->
-        # None
+        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
         """Scale the IDF by a scaling factor.
 
         :param factor: Factor to scale by.
@@ -453,10 +444,13 @@ class IDF(BaseIDF):
             errortxt = (
                 "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)")
             raise IDDNotSetError(errortxt)
-        readout = idfreader1(
-            self.idfname, self.iddname, self,
-            commdct=self.idd_info, block=self.block)
-        self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = readout
+        self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = idfreader1(
+            self.idfname,
+            self.iddname,
+            self,
+            commdct=self.idd_info,
+            block=self.block,
+        )
         self.__class__.setidd(idd_info, idd_index, block, versiontuple)
 
     def newidfobject(self, key, aname='', **kwargs):
@@ -475,7 +469,7 @@ class IDF(BaseIDF):
 
         :param key: The type of IDF object. This must be in ALL_CAPS.
         :param aname: This parameter is not used. It is left there for backward compatibility.
-        :param **kwargs: Keyword arguments in the format `field=value` used to set fields in the IDF object created.
+        :param kwargs: Keyword arguments in the format `field=value` used to set fields in the EnergyPlus object.
         :returns: EpBunch object.
 
         """

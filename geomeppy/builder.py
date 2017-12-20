@@ -33,9 +33,7 @@ class Zone(object):
 class Block(object):
     def __init__(self,
                  name,  # type: str
-                 # type: Union[List[Tuple[float, float]], List[Tuple[int,
-                 # int]]]
-                 coordinates,
+                 coordinates,  # type: Union[List[Tuple[float, float]], List[Tuple[int, int]]]
                  height,  # type: float
                  num_stories=1,  # type: int
                  below_ground_stories=0,  # type: int
