@@ -216,7 +216,7 @@ def scale_coords(coords, factor, axes):
 
 
 def rotate(surfaces, angle):
-    # type: (Union[List[EpBunch], Idf_MSequence], int) -> None
+    # type: (Union[List[EpBunch], Idf_MSequence], Union[int, float]) -> None
     """Rotate all surfaces by an angle.
 
     :param surfaces: A list of EpBunch objects or a mutable sequence.
@@ -229,7 +229,7 @@ def rotate(surfaces, angle):
 
 
 def rotate_coords(coords, radians):
-    # type: (List[Tuple[float, float, float]], float64) -> Polygon3D
+    # type: (List[Tuple[float, float, float]], float64) -> List[Tuple[float, float, float]]
     """Rotate a set of coords by an angle in radians.
 
     :param coords: A list of points.

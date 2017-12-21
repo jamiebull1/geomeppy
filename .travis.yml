@@ -22,15 +22,13 @@ before_install:
   # create miniconda env
   - conda create --yes -n geomeppy python=$PYTHON
   - source activate geomeppy
-#  - conda install --yes numpy matplotlib pip
-#  - conda install --yes -c conda-forge shapely
 
 install:
   - pip install -e .[testing]
 
 before_script:
   - flake8 --count geomeppy
-  - if [[ $PYTHON == 3.6 ]]; then mypy geomeppy; fi
+  - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy; fi
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir

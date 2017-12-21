@@ -31,7 +31,7 @@ if MYPY:
 
 class Transformation(object):
     def __init__(self, mat=None):
-        # type: (Optional[ndarray]) -> None
+        # type: (Optional[np.ndarray]) -> None
         if mat is None:
             # initialise with a 4D identity matrix
             self.matrix = identity_matrix()
@@ -46,12 +46,12 @@ class Transformation(object):
         # type: (...) -> Union[Transformation, Vector3D]
         if hasattr(other, 'matrix'):
             # matrix by a matrix
-            mat = concatenate_matrices(self.matrix, other.matrix)
+            mat = concatenate_matrices(self.matrix, other.matrix)  # type: ignore
             return Transformation(mat)
         elif hasattr(other, 'x'):
             # matrix by a vector
             vector = other
-            temp = [vector.x, vector.y, vector.z, 1]
+            temp = [vector.x, vector.y, vector.z, 1]  # type: ignore
             result = np.dot(self.matrix, temp)[:3]
             return Vector3D(*result)
         else:
@@ -133,7 +133,7 @@ class Transformation(object):
         return Transformation(translation_matrix(direction))
 
     def _rotation(self, direction, angle):
-        # type: (Vector3D, Union[int, float64]) -> Transformation
+        # type: (Vector3D, Union[int, np.float]) -> Transformation
         return Transformation(rotation_matrix(angle, direction))
 
 

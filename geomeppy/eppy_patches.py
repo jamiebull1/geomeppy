@@ -76,7 +76,10 @@ def idfreader1(fname,  # type: StringIO
                commdct=None,  # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]]
                block=None  # type: Optional[List[List[str]]]
                ):
-    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int]]
+    # type: (...) -> Tuple[Dict, List, Eplusdata, List[Dict, Dict], Dict, Tuple[int]]
+    # would like to have:
+    # - type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]],
+    # List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int]]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -116,7 +119,7 @@ def idfreader1(fname,  # type: StringIO
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
                  data,  # type: Eplusdata
-                 commdct, # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]
+                 commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]
                  thisbunch,  # type: EpBunch
                  _idf  # type: IDF
                  ):
@@ -215,34 +218,25 @@ class IDF(BaseIDF):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        # type: (Optional[str], Optional[str]) -> None
-        super(IDF, self).__init__(*args, **kwargs)
-
     def intersect_match(self):
         # type: () -> None
-        """Intersect all surfaces in the IDF, then set boundary conditions.
-        """
+        """Intersect all surfaces in the IDF, then set boundary conditions."""
         self.intersect()
         self.match()
 
     def intersect(self):
         # type: () -> None
-        """Intersect all surfaces in the IDF.
-        """
+        """Intersect all surfaces in the IDF."""
         intersect_idf_surfaces(self)
 
     def match(self):
         # type: () -> None
-        """Set boundary conditions for all surfaces in the IDF.
-        """
+        """Set boundary conditions for all surfaces in the IDF."""
         match_idf_surfaces(self)
 
     def translate_to_origin(self):
         # type: () -> None
-        """
-        Move an IDF close to the origin so that it can be viewed in SketchUp.
-        """
+        """Move an IDF close to the origin so that it can be viewed in SketchUp."""
         translate_to_origin(self)
 
     def translate(self, vector):
@@ -408,7 +402,7 @@ class IDF(BaseIDF):
 
         """
         try:
-            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]
+            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]  # type: Dict[str, Idf_MSequence]
         except IndexError:
             ggr = None
         # add zone object
@@ -479,7 +473,7 @@ class IDF(BaseIDF):
             warnings.warn(
                 "The aname parameter should no longer be used.", UserWarning)
             namebunch(abunch, aname)
-        self.idfobjects[key].append(abunch)
+        self.idfobjects[key].append(abunch)  # type: Dict[str, Idf_MSequence]
         for k, v in kwargs.items():
             abunch[k] = v
         return abunch
@@ -494,9 +488,4 @@ class IDF(BaseIDF):
         :returns: EpBunch object.
 
         """
-        abunch = addthisbunch(self.idfobjects,
-                              self.model,
-                              self.idd_info,
-                              idfobject,
-                              self)
-        return abunch
+        return addthisbunch(self.idfobjects, self.model, self.idd_info, idfobject, self)

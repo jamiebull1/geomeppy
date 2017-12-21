@@ -7,7 +7,7 @@
 """Utilities for IDF vectors.
 """
 
-from typing import Any, Iterator, List, Tuple, Union  # noqa
+from typing import Any, Iterator, List, Sized, Tuple, Union  # noqa
 
 import numpy as np
 
@@ -16,7 +16,7 @@ if MYPY:
     from .polygons import Polygon3D  # noqa
 
 
-class Vector2D(object):
+class Vector2D(Sized):
     """Two dimensional point."""
 
     def __init__(self, *args):
@@ -42,7 +42,7 @@ class Vector2D(object):
         return True
 
     def __sub__(self, other):
-        # type: (Union[Vector3D, ndarray]) -> Vector3D
+        # type: (Union[Vector2D, Vector3D, np.ndarray]) -> Union[Vector2D, Vector3D]
         return self.__class__(*[self[i] - other[i] for i in range(len(self))])
 
     def __add__(self, other):
@@ -68,30 +68,23 @@ class Vector2D(object):
         return hash(self.x) ^ hash(self.y)
 
     def dot(self, other):
-        # type: (Vector3D) -> float64
+        # type: (Vector3D) -> np.float64
         return np.dot(self, other)
 
     def cross(self, other):
-        # type: (Vector3D) -> ndarray
+        # type: (Vector3D) -> np.ndarray
         return np.cross(self, other)
 
     @property
     def length(self):
         # type: () -> float
-        """The length of a vector.
-
-        Parameters
-        ----------
-        list-like
-            A list or other iterable.
-
-        """
-        length = sum(x ** 2 for x in self) ** 0.5
+        """The length of a vector."""
+        length = sum(x ** 2 for x in self.args) ** 0.5
 
         return length
 
     def closest(self, poly):
-        # type: (Polygon3D) -> Vector3D
+        # type: (Polygon3D) -> Union[Vector2D, Vector3D]
         """Find the closest vector in a polygon.
 
         Parameters
@@ -110,18 +103,18 @@ class Vector2D(object):
         return closest_pt
 
     def normalize(self):
-        # type: () -> Vector3D
+        # type: () -> Union[Vector2D, Vector3D]
         return self.set_length(1.0)
 
     def set_length(self, new_length):
-        # type: (float) -> Vector3D
+        # type: (float) -> Union[Vector2D, Vector3D]
         current_length = self.length
         multiplier = new_length / current_length
         self.args = [i * multiplier for i in self.args]
         return self
 
     def invert(self):
-        # type: () -> Vector3D
+        # type: () -> Union[Vector2D, Vector3D]
         return -self
 
 
@@ -129,9 +122,9 @@ class Vector3D(Vector2D):
     """Three dimensional point."""
 
     def __init__(self,
-                 x,  # type: Union[float, float64]
-                 y,  # type: Union[float, float64]
-                 z=0  # type: Union[float, float64]
+                 x,  # type: Union[float, np.float64]
+                 y,  # type: Union[float, np.float64]
+                 z=0  # type: Union[float, np.float64]
                  ):
         # type: (...) -> None
         super(Vector3D, self).__init__(x, y)
