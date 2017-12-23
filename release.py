@@ -1,7 +1,9 @@
-from tempfile import mkstemp
+from os import fdopen, remove
 from shutil import move
 import subprocess
-from os import fdopen, remove
+from tempfile import mkstemp
+
+import twine  # noqa
 
 from geomeppy import __version__
 
