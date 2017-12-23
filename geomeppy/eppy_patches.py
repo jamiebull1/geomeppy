@@ -18,7 +18,7 @@ import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union  # noqa
 
 from eppy import bunchhelpers, iddgaps
-from eppy.EPlusInterfaceFunctions import readidf
+from eppy.EPlusInterfaceFunctions import eplusdata, iddindex, parse_idd
 from eppy.EPlusInterfaceFunctions.eplusdata import Eplusdata  # noqa
 from eppy.bunch_subclass import EpBunch as BaseBunch
 from eppy.idf_msequence import Idf_MSequence
@@ -96,7 +96,7 @@ def idfreader1(fname,  # type: StringIO
 
     """
     versiontuple = iddversiontuple(iddfile)
-    block, data, commdct, idd_index = readidf.readdatacommdct1(
+    block, data, commdct, idd_index = readdatacommdct1(
         fname,
         iddfile=iddfile,
         commdct=commdct,
@@ -115,6 +115,35 @@ def idfreader1(fname,  # type: StringIO
     bunchdt = makebunches(data, commdct, theidf)
 
     return bunchdt, block, data, commdct, idd_index, versiontuple
+
+
+def readdatacommdct1(idfname, iddfile='Energy+.idd', commdct=None, block=None):
+    # type: (str, Optional[str], Optional[Dict], Optional[List]) -> Tuple[List, Eplusdata, List[Dict, Dict], Dict]
+    """Read the idf file.
+
+    This is patched so that the IDD index is not lost when reading a new IDF without reloading the modeleditor module.
+
+    :param idfname: Name of the IDF file to read.
+    :param iddfile: Name of the IDD file to use to interpret the IDF.
+    :param commdct: Descriptions of IDF fields from the IDD. Defaults to None.
+    :param block: EnergyPlus field ID names of the IDF from the IDD. Defaults to None.
+    :returns: block EnergyPlus field ID names of the IDF from the IDD.
+    :returns data: Eplusdata object containing representions of IDF objects.
+    :returns: commdct List of names of IDF objects.
+    :returns: idd_index A pair of dicts used for fast lookups of names of groups of objects.
+
+    """
+    if not commdct:
+        block, commlst, commdct, idd_index = parse_idd.extractidddata(iddfile)
+        theidd = eplusdata.Idd(block, 2)
+    else:
+        theidd = eplusdata.Idd(block, 2)
+        name2refs = iddindex.makename2refdct(commdct)
+        ref2namesdct = iddindex.makeref2namesdct(name2refs)
+        idd_index = dict(name2refs=name2refs, ref2names=ref2namesdct)
+        commdct = iddindex.ref2names2commdct(ref2namesdct, commdct)
+    data = eplusdata.Eplusdata(theidd, idfname)
+    return block, data, commdct, idd_index
 
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
@@ -343,14 +372,16 @@ class IDF(BaseIDF):
         """
         return getidfsubsurfaces(self, surface_type)
 
-    def set_wwr(self, wwr):
-        # type: (float) -> None
+    def set_wwr(self, wwr, construction=None, force=False):
+        # type: (float, Optional[str], Optional[bool]) -> None
         """Add strip windows to all external walls.
 
         :param wwr: Window to wall ratio in the range 0.0 to 1.0.
+        :param construction: Name of a window construction.
+        :param force: True to remove all subsurfaces before setting the WWR.
 
         """
-        set_wwr(self, wwr)
+        set_wwr(self, wwr, construction, force)
 
     def view_model(self):
         # type: () -> None

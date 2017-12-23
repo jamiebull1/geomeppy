@@ -5,12 +5,13 @@
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
 """Recipes for making changes to EnergyPlus IDF files."""
+import itertools
 from typing import List, Tuple, Union  # noqa
 
-import numpy as np
 from eppy.idf_msequence import Idf_MSequence  # noqa
+import numpy as np
 
-from geomeppy.geom.intersect_match import getidfsurfaces
+from .geom.intersect_match import getidfsurfaces
 from .geom.polygons import Polygon3D
 from .geom.transformations import Transformation
 from .geom.vectors import Vector2D, Vector3D  # noqa
@@ -76,34 +77,60 @@ def set_default_construction(surface):
         surface.Construction_Name = 'Project Door'
 
 
-def set_wwr(idf, wwr=0.2):
-    # type: (IDF, float) -> None
+def set_wwr(idf, wwr=0.2, construction=None, force=False):
+    # type: (IDF, Optional[float], Optional[str], Optional[bool]) -> None
     """Set the window to wall ratio on all external walls.
 
     :param idf: The IDF to edit.
     :param wwr: The window to wall ratio.
+    :param construction: Name of a window construction.
+    :param force: True to remove all subsurfaces before setting the WWR.
 
     """
     try:
         ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
     except IndexError:
         ggr = []
-    walls = [s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
-             if s.Surface_Type.lower() == 'wall' and
-             s.Outside_Boundary_Condition.lower() == 'outdoors']
-    windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
-    for window in windows:
-        idf.removeidfobject(window)
-    for wall in walls:
+    external_walls = [
+        s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
+        if s.Surface_Type.lower() == 'wall' and s.Outside_Boundary_Condition.lower() == 'outdoors'
+    ]
+    subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index['ref2names']['SubSurfNames']]
+    for wall in external_walls:
+        # get any subsurfaces on the wall
+        wall_subsurfaces = [
+            ss for ss in itertools.chain(*subsurfaces)
+            if ss.Building_Surface_Name == wall.Name
+        ]
+        if not all(_is_window(wss) for wss in wall_subsurfaces) and not force:
+            raise ValueError(
+                'Not all subsurfaces on wall "{name}" are windows. '
+                'Use `force=True` to replace all subsurfaces.'.format(name=wall.Name))
+
+        if wall_subsurfaces and not construction:
+            constructions = list({wss.Construction_Name for wss in wall_subsurfaces if _is_window(wss)})
+            if len(constructions) > 1:
+                raise ValueError(
+                    'Not all subsurfaces on wall "{name}" have the same construction'.format(name=wall.Name))
+            construction = constructions[0]
+        # remove all subsurfaces
+        for ss in wall_subsurfaces:
+            idf.removeidfobject(ss)
         coords = window_vertices_given_wall(wall, wwr)
         window = idf.newidfobject(
             'FENESTRATIONSURFACE:DETAILED',
             Name="%s window" % wall.Name,
             Surface_Type='Window',
+            Construction_Name=construction,
             Building_Surface_Name=wall.Name,
             View_Factor_to_Ground='autocalculate',  # from the surface angle
         )
         window.setcoords(coords, ggr)
+
+
+def _is_window(subsurface):
+    if subsurface.key.lower() in {'window', 'fenestrationsurface:detailed'}:
+        return True
 
 
 def window_vertices_given_wall(wall, wwr):

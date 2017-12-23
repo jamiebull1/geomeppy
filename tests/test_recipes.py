@@ -7,6 +7,7 @@
 """pytest for recipes.py"""
 
 from eppy.iddcurrent import iddcurrent
+import pytest
 from six import StringIO
 
 from geomeppy.eppy_patches import IDF
@@ -127,9 +128,9 @@ class TestMatchSurfaces():
 
     def setup(self):
         # type: () -> None
+        IDF.iddname == None
         iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
+        IDF.setiddname(iddfhandle, testing=True)
         self.idf = IDF(StringIO(idf_txt))
         intersect_idf_surfaces(self.idf)
         match_idf_surfaces(self.idf)
@@ -147,3 +148,82 @@ class TestMatchSurfaces():
             wall = idf.getobject('BUILDINGSURFACE:DETAILED',
                                  window.Building_Surface_Name)
             assert almostequal(window.area, wall.area * wwr, 3)
+
+
+@pytest.fixture()
+def new_idf():
+    IDF.iddname == None
+    iddfhandle = StringIO(iddcurrent.iddtxt)
+    IDF.setiddname(iddfhandle, testing=True)
+    idf = IDF()
+    idf.new()
+    return idf
+
+@pytest.fixture()
+def wwr_idf(new_idf):
+    new_idf.newidfobject(
+        'FENESTRATIONSURFACE:DETAILED',
+        Name='window1',
+        Surface_Type='window',
+        Construction_Name='ExtWindow',
+        Building_Surface_Name='wall1',
+    )
+    wall = new_idf.newidfobject(
+        'BUILDINGSURFACE:DETAILED',
+        Name='wall1',
+        Surface_Type='wall',
+        Outside_Boundary_Condition='Outdoors',
+
+    )
+    wall.setcoords([[0,0,0], [0,1,0], [0,1,1], [0,0,1]])
+
+    return new_idf
+
+
+class TestWWR:
+
+    def is_expected_wwr(self, idf, wwr):
+        windows_area = sum(w.area for w in idf.getsubsurfaces('window'))
+        walls_area = sum(w.area for w in idf.getsurfaces('wall'))
+        return almostequal(windows_area, walls_area * wwr, 3)
+
+    def test_wwr(self, wwr_idf):
+        idf = wwr_idf
+        wwr = 0.2
+        idf.set_wwr(wwr)
+        assert self.is_expected_wwr(idf, wwr)
+
+    def test_wwr_two_window_constructions(self, wwr_idf):
+        idf = wwr_idf
+        idf.newidfobject(
+            'FENESTRATIONSURFACE:DETAILED',
+            Name='window2',
+            Surface_Type='window',
+            Construction_Name='ExtWindow2',
+            Building_Surface_Name='wall1',
+        )
+        wwr = 0.2
+        try:
+            idf.set_wwr(wwr)
+            assert False, 'Should have raised an error since windows with more than one construction are present'
+        except ValueError:
+            pass
+        idf.set_wwr(wwr, construction='ExtWindow')
+        assert self.is_expected_wwr(idf, wwr)
+
+    def test_wwr_mixed_subsurfaces(self, wwr_idf):
+        idf = wwr_idf
+        idf.newidfobject(
+            'DOOR',
+            Name='door1',
+            Construction_Name='ExtDoor',
+            Building_Surface_Name='wall1',
+        )
+        wwr = 0.2
+        try:
+            idf.set_wwr(wwr)
+            assert False, 'Should have raised an error since not all subsurfaces are windows'
+        except ValueError:
+            pass
+        idf.set_wwr(wwr, force=True)
+        assert self.is_expected_wwr(idf, wwr)
