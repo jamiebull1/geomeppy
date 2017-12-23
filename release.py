@@ -3,8 +3,6 @@ from shutil import move
 import subprocess
 from os import fdopen, remove
 
-import pypandoc
-
 from geomeppy import __version__
 
 
@@ -34,17 +32,22 @@ def main():
     major, minor, patch = version.split('.')
     new_version = '%s.%s.%d' % (major, minor, int(patch) + 1)
     replace('geomeppy/__init__.py', version, new_version)
-    replace('setup.py', version, new_version)
+    replace('setup.py', "version='%s'" % version, "version='%s'" % new_version)
+    replace('setup.py', "tarball/v%s" % version, "tarball/v%s" % new_version)
     try:
-        # convert docs to rst
-        z = pypandoc.convert('README.md', 'rst', format='markdown')
-        with open('README.rst', 'w') as outfile:
-            outfile.write(z)
         # add and commit changes
         print(subprocess.check_output(['git', 'add', 'geomeppy/__init__.py']))
         print(subprocess.check_output(['git', 'add', 'setup.py']))
         print(subprocess.check_output(['git', 'add', 'README.rst']))
         print(subprocess.check_output(['git', 'commit', '-m', 'release/%s' % new_version]))
+    except Exception as e:
+        # rollback
+        print('rolling back')
+        print(e)
+        replace('geomeppy/__init__.py', new_version, version)
+        replace('setup.py', new_version, version)
+        exit()
+    try:
         # create a tagged release
         print(subprocess.check_output(['git', 'tag', '-m', 'release/%s' % new_version, 'v%s' % new_version]))
         # push to github
@@ -52,14 +55,23 @@ def main():
         # create dist
         print(subprocess.check_output(['python', 'setup.py', 'sdist']))
         # release
-        print(subprocess.check_output(['twine', 'upload', 'dist/*']))
     except Exception as e:
         # rollback
-        print('rolling back')
+        print('rolling back tag')
         print(e)
-        replace('geomeppy/__init__.py', new_version, version)
-        replace('setup.py', new_version, version)
-
+        # delete the tagged release
+        print(subprocess.check_output(['git', 'tag', '-d', 'release/%s' % new_version, 'v%s' % new_version]))
+        # push to github
+        print(subprocess.check_output(
+            ['git', 'push', 'origin', ':refs/tags/release/%s' % new_version, 'v%s' % new_version])
+        )
+        exit()
+    try:
+        print(subprocess.check_output(['twine', 'upload', 'dist/geomeppy-%s.tar.gz' % new_version]))
+    except Exception as e:
+        print('too late to roll back')
+        print(e)
+        exit()
 
 if __name__ == '__main__':
     main()
