@@ -14,7 +14,7 @@ try:
     from mpl_toolkits.mplot3d import Axes3D  # noqa
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     import matplotlib.pyplot as plt
-except ImportError:
+except (ImportError, RuntimeError):
     # this isn't always needed so we can ignore if it's not present
     pass
 
