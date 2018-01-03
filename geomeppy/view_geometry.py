@@ -81,13 +81,28 @@ def view_polygons(polygons):
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
-    surface_types = ['BUILDINGSURFACE:DETAILED',
-                     'FENESTRATIONSURFACE:DETAILED']
+    surface_types = [
+        'BUILDINGSURFACE:DETAILED',
+        'FENESTRATIONSURFACE:DETAILED',
+    ]
     surfaces = []
     for surface_type in surface_types:
         surfaces.extend(idf.idfobjects[surface_type])
 
     return surfaces
+
+
+def _get_shading(idf):
+    """Get the shading surfaces from the IDF.
+    """
+    shading_types = [
+        'SHADING:ZONE:DETAILED',
+    ]
+    shading = []
+    for shading_type in shading_types:
+        shading.extend(idf.idfobjects[shading_type])
+
+    return shading
 
 
 def _get_collections(idf, opacity=1):
@@ -119,8 +134,14 @@ def _get_collections(idf, opacity=1):
                                facecolor='cornflowerblue',
                                edgecolors='black'
                                )
+    shading_surfaces = _get_shading(idf)
+    shading = Poly3DCollection([getcoords(s) for s in shading_surfaces],
+                               alpha=opacity,
+                               facecolor='darkolivegreen',
+                               edgecolors='black'
+                               )
 
-    return walls, roofs, floors, windows
+    return walls, roofs, floors, windows, shading
 
 
 def _make_collections(polygons, opacity=1):

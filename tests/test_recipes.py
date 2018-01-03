@@ -16,6 +16,8 @@ from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.vectors import Vector2D, Vector3D
 from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
 from geomeppy.utilities import almostequal
+from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces
+
 
 idf_txt = """
 Version, 8.5;
@@ -34,22 +36,24 @@ BuildingSurface:Detailed, z2_WALL_0001, WALL, , z2 Thermal Zone, outdoors, , Sun
 BuildingSurface:Detailed, z2_WALL_0002, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 1.5, 3.05, 0.5, 1.5, 3.05, 0.0, 2.5, 2.95, 0.0, 2.5, 2.95, 0.5;
 BuildingSurface:Detailed, z2_WALL_0003, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.5, 2.95, 0.5, 2.5, 2.95, 0.0, 2.5, 1.95, 0.0, 2.5, 1.95, 0.5;
 BuildingSurface:Detailed, z2_WALL_0004, Wall, , z2 Thermal Zone, Outdoors, , SunExposed, WindExposed, , , 2.5, 1.95, 0.5, 2.5, 1.95, 0.0, 1.5, 2.05, 0.0, 1.5, 2.05, 0.5;
+Shading:Zone:Detailed, z2_SHADE_0003, z2_WALL_0003, , 4, 2.5, 2.95, 0.5, 2.6, 2.95, 0.3, 2.6, 1.95, 0.3, 2.5, 1.95, 0.5;
 """
+
+@pytest.fixture()
+def base_idf():
+    # type: () -> None
+    iddfhandle = StringIO(iddcurrent.iddtxt)
+    if IDF.getiddname() == None:
+        IDF.setiddname(iddfhandle)
+
+    return IDF(StringIO(idf_txt))
 
 
 class TestTranslate():
     
-    def setup(self):
+    def test_translate(self, base_idf):
         # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-        
-        self.idf = IDF(StringIO(idf_txt))
-            
-    def test_translate(self):
-        # type: () -> None
-        idf = self.idf
+        idf = base_idf
         surfaces = getidfsurfaces(idf)
         translate(surfaces, (50, 100))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
@@ -68,9 +72,9 @@ class TestTranslate():
         expected = [52.0, 52.0, 51.0, 51.0]
         assert result == expected
 
-    def test_translate_to_origin(self):
+    def test_translate_to_origin(self, base_idf):
         # type: () -> None
-        idf = self.idf
+        idf = base_idf
         surfaces = getidfsurfaces(idf)
         translate(surfaces, (50000, 10000))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
@@ -84,9 +88,9 @@ class TestTranslate():
         assert min_x == 0
         assert min_y == 0
 
-    def test_rotate_360(self):
+    def test_rotate_360(self, base_idf):
         # type: () -> None
-        idf = self.idf
+        idf = base_idf
         surface = getidfsurfaces(idf)[0]
         coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
         surface.setcoords(coords)
@@ -95,9 +99,9 @@ class TestTranslate():
         result = surface.coords
         assert almostequal(result, expected)
 
-    def test_rotate_idf_360(self):
+    def test_rotate_idf_360(self, base_idf):
         # type: () -> None
-        idf1 = self.idf
+        idf1 = base_idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
         idf1.rotate(360)
@@ -105,16 +109,16 @@ class TestTranslate():
         floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
         assert almostequal(floor1, floor2)
 
-    def test_centre(self):
+    def test_centre(self, base_idf):
         # type: () -> None
-        idf = self.idf
+        idf = base_idf
         result = idf.centroid
         expected = Vector2D(1.75, 2.025)
         assert result == expected
 
-    def test_scale_idf(self):
+    def test_scale_idf(self, base_idf):
         # type: () -> None
-        idf1 = self.idf
+        idf1 = base_idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
         idf1.scale(10)
@@ -126,20 +130,11 @@ class TestTranslate():
 
 class TestMatchSurfaces():
 
-    def setup(self):
+    def test_set_wwr(self, base_idf):
         # type: () -> None
-        IDF.iddname == None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        IDF.setiddname(iddfhandle, testing=True)
-        self.idf = IDF(StringIO(idf_txt))
-        intersect_idf_surfaces(self.idf)
-        match_idf_surfaces(self.idf)
-            
-    def test_set_wwr(self):
-        # type: () -> None
-        """Check that the correct WWR is set for all walls.
-        """
-        idf = self.idf
+        idf = base_idf
+        intersect_idf_surfaces(idf)
+        match_idf_surfaces(idf)
         wwr = 0.25
         set_wwr(idf, wwr)
         windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
@@ -148,6 +143,34 @@ class TestMatchSurfaces():
             wall = idf.getobject('BUILDINGSURFACE:DETAILED',
                                  window.Building_Surface_Name)
             assert almostequal(window.area, wall.area * wwr, 3)
+
+
+class TestViewGeometry():
+
+    def test_get_surfaces(self, base_idf):
+        # type: () -> None
+        idf = base_idf
+        surfaces = _get_surfaces(idf)
+        assert len(surfaces) == 12
+
+    def test_get_shading(self, base_idf):
+        # type: () -> None
+        idf = base_idf
+        shading = _get_shading(idf)
+        assert len(shading) == 1
+
+    def test_get_collections(self, base_idf):
+        # type: () -> None
+        idf = base_idf
+        collections = _get_collections(idf)
+        assert len(collections) == 5
+        for c in collections:
+            assert c
+
+    def test_view_model(self, base_idf):
+        # type: () -> None
+        idf = base_idf
+        idf.view_model()
 
 
 @pytest.fixture()
@@ -227,3 +250,4 @@ class TestWWR:
             pass
         idf.set_wwr(wwr, force=True)
         assert self.is_expected_wwr(idf, wwr)
+
