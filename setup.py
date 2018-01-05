@@ -34,6 +34,7 @@ setup(
     platforms='any',
     install_requires=[
         'eppy==0.5.46',
+        'matplotlib',  # model viewer
         'numpy==1.13',
         'pyclipper==1.0.6',  # geometry intersection
         'shapely==1.6.2',  # geometry transformations
