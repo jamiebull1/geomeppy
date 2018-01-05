@@ -19,8 +19,8 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None):
-    # type: (Optional[str], Optional[str]) -> None
+def view_idf(fname=None, idf_txt=None, test=False):
+    # type: (Optional[str], Optional[str], Optional[bool]) -> None
     """Display an IDF for inspection.
 
     :param fname: Path to the IDF.
@@ -52,7 +52,8 @@ def view_idf(fname=None, idf_txt=None):
     ax.set_ylim(limits['y'])
     ax.set_zlim(limits['z'])
 
-    plt.show()
+    if not test:
+        plt.show()
 
 
 def view_polygons(polygons):

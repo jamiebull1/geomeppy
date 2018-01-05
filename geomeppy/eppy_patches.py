@@ -399,10 +399,10 @@ class IDF(BaseIDF):
         """
         set_wwr(self, wwr, construction, force)
 
-    def view_model(self):
-        # type: () -> None
+    def view_model(self, test=False):
+        # type: (Optional[bool]) -> None
         """Show a zoomable, rotatable representation of the IDF."""
-        view_idf(idf_txt=self.idfstr())
+        view_idf(idf_txt=self.idfstr(), test=test)
 
     def add_block(self, *args, **kwargs):
         # type: (*Any, **Any) -> None
