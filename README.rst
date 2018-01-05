@@ -52,8 +52,11 @@ object:
 -  Rotating an IDF
 
 ``IDF.rotate(90)  # rotate the IDF 90 degrees counterclockwise around the centre of its bounding box``
+
 ``IDF.scale(2)  # scale the IDF to double its size (default is on the xy axes)``
+
 ``IDF.scale(2, axes='xy')  # scale the IDF to double its size (in the xy axes)``
+
 ``IDF.scale(2, axes='z')  # scale the IDF to double its size (in the z axis)``
 
 -  Adding windows to external walls
