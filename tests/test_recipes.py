@@ -11,12 +11,13 @@ import pytest
 from six import StringIO
 
 from geomeppy.eppy_patches import IDF
-from geomeppy.geom.intersect_match import getidfsurfaces, intersect_idf_surfaces, match_idf_surfaces
+from geomeppy.geom.intersect_match import (
+    getidfsurfaces, getidfshadingsurfaces, intersect_idf_surfaces, match_idf_surfaces)
 from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.vectors import Vector2D, Vector3D
 from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
 from geomeppy.utilities import almostequal
-from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces
+from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces, plt
 
 
 idf_txt = """
@@ -108,6 +109,9 @@ class TestTranslate():
         floor1 = Polygon3D(idf1.getsurfaces('floor')[0].coords).normalize_coords(None)
         floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
         assert almostequal(floor1, floor2)
+        shade1 = Polygon3D(idf1.getshadingsurfaces()[0].coords).normalize_coords(None)
+        shade2 = Polygon3D(idf1.getshadingsurfaces()[0].coords).normalize_coords(None)
+        assert almostequal(shade1, shade2)
 
     def test_centre(self, base_idf):
         # type: () -> None
@@ -170,7 +174,7 @@ class TestViewGeometry():
     def test_view_model(self, base_idf):
         # type: () -> None
         idf = base_idf
-        idf.view_model()
+        idf.view_model(test=True)
 
 
 @pytest.fixture()
