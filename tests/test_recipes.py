@@ -17,7 +17,7 @@ from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.vectors import Vector2D, Vector3D
 from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
 from geomeppy.utilities import almostequal
-from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces, plt
+from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces
 
 
 idf_txt = """
