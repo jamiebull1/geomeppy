@@ -16,8 +16,7 @@ Installation
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
-Once these requirements are met, to install GeomEppy for Python 2.7 or
-3.6 call ``pip install geomeppy``.
+To install GeomEppy, call `pip install geomeppy`.
 
 API
 ---
