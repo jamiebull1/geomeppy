@@ -9,6 +9,7 @@ from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 from eppy.modeleditor import IDF
 from six import StringIO
+from six.moves.tkinter import TclError
 
 try:
     from mpl_toolkits.mplot3d import Axes3D  # noqa
@@ -26,6 +27,11 @@ def view_idf(fname=None, idf_txt=None, test=False):
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
+    try:
+        plt.figure()
+    except TclError:
+        # this is as expected on the test server
+        return
     if fname and idf_txt:
         raise ValueError('Pass either fname or idf_txt, not both.')
     # set the IDD for the version of EnergyPlus
@@ -40,7 +46,6 @@ def view_idf(fname=None, idf_txt=None, test=False):
         idf = IDF()
         idf.initreadtxt(idf_txt)
     # create the figure and add the surfaces
-    plt.figure()
     ax = plt.axes(projection='3d')
     collections = _get_collections(idf, opacity=0.5)
     for c in collections:
