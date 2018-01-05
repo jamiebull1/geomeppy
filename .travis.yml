@@ -1,6 +1,6 @@
 language: cpp
 
-os: 
+os:
   - linux
 
 sudo: required
@@ -18,7 +18,7 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes conda
-  
+
   # create miniconda env
   - conda create --yes -n geomeppy python=$PYTHON
   - source activate geomeppy
@@ -35,6 +35,11 @@ script:
   - py.test -v --cov-config .coveragerc --cov=geomeppy tests
 
 after_success:
-  # coverage reporting on CodeCov 
+  # coverage reporting on CodeCov
   - if [[ $PYTHON == 3.6 ]]; then codecov; fi
 
+deploy:
+  provider: pypi
+  user: JamieBull
+  password:
+    secure: krobKK/9orQpsrZ5hD4XfT7ZvWFMssMQmVd4CkK3p1SzkrY96tfjVJU0DtYRvF4cIljExYNhJrwOrtyaCYy/IKgh/wA8cMKBImkOB94RLA7hx8QOEpFkxOa0XyMBZaxWtw1mB/PJ9+t4kirzlC1nU0HVQUSBmjyAEhYr5w7+n39bP61UHEuEiaw86Zhnpcwf6yj1EWc04raRfwf3f5TPmgpQlppohCvfc7jxU5/NZFCUPRpYxQ+OxQRVzKl0SgY6ifWOAXmuTJv5/mHr3TaV1cDZqNrpmLTIEHb0B/n5AF2rDB6/Ea+Ahlw1nAOuRUHnvR4lqMA/uYAc6GcwNxwAdwD8juJuZ5Cl9JEIzD0jGIdmOC/IxPUY2CnRVOtfTSsH4a0Wfh86rx9VNyJhBcZXYRaDw0CvsbiEmZhEgmQDEaEE9w95zQFMSDHbGTlkFMto6ajD6petzptm7cgqxGGAoJjKlUWvUjlXQtLSdAL1wn7CRgBsXWMIWAvW8HFyfO6/yaH7sr6U70dlA9UV4d9nDOyc2eNNujhfpRWZWAZv4YM47yu8lEnPJWOT7M2S4w40OyJNKFhMo74duLhAd9t+zg4MAGmIATGKJi3XMPUdJwSl182jGEx/Cye07vmKdfKWnHFtyJbRcyOuKTP2aiaYGUDInCQLr/wbzZlQ1A4Jovs=
