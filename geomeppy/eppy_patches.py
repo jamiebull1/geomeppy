@@ -30,6 +30,7 @@ from geomeppy.geom.intersect_match import (
     intersect_idf_surfaces,
     getidfsurfaces,
     getidfsubsurfaces,
+    getidfshadingsurfaces,
     match_idf_surfaces,
     set_coords,
 )
@@ -279,6 +280,8 @@ class IDF(BaseIDF):
         translate(surfaces, vector)
         subsurfaces = self.getsubsurfaces()
         translate(subsurfaces, vector)
+        shadingsurfaces = self.getshadingsurfaces()
+        translate(shadingsurfaces, vector)
 
     def rotate(self, angle, anchor=None):
         # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
@@ -291,9 +294,11 @@ class IDF(BaseIDF):
         anchor = anchor or self.centroid
         surfaces = self.getsurfaces()
         subsurfaces = self.getsubsurfaces()
+        shadingsurfaces = self.getshadingsurfaces()
         self.translate(-anchor)
         rotate(surfaces, angle)
         rotate(subsurfaces, angle)
+        rotate(shadingsurfaces, angle)
         self.translate(anchor)
 
     def scale(self, factor, anchor=None):
@@ -307,9 +312,11 @@ class IDF(BaseIDF):
         anchor = anchor or self.centroid
         surfaces = self.getsurfaces()
         subsurfaces = self.getsubsurfaces()
+        shadingsurfaces = self.getshadingsurfaces()
         self.translate(-anchor)
         scale(surfaces, factor)
         scale(subsurfaces, factor)
+        scale(shadingsurfaces, factor)
         self.translate(anchor)
 
     def set_default_constructions(self):
@@ -372,6 +379,15 @@ class IDF(BaseIDF):
         """
         return getidfsubsurfaces(self, surface_type)
 
+    def getshadingsurfaces(self, surface_type=None):
+        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+        """Return all subsurfaces in the IDF.
+
+        :returns: IDF surfaces.
+
+        """
+        return getidfshadingsurfaces(self, surface_type)
+
     def set_wwr(self, wwr, construction=None, force=False):
         # type: (float, Optional[str], Optional[bool]) -> None
         """Add strip windows to all external walls.
@@ -419,7 +435,8 @@ class IDF(BaseIDF):
                 continue
             s = self.newidfobject(
                 'SHADING:SITE:DETAILED',
-                '%s_%s' % (block.name, i))
+                Name='%s_%s' % (block.name, i),
+            )
             try:
                 s.setcoords(wall)
             except ZeroDivisionError:
@@ -446,9 +463,12 @@ class IDF(BaseIDF):
                 if not surface_coords:
                     continue
                 name = '{name} {s_type} {num:04d}'.format(name=zone.name, s_type=surface_type[:-1].title(), num=i)
-                s = self.newidfobject('BUILDINGSURFACE:DETAILED', name,
-                                      Surface_Type=surface_type[:-1],
-                                      Zone_Name=zone.name)
+                s = self.newidfobject(
+                    'BUILDINGSURFACE:DETAILED',
+                    Name=name,
+                    Surface_Type=surface_type[:-1],
+                    Zone_Name=zone.name,
+                )
                 s.setcoords(surface_coords, ggr)
 
     def read(self):

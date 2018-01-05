@@ -298,3 +298,18 @@ def getidfsubsurfaces(idf, surface_type=None):
         surfaces = [s for s in surfaces
                     if s.Surface_Type.lower() == surface_type.lower()]
     return surfaces
+
+
+def getidfshadingsurfaces(idf, surface_type=None):
+    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+    """Return all shading surfaces in an IDF.
+
+    :param idf: The IDF to search.
+    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
+    :returns: All matching shading surfaces.
+    """
+    surfaces = idf.idfobjects['SHADING:ZONE:DETAILED']
+    if surface_type:
+        surfaces = [s for s in surfaces
+                    if s.Surface_Type.lower() == surface_type.lower()]
+    return surfaces
