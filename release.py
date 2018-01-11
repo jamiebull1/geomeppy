@@ -23,7 +23,7 @@ def replace(file_path, pattern, subst):
 
 def main():
     # check we're on master
-    assert b'* master' in subprocess.check_output(['git', 'branch']), 'Not on master branch'
+    assert b'* develop' in subprocess.check_output(['git', 'branch']), 'Not on develop branch'
     # check we're up-to-date
     status = subprocess.check_output(['git', 'status'])
     assert b'modified' not in status, 'Repository contains modified files'
@@ -50,13 +50,12 @@ def main():
         replace('setup.py', new_version, version)
         exit()
     try:
+        # push the changes
+        print(subprocess.check_output(['git', 'push', 'origin', 'develop', '-f']))
         # create a tagged release
-        print(subprocess.check_output(['git', 'tag', '-m', 'release/%s' % new_version, 'v%s' % new_version]))
+        print(subprocess.check_output(['git', 'tag', 'release/%s' % new_version, '-m', 'v%s' % new_version]))
         # push to github
-        print(subprocess.check_output(['git', 'push', 'origin', 'master', '-f']))
-        # create dist
-        print(subprocess.check_output(['python', 'setup.py', 'sdist']))
-        # release
+        print(subprocess.check_output(['git', 'push', 'origin', 'release/%s' % new_version, '-f']))
     except Exception as e:
         # rollback
         print('rolling back tag')
