@@ -43,5 +43,5 @@ deploy:
   user: JamieBull
   password:
     secure: "KR7mtkcEN+0G+U1/PaJ+pR6dEEQ8HZKdzJ6HzjOUVIej2rcudWZBYhtmALdgA/ynqXuSc0HaeNhPze+jjOTSqB92zJDVjzcJzOmN8ScWZXuxaSFvI9Wnc9CIPsfCBnDpl13YAa9inAlwQdYiTX2Ve7mSwGbh1wEjKBIlZrE3PX7xnPdnyV3Fuj/dllSFAzqQPjJpl7eYclztARQSQnHF8Om7gL5qDCSvZ1OsetnbmCswcCqaVkdELq0aCtQH2HV14BxMbZcyM9lBK1BQwn2yt3FZ5kaVo8bC8RT1CpyWajOuDNdLHM3k6uXZ+VboQkAuYMNF4BZoqiOorsAkC6wH/VqA5DGI72hJmGkGbbbM57wzNqbjmeI2Xzz2hjXXynjG3bfYzxEeZsM8BkITJ++LirhwaR7bpIcX+l8cMxcoy2gdcQN6PAlbfx3ceAe02Asg5zla56dGPdW0QDoPZgutVYg40YHkWkMfyRuIU0IexdXe7vN3QLcRlRr9PPqMYtdU1aHUoNIVbT49bQ0f6GxHcTLdFu8M5JOmAjVY+XF0F1mtz+Ddo/aOEk9jltEiSRPb6mHbsqsi/c2yEzjicqKiQ2esdxulQxbllYnF8+kS4xXMpqxuNrljEUGasnOwNPzaJbRAAOhkGbZLMGZvLW7NVpjXK4yAkRKlZF0SR5DnhBg="
-#  on:
-#    tags: true
+  on:
+    tags: true
