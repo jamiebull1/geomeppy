@@ -99,8 +99,7 @@ def _get_surfaces(idf):
 
 
 def _get_shading(idf):
-    """Get the shading surfaces from the IDF.
-    """
+    """Get the shading surfaces from the IDF."""
     shading_types = [
         'SHADING:ZONE:DETAILED',
     ]
@@ -112,34 +111,14 @@ def _get_shading(idf):
 
 
 def _get_collections(idf, opacity=1):
-    """Set up 3D collections for each surface type.
-    """
+    """Set up 3D collections for each surface type."""
     surfaces = _get_surfaces(idf)
     # set up the collections
-    walls = Poly3DCollection([getcoords(s) for s in surfaces
-                              if s.Surface_Type.lower() == 'wall'],
-                             alpha=opacity,
-                             facecolor='wheat',
-                             edgecolors='black'
-                             )
-    floors = Poly3DCollection([getcoords(s) for s in surfaces
-                               if s.Surface_Type.lower() == 'floor'],
-                              alpha=opacity,
-                              facecolor='dimgray',
-                              edgecolors='black'
-                              )
-    roofs = Poly3DCollection([getcoords(s) for s in surfaces
-                              if s.Surface_Type.lower() == 'roof'],
-                             alpha=opacity,
-                             facecolor='firebrick',
-                             edgecolors='black'
-                             )
-    windows = Poly3DCollection([getcoords(s) for s in surfaces
-                                if s.Surface_Type.lower() == 'window'],
-                               alpha=opacity,
-                               facecolor='cornflowerblue',
-                               edgecolors='black'
-                               )
+    walls = _get_collection('wall', surfaces, opacity, facecolor='lightyellow')
+    floors = _get_collection('floor', surfaces, opacity, facecolor='dimgray')
+    roofs = _get_collection('roof', surfaces, opacity, facecolor='firebrick')
+    windows = _get_collection('window', surfaces, opacity, facecolor='cornflowerblue')
+
     shading_surfaces = _get_shading(idf)
     shading = Poly3DCollection([getcoords(s) for s in shading_surfaces],
                                alpha=opacity,
@@ -150,9 +129,21 @@ def _get_collections(idf, opacity=1):
     return walls, roofs, floors, windows, shading
 
 
+def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors='black'):
+    """Make collections from a list of EnergyPlus surfaces."""
+    coords = [getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
+    trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
+    collection = Poly3DCollection(
+        trimmed_coords,
+        alpha=opacity,
+        facecolor=facecolor,
+        edgecolors=edgecolors
+    )
+    return collection
+
+
 def _make_collections(polygons, opacity=1):
-    """Make collections from a dict of polygons.
-    """
+    """Make collections from a dict of polygons."""
     collection = []
     for color in polygons:
         collection.append(Poly3DCollection(

@@ -388,16 +388,20 @@ class IDF(BaseIDF):
         """
         return getidfshadingsurfaces(self, surface_type)
 
-    def set_wwr(self, wwr, construction=None, force=False):
-        # type: (float, Optional[str], Optional[bool]) -> None
+    def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}):
+        # type: (Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
         """Add strip windows to all external walls.
+
+        Different WWR can be applied to specific wall orientations using the `wwr_map` keyword arg.
+        This map is a dict of wwr values, keyed by `wall.azimuth`, which overrides the default passed as `wwr`.
 
         :param wwr: Window to wall ratio in the range 0.0 to 1.0.
         :param construction: Name of a window construction.
         :param force: True to remove all subsurfaces before setting the WWR.
+        :param wwr_map: Mapping from wall orientation (azimuth) to WWR, e.g. {180: 0.25, 90: 0.2}.
 
         """
-        set_wwr(self, wwr, construction, force)
+        set_wwr(self, wwr, construction, force, wwr_map)
 
     def view_model(self, test=False):
         # type: (Optional[bool]) -> None

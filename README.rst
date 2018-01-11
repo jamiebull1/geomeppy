@@ -16,8 +16,7 @@ Installation
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
-Once these requirements are met, to install GeomEppy for Python 2.7 or
-3.6 call ``pip install geomeppy``.
+To install GeomEppy, call `pip install geomeppy`.
 
 API
 ---
@@ -52,13 +51,28 @@ object:
 -  Rotating an IDF
 
 ``IDF.rotate(90)  # rotate the IDF 90 degrees counterclockwise around the centre of its bounding box``
+
 ``IDF.scale(2)  # scale the IDF to double its size (default is on the xy axes)``
+
 ``IDF.scale(2, axes='xy')  # scale the IDF to double its size (in the xy axes)``
+
 ``IDF.scale(2, axes='z')  # scale the IDF to double its size (in the z axis)``
 
 -  Adding windows to external walls
 
+``IDF.set_wwr()  # set a WWR of 20% (the default) for all external walls``
+
 ``IDF.set_wwr(wwr=0.25)  # set a WWR of 25% for all external walls``
+
+``IDF.set_wwr(wwr_map={90: 0})  # set no windows on all external walls with azimuth of 90, and WWR of 20% on other walls``
+
+``IDF.set_wwr(wwr=0, wwr_map={90: 0.3})  # set a WWR of 30% for all external walls with azimuth of 90, and no windows on other walls``
+
+If ``wwr_map`` is passed, it overrides any value passed to ``wwr``, including
+the default of 0.2. However it only overrides it on walls which have an
+azimuth in the ``wwr_map``. Any omitted walls' WWR will be set to the value in
+``wwr``. If you want to specify no windows for walls which are not specified in
+``wwr_map``, you must also set ``wwr=None``.
 
 -  Setting constructions
 
@@ -129,7 +143,6 @@ GeomEppy also provides some additional functions such as
 Forthcoming
 -----------
 
--  Scaling blocks
 -  Geometry validation and correction
 -  Geometry simplification
 -  Better geometry visualisation

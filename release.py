@@ -67,13 +67,8 @@ def main():
         print(subprocess.check_output(
             ['git', 'push', 'origin', ':refs/tags/release/%s' % new_version, 'v%s' % new_version])
         )
-        exit()
-    try:
-        print(subprocess.check_output(['twine', 'upload', 'dist/geomeppy-%s.tar.gz' % new_version]))
-    except Exception as e:
-        print('too late to roll back')
-        print(e)
-        exit()
+    # from here, the Travis CI magic begins
+
 
 if __name__ == '__main__':
     main()
