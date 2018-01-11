@@ -54,9 +54,6 @@ def main():
         print(subprocess.check_output(['git', 'tag', '-m', 'release/%s' % new_version, 'v%s' % new_version]))
         # push to github
         print(subprocess.check_output(['git', 'push', 'origin', 'master', '-f']))
-        # create dist
-        print(subprocess.check_output(['python', 'setup.py', 'sdist']))
-        # release
     except Exception as e:
         # rollback
         print('rolling back tag')
