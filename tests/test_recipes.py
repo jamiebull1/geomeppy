@@ -188,22 +188,22 @@ def new_idf():
 
 @pytest.fixture()
 def wwr_idf(new_idf):
-    new_idf.newidfobject(
-        'FENESTRATIONSURFACE:DETAILED',
-        Name='window1',
-        Surface_Type='window',
-        Construction_Name='ExtWindow',
-        Building_Surface_Name='wall1',
-    )
-    wall = new_idf.newidfobject(
-        'BUILDINGSURFACE:DETAILED',
-        Name='wall1',
-        Surface_Type='wall',
-        Outside_Boundary_Condition='Outdoors',
-
-    )
-    wall.setcoords([[0,0,0], [0,1,0], [0,1,1], [0,0,1]])
-
+    test_walls = [[0,0,0], [0,1,0], [0,1,1], [0,0,1]], [[0,0,0], [1,0,0], [1,0,1], [0,0,1]]
+    for i, coords in enumerate(test_walls, 1):
+        new_idf.newidfobject(
+            'FENESTRATIONSURFACE:DETAILED',
+            Name='window%s' % i,
+            Surface_Type='window',
+            Construction_Name='ExtWindow',
+            Building_Surface_Name='wall%s' % i,
+        )
+        wall = new_idf.newidfobject(
+            'BUILDINGSURFACE:DETAILED',
+            Name='wall%s' % i,
+            Surface_Type='wall',
+            Outside_Boundary_Condition='Outdoors',
+        )
+        wall.setcoords(coords)
     return new_idf
 
 
@@ -218,7 +218,25 @@ class TestWWR:
         idf = wwr_idf
         wwr = 0.2
         idf.set_wwr(wwr)
-        assert self.is_expected_wwr(idf, wwr)
+        assert self.is_expected_wwr(idf, wwr), 'Not all walls have the expected WWR set'
+
+    def test_wwr_map(self, wwr_idf):
+        idf = wwr_idf
+        expected_wwr = 0.2
+        idf.set_wwr(wwr=0.99, wwr_map={90.0: 0.1, 180: 0.3})
+        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
+
+    def test_wwr_zero(self, wwr_idf):
+        idf = wwr_idf
+        idf.set_wwr(wwr=0, wwr_map={90.0: 0.1})
+        expected_wwr = 0.05
+        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
+
+    def test_wwr_none(self, wwr_idf):
+        idf = wwr_idf
+        idf.set_wwr(wwr=None, wwr_map={90.0: 0.3})
+        expected_wwr = 0.15
+        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
 
     def test_wwr_two_window_constructions(self, wwr_idf):
         idf = wwr_idf

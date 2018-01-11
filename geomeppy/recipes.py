@@ -77,14 +77,15 @@ def set_default_construction(surface):
         surface.Construction_Name = 'Project Door'
 
 
-def set_wwr(idf, wwr=0.2, construction=None, force=False):
-    # type: (IDF, Optional[float], Optional[str], Optional[bool]) -> None
+def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
+    # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
     """Set the window to wall ratio on all external walls.
 
     :param idf: The IDF to edit.
     :param wwr: The window to wall ratio.
     :param construction: Name of a window construction.
     :param force: True to remove all subsurfaces before setting the WWR.
+    :param wwr_map: Mapping from wall orientation (azimuth) to WWR, e.g. {180: 0.25, 90: 0.2}.
 
     """
     try:
@@ -96,6 +97,7 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False):
         if s.Surface_Type.lower() == 'wall' and s.Outside_Boundary_Condition.lower() == 'outdoors'
     ]
     subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index['ref2names']['SubSurfNames']]
+    base_wwr = wwr
     for wall in external_walls:
         # get any subsurfaces on the wall
         wall_subsurfaces = [
@@ -116,6 +118,9 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False):
         # remove all subsurfaces
         for ss in wall_subsurfaces:
             idf.removeidfobject(ss)
+        wwr = wwr_map.get(wall.azimuth) or base_wwr
+        if not wwr:
+            return
         coords = window_vertices_given_wall(wall, wwr)
         window = idf.newidfobject(
             'FENESTRATIONSURFACE:DETAILED',
