@@ -53,7 +53,7 @@ def main():
         # push the changes
         print(subprocess.check_output(['git', 'push', 'origin', 'develop', '-f']))
         # create a tagged release
-        print(subprocess.check_output(['git', 'tag', '-m', 'release/%s' % new_version, 'v%s' % new_version]))
+        print(subprocess.check_output(['git', 'tag', 'release/%s' % new_version, '-m', 'v%s' % new_version]))
         # push to github
         print(subprocess.check_output(['git', 'push', 'origin', 'release/%s' % new_version, '-f']))
     except Exception as e:
