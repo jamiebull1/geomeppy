@@ -7,7 +7,7 @@
 """pytest for polygons.py"""
 
 from geomeppy.geom.polygons import (
-    break_polygons, difference_3D_polys, intersect_3D_polys, Polygon2D, Polygon3D, union_2D_polys, union_3D_polys,
+    break_polygons, difference_3D_polys, intersect_3D_polys, Polygon2D, Polygon3D, union_3D_polys,
     Vector2D, Vector3D,
 )
 from geomeppy.geom.segments import Segment
@@ -243,15 +243,13 @@ def test_union_2D_polys_single():
     expected = [Polygon2D([(0, 0), (0, 2), (1, 2), (1, 3),
                            (3,3), (3,1), (2,1), (2,0)])]  # clockwise
     
-    result = union_2D_polys(s1, s2)
+    result = s1.union(s2)
     for res, exp in zip(result, expected):
         assert res == exp
 
-    result = s1.union(s2)
-    assert res == exp
-
     result = s2.union(s1)
-    assert res == exp
+    for res, exp in zip(result, expected):
+        assert res == exp
 
 
 def test_intersect_2D_polys_single():
