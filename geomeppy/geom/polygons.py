@@ -20,13 +20,14 @@ from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
 from shapely import wkt
 
+from .clippers import Clipper2D
 from .segments import Segment
 from .transformations import align_face, invert_align_face
 from .vectors import normalise_vector, Vector2D, Vector3D
 from ..utilities import almostequal
 
 
-class Polygon2D(MutableSequence):
+class Polygon2D(MutableSequence, Clipper2D):
     """Two-dimensional polygon."""
     n_dims = 2
     vector_class = Vector2D
