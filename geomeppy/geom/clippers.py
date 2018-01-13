@@ -4,7 +4,10 @@
 #  (See accompanying file LICENSE or copy at
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
-"""Perform clipping operations on Polygons."""
+"""Perform clipping operations on Polygons.
+
+PyClipper is used for clipping.
+"""
 import pyclipper as pc
 
 if False: from .polygons import Polygon2D,  Polygon3D  # noqa

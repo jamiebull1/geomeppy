@@ -4,13 +4,7 @@
 #  (See accompanying file LICENSE or copy at
 #  http://opensource.org/licenses/MIT)
 # =======================================================================
-"""
-Heavy lifting geometry for IDF surfaces.
-
-PyClipper is used for clipping.
-
-"""
-import pyclipper as pc
+"""Heavy lifting geometry for IDF surfaces."""
 from collections import MutableSequence
 from itertools import product
 from typing import Any, List, Tuple, Union  # noqa
@@ -825,3 +819,23 @@ def is_hole(surface, possible_hole):
             surface.edges,
             possible_hole.edges))
     return not any(collinear_edges)
+
+
+def bounding_box(polygons):
+    top_left = (
+        min(min(c[0] for c in f.coords) for f in polygons),
+        max(max(c[1] for c in f.coords) for f in polygons)
+    )
+    bottom_left = (
+        min(min(c[0] for c in f.coords) for f in polygons),
+        min(min(c[1] for c in f.coords) for f in polygons)
+    )
+    bottom_right = (
+        max(max(c[0] for c in f.coords) for f in polygons),
+        min(min(c[1] for c in f.coords) for f in polygons)
+    )
+    top_right = (
+        max(max(c[0] for c in f.coords) for f in polygons),
+        max(max(c[1] for c in f.coords) for f in polygons)
+    )
+    return Polygon2D([top_left, bottom_left, bottom_right, top_right])
