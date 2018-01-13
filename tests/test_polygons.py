@@ -6,10 +6,7 @@
 # =======================================================================
 """pytest for polygons.py"""
 
-from geomeppy.geom.polygons import (
-    break_polygons, difference_3D_polys, intersect_3D_polys, Polygon2D, Polygon3D, union_3D_polys,
-    Vector2D, Vector3D,
-)
+from geomeppy.geom.polygons import break_polygons, Polygon2D, Polygon3D, Vector2D, Vector3D
 from geomeppy.geom.segments import Segment
 from geomeppy.utilities import almostequal
 
@@ -309,15 +306,13 @@ def test_union_3D_polys_single():
     expected = [Polygon3D([(0,0,0), (0,2,0), (1,2,0), (1,3,0),
                            (3,3,0), (3,1,0), (2,1,0), (2,0,0)])]  # clockwise
     
-    result = union_3D_polys(s1, s2)
+    result = s1.union(s2)
     for res, exp in zip(result, expected):
         assert res == exp
 
-    result = s1.union(s2)
-    assert res == exp
-
     result = s2.union(s1)
-    assert res == exp
+    for res, exp in zip(result, expected):
+        assert res == exp
 
 
 def test_intersect_3D_polys_single():
@@ -332,7 +327,7 @@ def test_intersect_3D_polys_single():
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = Polygon3D([(1,3,0), (3,3,0), (3,1,0), (1,1,0)])  # clockwise
     expected = [Polygon3D([(1,2,0), (2,2,0), (2,1,0), (1,1,0)])]  #clockwise
-    result = intersect_3D_polys(s1, s2)
+    result = s1.intersect(s2)
     for res, exp in zip(result, expected):
         assert res == exp
 
@@ -354,7 +349,7 @@ def test_difference_3D_polys_single():
     ex_s2 = [Polygon3D([(1,3,0), (3,3,0), (3,1,0), (2,1,0), (2,2,0), (1,2,0)])]
     expected = [ex_s1, ex_s2]
 
-    result = [difference_3D_polys(s1, s2), difference_3D_polys(s2, s1)]
+    result = [s1.difference(s2), s2.difference(s1)]
     assert result[0] == expected[0]
     assert result[1] == expected[1]
     
@@ -366,7 +361,7 @@ def test_intersect_3D_polys_angled():
     expected = [Polygon3D([(2.0, 2.0, 0.0), (1.5, 2.05, 0.0),
                            (1.5, 2.05, 0.5),(2.0, 2.0, 0.5)])]
 
-    result = intersect_3D_polys(s1, s2)
+    result = s1.intersect(s2)
 
     assert result == expected
 
@@ -377,7 +372,7 @@ def test_intersect_no_overlap():
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = Polygon3D([(2,3,0), (3,3,0), (3,1,0), (2,1,0)])  # clockwise
     expected = []  #clockwise
-    result = intersect_3D_polys(s1, s2)
+    result = s1.intersect(s2)
     assert result == expected
 
 
@@ -387,7 +382,7 @@ def test_difference_no_difference():
     s1 = Polygon3D([(0,2,0), (2,2,0), (2,0,0), (0,0,0)])  # clockwise
     s2 = s1
     expected = []  #clockwise
-    result = difference_3D_polys(s1, s2)
+    result = s1.difference(s2)
     assert result == expected
 
 
@@ -412,7 +407,7 @@ def test_intersect_3D_polys_multi():
 
     expected = [ex_s1, ex_s2]
     expected.extend(overlap)
-    result = intersect_3D_polys(s1, s2)
+    result = s1.intersect(s2)
     
     for res, exp in zip(result, overlap):
         assert res == exp
@@ -444,7 +439,7 @@ def test_difference_3D_polys_multi():
     ex_s2 = [Polygon3D([(1,2,0), (4,2,0), (4,3,0), (1,3,0)])]
 
     expected = [ex_s1, ex_s2]
-    result = [difference_3D_polys(s1, s2), difference_3D_polys(s2, s1)]
+    result = [s1.difference(s2), s2.difference(s1)]
     
     for res, exp in zip(result, expected):
         assert len(res) == len(exp)

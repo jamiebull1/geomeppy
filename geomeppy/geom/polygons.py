@@ -20,7 +20,7 @@ from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
 from shapely import wkt
 
-from .clippers import Clipper2D
+from .clippers import Clipper2D, Clipper3D
 from .segments import Segment
 from .transformations import align_face, invert_align_face
 from .vectors import normalise_vector, Vector2D, Vector3D
@@ -272,14 +272,10 @@ def section(first, last, coords):
     return section_on_hole
 
 
-class Polygon3D(Polygon2D):
+class Polygon3D(Polygon, Clipper3D):
     """Three-dimensional polygon."""
     n_dims = 3
     vector_class = Vector3D
-
-    def __init__(self, vertices):
-        # type: (Any) -> None
-        super(Polygon3D, self).__init__(vertices)
 
     def __eq__(self, other):
         # type: (Polygon3D) -> bool
@@ -468,60 +464,6 @@ class Polygon3D(Polygon2D):
 
         return Polygon2D([pt[:2] for pt in projected_points])
 
-    def union(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Union with another 3D polygon.
-
-        Parameters
-        ----------
-        poly : Polygon3D
-            The clip polygon.
-
-        Returns
-        -------
-        list or False
-            False if no union, otherwise a list of lists of Polygon3D
-            objects representing each union.
-
-        """
-        return union_3D_polys(self, poly)
-
-    def intersect(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Intersect with another 3D polygon.
-
-        Parameters
-        ----------
-        poly : Polygon3D
-            The clip polygon.
-
-        Returns
-        -------
-        list or False
-            False if no intersection, otherwise a list of lists of Polygon3D
-            objects representing each intersection.
-
-        """
-        return intersect_3D_polys(self, poly)
-
-    def difference(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Difference from another 3D polygon.
-
-        Parameters
-        ----------
-        poly : Polygon3D
-            The clip polygon.
-
-        Returns
-        -------
-        list or False
-            False if no difference, otherwise a list of lists of Polygon3D
-            objects representing each intersection.
-
-        """
-        return difference_3D_polys(self, poly)
-
     def normalize_coords(self, ggr):
         # type: (Union[List, None, Idf_MSequence]) -> Polygon3D
         """Order points, respecting the global geometry rules
@@ -596,167 +538,6 @@ def normal_vector(poly):
         n[2] += (v_curr.x - v_next.x) * (v_curr.y + v_next.y)
 
     return normalise_vector(n)
-
-
-def prep_3D_polys(poly1, poly2):
-    # type: (Polygon3D, Polygon3D) -> pc.Pyclipper
-    """Prepare two 3D polygons for clipping operations.
-
-    Parameters
-    ----------
-    poly1 : Polygon3D
-        The subject polygon.
-    poly2 : Polygon3D
-        The clip polygon.
-
-    Returns
-    -------
-    pc.Pyclipper object
-
-    """
-    if not poly1.is_coplanar(poly2):
-        return False
-    poly1 = poly1.project_to_2D()
-    poly2 = poly2.project_to_2D()
-
-    s1 = pc.scale_to_clipper(poly1.vertices_list)
-    s2 = pc.scale_to_clipper(poly2.vertices_list)
-    clipper = pc.Pyclipper()
-    clipper.AddPath(s1, poly_type=pc.PT_SUBJECT, closed=True)
-    clipper.AddPath(s2, poly_type=pc.PT_CLIP, closed=True)
-
-    return clipper
-
-
-def union_3D_polys(poly1, poly2):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
-    """Union of two 3D polygons.
-
-    Parameters
-    ----------
-    poly1 : Polygon3D
-        The subject polygon.
-    poly2 : Polygon3D
-        The clip polygon.
-
-    Returns
-    -------
-    list or False
-        A list of lists of Polygon3D objects representing each union.
-
-    """
-    clipper = prep_3D_polys(poly1, poly2)
-    if not clipper:
-        return []
-    unions = clipper.Execute(
-        pc.CT_UNION, pc.PFT_NONZERO, pc.PFT_NONZERO)
-
-    polys = process_clipped_3D_polys(unions, poly1)
-
-    # orient to match poly1
-    results = []
-    for poly in polys:
-        if almostequal(poly.normal_vector, poly1.normal_vector):
-            results.append(poly)
-        else:
-            results.append(poly.invert_orientation())
-
-    return results
-
-
-def intersect_3D_polys(poly1, poly2):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
-    """Intersection of two 3D polygons.
-
-    Parameters
-    ----------
-    poly1 : Polygon3D
-        The subject polygon.
-    poly2 : Polygon3D
-        The clip polygon.
-
-    Returns
-    -------
-    list or False
-        False if no intersection, otherwise a list of lists of Polygon3D
-        objects representing each intersection.
-
-    """
-    clipper = prep_3D_polys(poly1, poly2)
-    if not clipper:
-        return []
-    intersections = clipper.Execute(
-        pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
-
-    polys = process_clipped_3D_polys(intersections, poly1)
-    # orient to match poly1
-    results = []
-    for poly in polys:
-        if almostequal(poly.normal_vector, poly1.normal_vector):
-            results.append(poly)
-        else:
-            results.append(poly.invert_orientation())
-
-    return results
-
-
-def difference_3D_polys(poly1, poly2):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
-    """Difference between two 3D polygons.
-
-    Parameters
-    ----------
-    poly1 : Polygon3D
-        The subject polygon.
-    poly2 : Polygon3D
-        The clip polygon.
-
-    Returns
-    -------
-    list or False
-        False if no difference, otherwise a list of lists of Polygon3D
-        objects representing each difference.
-
-    """
-    clipper = prep_3D_polys(poly1, poly2)
-    if not clipper:
-        return []
-    differences = clipper.Execute(
-        pc.CT_DIFFERENCE, pc.PFT_NONZERO, pc.PFT_NONZERO)
-
-    polys = process_clipped_3D_polys(differences, poly1)
-
-    # orient to match poly1
-    results = []
-    for poly in polys:
-        if almostequal(poly.normal_vector, poly1.normal_vector):
-            results.append(poly)
-        else:
-            results.append(poly.invert_orientation())
-
-    return results
-
-
-def process_clipped_3D_polys(results, example3d):
-    # type: (List[List[List[int]]], Polygon3D) -> List[Polygon3D]
-    """Convert 2D clipping results back to 3D.
-
-    Parameters
-    ----------
-    example3d : Polygon3D
-        Used to find the plane to project the 2D polygons into.
-
-    Returns
-    -------
-    list or False
-        List of Poygon3D if result found, otherwise False.
-
-    """
-    if results:
-        res_vertices = [pc.scale_from_clipper(r) for r in results]
-        return [Polygon2D(v).project_to_3D(example3d) for v in res_vertices]
-    else:
-        return []
 
 
 def project_to_2D(vertices, proj_axis):
