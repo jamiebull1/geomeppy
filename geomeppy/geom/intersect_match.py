@@ -9,6 +9,7 @@
 from collections import defaultdict
 from itertools import combinations, product
 from typing import Dict, List, Optional, Union  # noqa
+import warnings
 
 from eppy.idf_msequence import Idf_MSequence  # noqa
 from numpy import float64  # noqa
@@ -263,6 +264,11 @@ def set_coords(surface,  # type: EpBunch
     poly = Polygon3D(coords)
     poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
+    if len(coords) > 120:
+        warnings.warn(
+            'To create surfaces with >120 vertices, ensure you have customised your IDD before running EnergyPlus. '
+            'https://unmethours.com/question/9343/energy-idf-parsing-error/?answer=9344#post-id-9344'
+        )
     # find the vertex fields
     n_vertices_index = surface.objls.index('Number_of_Vertices')
     first_x = n_vertices_index + 1  # X of first coordinate
