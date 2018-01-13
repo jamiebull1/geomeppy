@@ -1,9 +1,8 @@
 from os import fdopen, remove
 from shutil import move
 import subprocess
+import sys
 from tempfile import mkstemp
-
-import twine  # noqa
 
 from geomeppy import __version__
 
@@ -21,7 +20,7 @@ def replace(file_path, pattern, subst):
     move(abs_path, file_path)
 
 
-def main():
+def main(increment):
     # check we're on master
     assert b'* develop' in subprocess.check_output(['git', 'branch']), 'Not on develop branch'
     # check we're up-to-date
@@ -32,7 +31,15 @@ def main():
     # increment version
     version = __version__
     major, minor, patch = version.split('.')
-    new_version = '%s.%s.%d' % (major, minor, int(patch) + 1)
+    version = [int(i) for i in version.split('.')]
+    version[increment] += 1
+    for i in range(len(version)):
+        if i == increment:
+            version[i] += 1
+        if i > increment:
+            version[i] = 1
+
+    new_version = '%d.%d.%d' % (major, minor, int(patch) + 1)
     replace('geomeppy/__init__.py', version, new_version)
     replace('setup.py', "version='%s'" % version, "version='%s'" % new_version)
     replace('setup.py', "tarball/v%s" % version, "tarball/v%s" % new_version)
@@ -70,4 +77,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv[1:]
+    VERSION = ['major', 'minor', 'patch']
+    try:
+        increment = VERSION.index(sys.argv[1])
+    except ValueError:
+        print('%s is not a valid semantic version level (use major, minor, or patch)' % sys.argv[1])
+    except IndexError:
+        # default
+        increment = VERSION.index('patch')
+
+    main(increment)
