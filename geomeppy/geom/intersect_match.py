@@ -18,7 +18,7 @@ from geomeppy.utilities import almostequal
 
 MYPY = False
 if MYPY:
-    from geomeppy.eppy_patches import EpBunch, IDF  # noqa
+    from geomeppy.patches import EpBunch, IDF  # noqa
 
 
 def getidfsurfaces(idf, surface_type=None):

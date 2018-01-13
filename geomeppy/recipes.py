@@ -18,7 +18,7 @@ from .geom.vectors import Vector2D, Vector3D  # noqa
 
 MYPY = False
 if MYPY:
-    from .eppy_patches import EpBunch, IDF  # noqa
+    from .patches import EpBunch, IDF  # noqa
 
 
 def set_default_constructions(idf):

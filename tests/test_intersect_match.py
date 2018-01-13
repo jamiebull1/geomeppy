@@ -10,7 +10,7 @@ import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
-from geomeppy.eppy_patches import IDF
+from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import (
     get_adjacencies, getidfsurfaces, intersect_idf_surfaces, match_idf_surfaces,
 )

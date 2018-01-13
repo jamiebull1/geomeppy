@@ -9,7 +9,7 @@ from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
 from geomeppy.builder import Block
-from geomeppy.eppy_patches import IDF
+from geomeppy.idf import IDF
 
 
 idf_txt = """
