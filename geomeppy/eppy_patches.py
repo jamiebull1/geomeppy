@@ -35,7 +35,7 @@ from geomeppy.geom.intersect_match import (
     set_coords,
 )
 from .builder import Block, Zone
-from .geom.polygons import Polygon, Polygon3D  # noqa
+from .geom.polygons import Polygon2D, Polygon3D  # noqa
 from .geom.vectors import Vector2D, Vector3D  # noqa
 from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
 from .view_geometry import view_idf
@@ -334,7 +334,7 @@ class IDF(BaseIDF):
         return getidfsurfaces(self, surface_type)
 
     def bounding_box(self):
-        # type: () -> Polygon
+        # type: () -> Polygon2D
         """Calculate the site bounding box.
 
         :returns: A polygon of the bounding box.
@@ -342,22 +342,22 @@ class IDF(BaseIDF):
         """
         floors = self.getsurfaces('floor')
         top_left = Vector2D(
-            min(min(Polygon(f.coords).xs) for f in floors),
-            max(max(Polygon(f.coords).ys) for f in floors)
+            min(min(Polygon2D(f.coords).xs) for f in floors),
+            max(max(Polygon2D(f.coords).ys) for f in floors)
         )
         bottom_left = Vector2D(
-            min(min(Polygon(f.coords).xs) for f in floors),
-            min(min(Polygon(f.coords).ys) for f in floors)
+            min(min(Polygon2D(f.coords).xs) for f in floors),
+            min(min(Polygon2D(f.coords).ys) for f in floors)
         )
         bottom_right = Vector2D(
-            max(max(Polygon(f.coords).xs) for f in floors),
-            min(min(Polygon(f.coords).ys) for f in floors)
+            max(max(Polygon2D(f.coords).xs) for f in floors),
+            min(min(Polygon2D(f.coords).ys) for f in floors)
         )
         top_right = Vector2D(
-            max(max(Polygon(f.coords).xs) for f in floors),
-            max(max(Polygon(f.coords).ys) for f in floors)
+            max(max(Polygon2D(f.coords).xs) for f in floors),
+            max(max(Polygon2D(f.coords).ys) for f in floors)
         )
-        return Polygon([top_left, bottom_left, bottom_right, top_right])
+        return Polygon2D([top_left, bottom_left, bottom_right, top_right])
 
     @property
     def centroid(self):

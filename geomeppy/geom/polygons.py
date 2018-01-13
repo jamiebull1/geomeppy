@@ -26,14 +26,15 @@ from .vectors import normalise_vector, Vector2D, Vector3D
 from ..utilities import almostequal
 
 
-class Polygon(MutableSequence):
+class Polygon2D(MutableSequence):
     """Two-dimensional polygon."""
     n_dims = 2
+    vector_class = Vector2D
 
     def __init__(self, vertices):
         # type: (Any) -> None
-        super(Polygon, self).__init__()
-        self.vertices = [Vector2D(*v) for v in vertices]
+        super(Polygon2D, self).__init__()
+        self.vertices = [self.vector_class(*v) for v in vertices]
 
     def __repr__(self):
         # type: () -> str
@@ -55,7 +56,7 @@ class Polygon(MutableSequence):
         self.vertices[key] = value
 
     def __eq__(self, other):
-        # type: (Polygon) -> bool
+        # type: (Polygon2D) -> bool
         if self.__dict__ == other.__dict__:  # try the simple case first
             return True
         else:  # also cover same shape in different rotation
@@ -66,9 +67,9 @@ class Polygon(MutableSequence):
         return False
 
     def __add__(self,
-                other  # type: Union[Polygon, Vector2D, Vector3D]
+                other  # type: Union[Polygon2D, Vector2D, Vector3D]
                 ):
-        # type: (...) -> Union[None, Polygon, Polygon3D]
+        # type: (...) -> Union[None, Polygon2D, Polygon3D]
         if len(self) == len(other) and hasattr(other[0], '__len__'):
             # add together two equal polygons
             vertices = [v1 + v2 for v1, v2 in zip(self, other)]
@@ -207,7 +208,7 @@ class Polygon(MutableSequence):
         return area(self)
 
     def invert_orientation(self):
-        # type: () -> Union[Polygon, Polygon3D]
+        # type: () -> Union[Polygon2D, Polygon3D]
         """Reverse the order of the vertices.
 
         This can be used to create a matching surface, e.g. the other side of a wall.
@@ -234,7 +235,7 @@ class Polygon(MutableSequence):
         return Polygon3D(projected_points)
 
     def union(self, poly):
-        # type: (Polygon) -> List[Polygon]
+        # type: (Polygon2D) -> List[Polygon2D]
         """Union with another 2D polygon.
 
         :param poly: The clip polygon.
@@ -243,7 +244,7 @@ class Polygon(MutableSequence):
         return union_2D_polys(self, poly)
 
     def intersect(self, poly):
-        # type: (Polygon) -> Union[bool, List[Polygon]]
+        # type: (Polygon2D) -> Union[bool, List[Polygon2D]]
         """Intersect with another 2D polygon.
 
         :param poly: The clip polygon.
@@ -252,7 +253,7 @@ class Polygon(MutableSequence):
         return intersect_2D_polys(self, poly)
 
     def difference(self, poly):
-        # type: (Polygon) -> Union[bool, List[Polygon]]
+        # type: (Polygon2D) -> Union[bool, List[Polygon2D]]
         """Intersect with another 2D polygon.
 
         :param poly: The clip polygon.
@@ -325,7 +326,7 @@ def section(first, last, coords):
 
 
 def prep_2D_polys(poly1, poly2):
-    # type: (Polygon, Polygon) -> pc.Pyclipper
+    # type: (Polygon2D, Polygon2D) -> pc.Pyclipper
     """Prepare two 2D polygons for clipping operations.
 
     :param poly1: The subject polygon.
@@ -341,7 +342,7 @@ def prep_2D_polys(poly1, poly2):
 
 
 def union_2D_polys(poly1, poly2):
-    # type: (Polygon, Polygon) -> List[Polygon]
+    # type: (Polygon2D, Polygon2D) -> List[Polygon2D]
     """Union of two 2D polygons.
 
     Find the combined shape of poly1 and poly2.
@@ -365,7 +366,7 @@ def union_2D_polys(poly1, poly2):
 
 
 def intersect_2D_polys(poly1, poly2):
-    # type: (Polygon, Polygon) -> List[Polygon]
+    # type: (Polygon2D, Polygon2D) -> List[Polygon2D]
     """Intersect two 2D polygons.
 
     Find the area/s that poly1 shares with poly2.
@@ -389,7 +390,7 @@ def intersect_2D_polys(poly1, poly2):
 
 
 def difference_2D_polys(poly1, poly2):
-    # type: (Polygon, Polygon) -> List[Polygon]
+    # type: (Polygon2D, Polygon2D) -> List[Polygon2D]
     """Difference from two 2D polygons.
 
     Equivalent to subtracting poly2 from poly1.
@@ -413,7 +414,7 @@ def difference_2D_polys(poly1, poly2):
 
 
 def process_clipped_2D_polys(results):
-    # type: (List[List[List[int]]]) -> List[Polygon]
+    # type: (List[List[List[int]]]) -> List[Polygon2D]
     """Process and return the results of a clipping operation.
 
     :param poly1: The subject polygon.
@@ -422,21 +423,19 @@ def process_clipped_2D_polys(results):
     """
     if results:
         results = [pc.scale_from_clipper(r) for r in results]
-        return [Polygon(r) for r in results]
+        return [Polygon2D(r) for r in results]
     else:
         return []
 
 
-class Polygon3D(Polygon):
+class Polygon3D(Polygon2D):
     """Three-dimensional polygon."""
     n_dims = 3
+    vector_class = Vector3D
 
     def __init__(self, vertices):
         # type: (Any) -> None
-        try:
-            self.vertices = [Vector3D(*v) for v in vertices]
-        except TypeError:
-            self.vertices = vertices
+        super(Polygon3D, self).__init__(vertices)
 
     def __eq__(self, other):
         # type: (Polygon3D) -> bool
@@ -607,7 +606,7 @@ class Polygon3D(Polygon):
         return Polygon3D(new_vertices)
 
     def project_to_2D(self):
-        # type: () -> Polygon
+        # type: () -> Polygon2D
         """Project the 3D polygon into 2D space.
 
         This is so that we can perform operations on it using pyclipper library.
@@ -623,7 +622,7 @@ class Polygon3D(Polygon):
         points = self.points_matrix
         projected_points = project_to_2D(points, self.projection_axis)
 
-        return Polygon([pt[:2] for pt in projected_points])
+        return Polygon2D([pt[:2] for pt in projected_points])
 
     def union(self, poly):
         # type: (Polygon3D) -> List[Polygon3D]
@@ -880,7 +879,7 @@ def process_clipped_3D_polys(results, example3d):
     """
     if results:
         res_vertices = [pc.scale_from_clipper(r) for r in results]
-        return [Polygon(v).project_to_3D(example3d) for v in res_vertices]
+        return [Polygon2D(v).project_to_3D(example3d) for v in res_vertices]
     else:
         return []
 
@@ -1130,7 +1129,7 @@ def intersect(poly1, poly2):
 
 
 def unique(polys):
-    # type: (List[Union[Polygon, Polygon3D]]) -> List[Union[Polygon, Polygon3D]]
+    # type: (List[Union[Polygon2D, Polygon3D]]) -> List[Union[Polygon2D, Polygon3D]]
     """Make a unique set of polygons.
 
     :param polys: A list of polygons.
@@ -1138,7 +1137,7 @@ def unique(polys):
     """
     flattened = []
     for item in polys:
-        if isinstance(item, (Polygon, Polygon3D)):
+        if isinstance(item, (Polygon2D, Polygon3D)):
             flattened.append(item)
         elif isinstance(item, list):
             flattened.extend(item)
@@ -1152,7 +1151,7 @@ def unique(polys):
 
 
 def is_hole(surface, possible_hole):
-    # type: (Union[Polygon, Polygon3D], Union[Polygon, Polygon3D]) -> bool
+    # type: (Union[Polygon2D, Polygon3D], Union[Polygon2D, Polygon3D]) -> bool
     """Identify if an intersection is a hole in the surface.
 
     Check the intersection touches an edge of the surface. If it doesn't then it represents a hole, and this needs

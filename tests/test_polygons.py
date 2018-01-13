@@ -7,7 +7,7 @@
 """pytest for polygons.py"""
 
 from geomeppy.geom.polygons import (
-    break_polygons, difference_3D_polys, intersect_3D_polys, Polygon, Polygon3D, union_2D_polys, union_3D_polys,
+    break_polygons, difference_3D_polys, intersect_3D_polys, Polygon2D, Polygon3D, union_2D_polys, union_3D_polys,
     Vector2D, Vector3D,
 )
 from geomeppy.geom.segments import Segment
@@ -16,7 +16,7 @@ from geomeppy.utilities import almostequal
 
 def test_polygon_repr():
     # type: () -> None
-    s2D = Polygon([(0,0), (2,0), (2,0), (0,0)])  # vertical
+    s2D = Polygon2D([(0, 0), (2, 0), (2, 0), (0, 0)])  # vertical
     assert eval(repr(s2D)) == s2D
     
     s3D = Polygon3D([(0,0,0), (2,0,0), (2,2,0), (0,2,0)])  # vertical
@@ -25,23 +25,23 @@ def test_polygon_repr():
 
 def test_equal_polygon():
     # type: () -> None
-    poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
-    poly2 = Polygon([(1,1),(1,0),(0,0),(0,1)])
+    poly1 = Polygon2D([(1, 0), (0, 0), (0, 1), (1, 1)])
+    poly2 = Polygon2D([(1, 1), (1, 0), (0, 0), (0, 1)])
     assert poly1 == poly2
     
-    poly1 = Polygon([(1,0),(0,0),(0,1),(1,1)])
-    poly2 = Polygon(reversed([(1,1),(1,0),(0,0),(0,1)]))
+    poly1 = Polygon2D([(1, 0), (0, 0), (0, 1), (1, 1)])
+    poly2 = Polygon2D(reversed([(1, 1), (1, 0), (0, 0), (0, 1)]))
     assert poly1 != poly2
     
     
 def test_equal_polygon3D():
     # type: () -> None
-    poly1 = Polygon([(1,0,0),(0,0,0),(0,1,0),(1,1,0)])
-    poly2 = Polygon([(1,1,0),(1,0,0),(0,0,0),(0,1,0)])
+    poly1 = Polygon2D([(1, 0, 0), (0, 0, 0), (0, 1, 0), (1, 1, 0)])
+    poly2 = Polygon2D([(1, 1, 0), (1, 0, 0), (0, 0, 0), (0, 1, 0)])
     assert poly1 == poly2
     
-    poly1 = Polygon([(1,0,0),(0,0,0),(0,1,0),(1,1,0)])
-    poly2 = Polygon(reversed([(1,1,0),(1,0,0),(0,0,0),(0,1,0)]))
+    poly1 = Polygon2D([(1, 0, 0), (0, 0, 0), (0, 1, 0), (1, 1, 0)])
+    poly2 = Polygon2D(reversed([(1, 1, 0), (1, 0, 0), (0, 0, 0), (0, 1, 0)]))
     assert poly1 != poly2
     
     
@@ -54,7 +54,7 @@ def test_polygon_index():
 
 def test_polygon_attributes():
     # type: () -> None
-    poly2d = Polygon([(0,0), (0,1), (1,1), (1,0)])
+    poly2d = Polygon2D([(0, 0), (0, 1), (1, 1), (1, 0)])
     assert len(poly2d) == 4
     assert poly2d.xs == [0,0,1,1]
     assert poly2d.ys == [0,1,1,0] 
@@ -85,9 +85,9 @@ def test_polygon3d_attributes():
 def test_add_polygon_to_polygon():
     # type: () -> None
     # 2D
-    poly1 = Polygon([(1,0), (0,0), (0,1)])
-    poly2 = Polygon([(1,0), (1,0), (1,0)])
-    expected = Polygon([(2,0), (1,0), (1,1)])
+    poly1 = Polygon2D([(1, 0), (0, 0), (0, 1)])
+    poly2 = Polygon2D([(1, 0), (1, 0), (1, 0)])
+    expected = Polygon2D([(2, 0), (1, 0), (1, 1)])
     result = poly1 + poly2
     assert almostequal(result, expected)
 
@@ -102,9 +102,9 @@ def test_add_polygon_to_polygon():
     except ValueError:
         pass
     # 3D
-    poly1 = Polygon([(1,0,1), (0,0,1), (0,1,1)])
-    poly2 = Polygon([(1,0,1), (1,0,1), (1,0,1)])
-    expected = Polygon([(2,0,2), (1,0,2), (1,1,2)])
+    poly1 = Polygon2D([(1, 0, 1), (0, 0, 1), (0, 1, 1)])
+    poly2 = Polygon2D([(1, 0, 1), (1, 0, 1), (1, 0, 1)])
+    expected = Polygon2D([(2, 0, 2), (1, 0, 2), (1, 1, 2)])
     result = poly1 + poly2
     assert almostequal(result, expected)
 
@@ -167,10 +167,10 @@ def test_order_points():
 
 def test_bounding_box():
     # type: () -> None
-    poly = Polygon([(0,0), (0,1), (1,1), (1,0)])
+    poly = Polygon2D([(0, 0), (0, 1), (1, 1), (1, 0)])
     poly3d = Polygon3D([(0,0,0), (0,1,1), (1,1,1), (1,0,0)])
     
-    expected = Polygon([(1,1,1), (1,0,0), (0,0,0), (0,1,1)])
+    expected = Polygon2D([(1, 1, 1), (1, 0, 0), (0, 0, 0), (0, 1, 1)])
 
     result = poly3d.bounding_box
     assert almostequal(result, expected)
@@ -195,7 +195,7 @@ def test_rotate():
     """
     # At the origin
     s1 = Polygon3D([(0,0,2), (2,0,2), (0,0,0)])  # vertical
-    expected = Polygon([(0,2), (2,2), (0,0)])
+    expected = Polygon2D([(0, 2), (2, 2), (0, 0)])
     # convert to 2D    
     result = s1.project_to_2D()
     assert result == expected
@@ -206,7 +206,7 @@ def test_rotate():
     
     # Away from the origin
     s1 = Polygon3D([(1,0,2), (3,0,2), (1,0,0)])  # vertical
-    expected = Polygon([(1,2), (3,2), (1,0)])
+    expected = Polygon2D([(1, 2), (3, 2), (1, 0)])
     # convert to 2D    
     result = s1.project_to_2D()
 
@@ -218,7 +218,7 @@ def test_rotate():
 
     # Away from the origin
     s1 = Polygon3D([(0,1,1), (2,2,0), (2,2,2), (0,1,2)])  # vertical
-    expected = Polygon([(0.0, 1.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)])
+    expected = Polygon2D([(0.0, 1.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)])
 
     # convert to 2D    
     result = s1.project_to_2D()
@@ -238,10 +238,10 @@ def test_union_2D_polys_single():
     
     """
     # surface is already a flat plane with z == 0
-    s1 = Polygon([(0,2), (2,2), (2,0), (0,0)])  # clockwise
-    s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
-    expected = [Polygon([(0,0), (0,2), (1,2), (1,3),
-                                  (3,3), (3,1), (2,1), (2,0)])]  # clockwise
+    s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
+    s2 = Polygon2D([(1, 3), (3, 3), (3, 1), (1, 1)])  # clockwise
+    expected = [Polygon2D([(0, 0), (0, 2), (1, 2), (1, 3),
+                           (3,3), (3,1), (2,1), (2,0)])]  # clockwise
     
     result = union_2D_polys(s1, s2)
     for res, exp in zip(result, expected):
@@ -263,9 +263,9 @@ def test_intersect_2D_polys_single():
     
     """
     # surface is already a flat plane with z == 0
-    s1 = Polygon([(0,2), (2,2), (2,0), (0,0)])  # clockwise
-    s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
-    expected = [Polygon([(1,2), (2,2), (2,1), (1,1)])]  #clockwise
+    s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
+    s2 = Polygon2D([(1, 3), (3, 3), (3, 1), (1, 1)])  # clockwise
+    expected = [Polygon2D([(1, 2), (2, 2), (2, 1), (1, 1)])]  #clockwise
     
     result = s1.intersect(s2)
     for res, exp in zip(result, expected):
@@ -284,12 +284,12 @@ def test_difference_2D_polys_single():
     Fails if the two original polygons do not have the intersection removed.
     
     """
-    s1 = Polygon([(0,2), (2,2), (2,0), (0,0)])  # clockwise
-    s2 = Polygon([(1,3), (3,3), (3,1), (1,1)])  # clockwise
+    s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
+    s2 = Polygon2D([(1, 3), (3, 3), (3, 1), (1, 1)])  # clockwise
     
     # clockwise
-    ex_s1 = [Polygon([(0,2), (1,2), (1,1), (2,1), (2,0), (0,0)])]
-    ex_s2 = [Polygon([(1,3), (3,3), (3,1), (2,1), (2,2), (1,2)])]
+    ex_s1 = [Polygon2D([(0, 2), (1, 2), (1, 1), (2, 1), (2, 0), (0, 0)])]
+    ex_s2 = [Polygon2D([(1, 3), (3, 3), (3, 1), (2, 1), (2, 2), (1, 2)])]
     expected = [ex_s1, ex_s2]
 
     result = [s1.difference(s2), s2.difference(s1)]
