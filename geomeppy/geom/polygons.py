@@ -93,6 +93,16 @@ class Polygon(MutableSequence):
         return invert_align_face(self, bbox)
 
     @property
+    def centroid(self):
+        # type: () -> Vector2D
+        """The centroid of a polygon."""
+        return self.vector_class(
+            sum(self.xs) / len(self),
+            sum(self.ys) / len(self),
+            sum(self.zs) / len(self),
+        )
+
+    @property
     def edges(self):
         # type: () -> List[Segment]
         """A list of edges represented as Segment objects."""
@@ -167,14 +177,6 @@ class Polygon2D(Polygon, Clipper2D):
         return False
 
     @property
-    def centroid(self):
-        # type: () -> Vector2D
-        """The centroid of a polygon."""
-        return Vector2D(
-            sum(self.xs) / len(self),
-            sum(self.ys) / len(self))
-
-    @property
     def normal_vector(self):
         # type: () -> Vector3D
         as_3d = Polygon3D((v.x, v.y, 0) for v in self)
@@ -201,32 +203,6 @@ class Polygon2D(Polygon, Clipper2D):
     def zs(self):
         # type: () -> List[float]
         return [0.0] * len(self.vertices)
-
-
-def relative_distance(pt1, pt2):
-    # type: (Vector3D, Vector3D) -> float
-    """A distance function for sorting vectors by distance.
-
-    This only provides relative distance, not actual distance since we only use it for sorting.
-
-    :param pt1:
-    :param pt2:
-    :return:
-    """
-    direction = pt1 - pt2
-    return sum(x ** 2 for x in direction)
-
-
-def section(first, last, coords):
-    section_on_hole = []
-    for item in coords:
-        if item == first:
-            section_on_hole.append(item)
-        elif section_on_hole:
-            section_on_hole.append(item)
-            if item == last:
-                break
-    return section_on_hole
 
 
 class Polygon3D(Polygon, Clipper3D):
@@ -328,20 +304,6 @@ class Polygon3D(Polygon, Clipper3D):
             return True
         else:
             return False
-
-    @property
-    def centroid(self):
-        """The centroid of a polygon.
-
-        Returns
-        -------
-        Vector3D
-
-        """
-        return Vector3D(
-            sum(self.xs) / len(self),
-            sum(self.ys) / len(self),
-            sum(self.zs) / len(self))
 
     def outside_point(self, entry_direction='counterclockwise'):
         # type: (str) -> Vector3D
@@ -461,7 +423,7 @@ class Polygon3D(Polygon, Clipper3D):
                 # find the nearest points on the exterior and interior
                 links = product(interior, exterior)
                 links = sorted(
-                    links, key=lambda x: relative_distance(x[0], x[1]))
+                    links, key=lambda x: x[0].relative_distance(x[1]))
                 on_interior = links[0][0]
                 on_exterior = links[0][1]
                 # join them up
@@ -486,7 +448,7 @@ def break_polygons(poly, hole):
     """
     # take the two closest points on the surface perimeter
     links = product(poly, hole)
-    links = sorted(links, key=lambda x: relative_distance(x[0], x[1]))  # fast distance check
+    links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))  # fast distance check
 
     first_on_poly = links[0][0]
     last_on_poly = links[1][0]
@@ -509,6 +471,18 @@ def break_polygons(poly, hole):
         new_poly2 = new_poly2.invert_orientation()
 
     return [new_poly, new_poly2]
+
+
+def section(first, last, coords):
+    section_on_hole = []
+    for item in coords:
+        if item == first:
+            section_on_hole.append(item)
+        elif section_on_hole:
+            section_on_hole.append(item)
+            if item == last:
+                break
+    return section_on_hole
 
 
 def normal_vector(poly):
@@ -670,7 +644,13 @@ def set_entry_direction(poly,  # type: Polygon3D
                         ggr=None  # type: Union[List, None, Idf_MSequence]
                         ):
     # type: (...) -> Polygon3D
-    """Check and set entry direction."""
+    """Check and set entry direction for a polygon.
+
+    :param poly: A polygon.
+    :param outside_pt: A point beyond the outside face of the polygon.
+    :param ggr: EnergyPlus global geometry rules
+    :return: A polygon with the vertices correctly oriented.
+    """
     if not ggr:
         entry_direction = 'counterclockwise'  # EnergyPlus default
     else:
@@ -765,6 +745,11 @@ def is_hole(surface, possible_hole):
 
 
 def bounding_box(polygons):
+    """The bounding box which encompasses all of the polygons in the x,y plane.
+
+    :param polygons: A list of polygons.
+    :return: A 2D polygon.
+    """
     top_left = (
         min(min(c[0] for c in f.coords) for f in polygons),
         max(max(c[1] for c in f.coords) for f in polygons)

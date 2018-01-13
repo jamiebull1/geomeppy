@@ -171,6 +171,18 @@ class Vector2D(Sized):
         elif dims == 2:
             return float(self.x), float(self.y)
 
+    def relative_distance(self, v2):
+        # type: (Vector3D) -> float
+        """A distance function for sorting vectors by distance.
+
+        This only provides relative distance, not actual distance since we only use it for sorting.
+
+        :param v2: Another vector.
+        :return: Relative distance between two point vectors.
+        """
+        direction = self - v2
+        return sum(x ** 2 for x in direction)
+
 
 class Vector3D(Vector2D):
     """Three dimensional point."""
