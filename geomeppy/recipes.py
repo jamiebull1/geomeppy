@@ -32,9 +32,9 @@ def set_default_constructions(idf):
                      'Project Flat Roof', 'Project Ceiling',
                      'Project External Window', 'Project Door']
     for construction in constructions:
-        idf.newidfobject('CONSTRUCTION', construction,
+        idf.newidfobject('CONSTRUCTION', Name=construction,
                          Outside_Layer='DefaultMaterial')
-    idf.newidfobject('MATERIAL', 'DefaultMaterial',
+    idf.newidfobject('MATERIAL', Name='DefaultMaterial',
                      Roughness='Rough',
                      Thickness=0.1,
                      Conductivity=0.1,

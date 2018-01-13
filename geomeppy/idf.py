@@ -214,7 +214,7 @@ class IDF(PatchedIDF):
         except IndexError:
             ggr = None
         # add zone object
-        self.newidfobject('ZONE', zone.name)
+        self.newidfobject('ZONE', Name=zone.name)
 
         for surface_type in zone.__dict__.keys():
             if surface_type == 'name':
