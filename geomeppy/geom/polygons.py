@@ -61,7 +61,7 @@ class Polygon(MutableSequence):
         else:  # also cover same shape in different rotation
             if self.difference(other):
                 return False
-            if self.normal_vector == other.normal_vector:
+            if almostequal(self.normal_vector, other.normal_vector):
                 return True
         return False
 
@@ -356,7 +356,7 @@ def union_2D_polys(poly1, poly2):
     polys = process_clipped_2D_polys(intersections)
     results = []
     for poly in polys:
-        if poly.normal_vector == poly1.normal_vector:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
             results.append(poly)
         else:
             results.append(poly.invert_orientation())
@@ -380,7 +380,7 @@ def intersect_2D_polys(poly1, poly2):
     polys = process_clipped_2D_polys(intersections)
     results = []
     for poly in polys:
-        if poly.normal_vector == poly1.normal_vector:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
             results.append(poly)
         else:
             results.append(poly.invert_orientation())
@@ -404,7 +404,7 @@ def difference_2D_polys(poly1, poly2):
     polys = process_clipped_2D_polys(differences)
     results = []
     for poly in polys:
-        if poly.normal_vector == poly1.normal_vector:
+        if almostequal(poly.normal_vector, poly1.normal_vector):
             results.append(poly)
         else:
             results.append(poly.invert_orientation())
@@ -1079,8 +1079,7 @@ def set_entry_direction(poly,  # type: Polygon3D
                         ggr=None  # type: Union[List, None, Idf_MSequence]
                         ):
     # type: (...) -> Polygon3D
-    """Check and set entry direction.
-    """
+    """Check and set entry direction."""
     if not ggr:
         entry_direction = 'counterclockwise'  # EnergyPlus default
     else:
@@ -1099,8 +1098,7 @@ def set_starting_position(poly,  # type: Polygon3D
                           ggr=None  # type: Union[List, None, Idf_MSequence]
                           ):
     # type: (...) -> Polygon3D
-    """Check and set entry direction.
-    """
+    """Check and set starting position."""
     if not ggr:
         starting_position = 'upperleftcorner'  # EnergyPlus default
     else:
