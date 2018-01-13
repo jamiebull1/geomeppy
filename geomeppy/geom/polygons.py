@@ -27,15 +27,13 @@ from .vectors import normalise_vector, Vector2D, Vector3D
 from ..utilities import almostequal
 
 
-class Polygon2D(MutableSequence, Clipper2D):
-    """Two-dimensional polygon."""
-    n_dims = 2
-    vector_class = Vector2D
+class Polygon(MutableSequence):
 
     def __init__(self, vertices):
         # type: (Any) -> None
-        super(Polygon2D, self).__init__()
+        super(Polygon, self).__init__()
         self.vertices = [self.vector_class(*v) for v in vertices]
+        self.as_2d = Polygon2D
 
     def __repr__(self):
         # type: () -> str
@@ -55,17 +53,6 @@ class Polygon2D(MutableSequence, Clipper2D):
 
     def __setitem__(self, key, value):
         self.vertices[key] = value
-
-    def __eq__(self, other):
-        # type: (Polygon2D) -> bool
-        if self.__dict__ == other.__dict__:  # try the simple case first
-            return True
-        else:  # also cover same shape in different rotation
-            if self.difference(other):
-                return False
-            if almostequal(self.normal_vector, other.normal_vector):
-                return True
-        return False
 
     def __add__(self,
                 other  # type: Union[Polygon2D, Vector2D, Vector3D]
@@ -92,42 +79,10 @@ class Polygon2D(MutableSequence, Clipper2D):
             raise ValueError("Incompatible objects: %s + %s" % (self, other))
         return self.__class__(vertices)
 
-    def from_wkt(self, wkt_poly):
-        # type: (str) -> Polygon3D
-        """Convert a wkt representation of a polygon to GeomEppy.
-
-        This also accounts for the possible presence of inner rings by linking them to the outer ring.
-
-        :param wkt_poly: A text representation of a polygon in well known text (wkt) format.
-        :returns: A polygon.
-        """
-        poly = wkt.loads(wkt_poly)
-        exterior = Polygon3D(poly.exterior.coords)
-        if poly.interiors:
-            # make the exterior into a geomeppy poly
-            for inner_ring in poly.interiors:
-                # make the interior into a geomeppy poly
-                interior = Polygon3D(inner_ring.coords)
-                # find the nearest points on the exterior and interior
-                links = product(interior, exterior)
-                links = sorted(
-                    links, key=lambda x: relative_distance(x[0], x[1]))
-                on_interior = links[0][0]
-                on_exterior = links[0][1]
-                # join them up
-                exterior = Polygon3D(exterior[exterior.index(
-                    on_exterior):] + exterior[:exterior.index(on_exterior) + 1])
-                interior = Polygon3D(interior[interior.index(
-                    on_interior):] + interior[:interior.index(on_interior) + 1])
-                exterior = Polygon3D(exterior[:] + interior[:])
-
-        return exterior
-
     @property
-    def normal_vector(self):
-        # type: () -> Vector3D
-        as_3d = Polygon3D((v.x, v.y, 0) for v in self)
-        return as_3d.normal_vector
+    def area(self):
+        # type: () -> np.float64
+        return area(self)
 
     @property
     def bounding_box(self):
@@ -144,15 +99,26 @@ class Polygon2D(MutableSequence, Clipper2D):
         return invert_align_face(self, bbox)
 
     @property
-    def centroid(self):
-        # type: () -> Vector2D
-        """The centroid of a polygon."""
-        return Vector2D(
-            sum(self.xs) / len(self),
-            sum(self.ys) / len(self))
+    def edges(self):
+        # type: () -> List[Segment]
+        """A list of edges represented as Segment objects."""
+        vertices = self.vertices
+        edges = [Segment(vertices[i], vertices[(i + 1) % len(self)])
+                 for i in range(len(self))]
+        return edges
 
     def insert(self, key, value):
         self.vertices.insert(key, value)
+
+    def invert_orientation(self):
+        # type: () -> Union[Polygon2D, Polygon3D]
+        """Reverse the order of the vertices.
+
+        This can be used to create a matching surface, e.g. the other side of a wall.
+
+        :returns: A polygon.
+        """
+        return self.__class__(reversed(self.vertices))
 
     @property
     def points_matrix(self):
@@ -171,13 +137,13 @@ class Polygon2D(MutableSequence, Clipper2D):
         return points
 
     @property
-    def edges(self):
-        # type: () -> List[Segment]
-        """A list of edges represented as Segment objects."""
-        vertices = self.vertices
-        edges = [Segment(vertices[i], vertices[(i + 1) % len(self)])
-                 for i in range(len(self))]
-        return edges
+    def vertices_list(self):
+        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float, float]]]
+        """A list of the vertices in the format required by pyclipper.
+
+        :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
+        """
+        return [pt_to_tuple(pt, dims=self.n_dims) for pt in self.vertices]
 
     @property
     def xs(self):
@@ -189,34 +155,36 @@ class Polygon2D(MutableSequence, Clipper2D):
         # type: () -> List[float]
         return [pt.y for pt in self.vertices]
 
-    @property
-    def zs(self):
-        # type: () -> List[float]
-        return [0.0] * len(self.vertices)
+
+class Polygon2D(Polygon, Clipper2D):
+    """Two-dimensional polygon."""
+    n_dims = 2
+    vector_class = Vector2D
+
+    def __eq__(self, other):
+        # type: (Polygon2D) -> bool
+        if self.__dict__ == other.__dict__:  # try the simple case first
+            return True
+        else:  # also cover same shape in different rotation
+            if self.difference(other):
+                return False
+            if almostequal(self.normal_vector, other.normal_vector):
+                return True
+        return False
 
     @property
-    def vertices_list(self):
-        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float, float]]]
-        """A list of the vertices in the format required by pyclipper.
-
-        :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
-        """
-        return [pt_to_tuple(pt, dims=self.n_dims) for pt in self.vertices]
+    def centroid(self):
+        # type: () -> Vector2D
+        """The centroid of a polygon."""
+        return Vector2D(
+            sum(self.xs) / len(self),
+            sum(self.ys) / len(self))
 
     @property
-    def area(self):
-        # type: () -> np.float64
-        return area(self)
-
-    def invert_orientation(self):
-        # type: () -> Union[Polygon2D, Polygon3D]
-        """Reverse the order of the vertices.
-
-        This can be used to create a matching surface, e.g. the other side of a wall.
-
-        :returns: A polygon.
-        """
-        return self.__class__(reversed(self.vertices))
+    def normal_vector(self):
+        # type: () -> Vector3D
+        as_3d = Polygon3D((v.x, v.y, 0) for v in self)
+        return as_3d.normal_vector
 
     def project_to_3D(self, example3d):
         # type: (Polygon3D) -> Polygon3D
@@ -235,32 +203,10 @@ class Polygon2D(MutableSequence, Clipper2D):
         projected_points = project_to_3D(points, proj_axis, a, v)
         return Polygon3D(projected_points)
 
-    def union(self, poly):
-        # type: (Polygon2D) -> List[Polygon2D]
-        """Union with another 2D polygon.
-
-        :param poly: The clip polygon.
-        :returns: A list of Polygons.
-        """
-        return union_2D_polys(self, poly)
-
-    def intersect(self, poly):
-        # type: (Polygon2D) -> Union[bool, List[Polygon2D]]
-        """Intersect with another 2D polygon.
-
-        :param poly: The clip polygon.
-        :returns: False if no intersection, otherwise a list of Polygons representing each intersection.
-        """
-        return intersect_2D_polys(self, poly)
-
-    def difference(self, poly):
-        # type: (Polygon2D) -> Union[bool, List[Polygon2D]]
-        """Intersect with another 2D polygon.
-
-        :param poly: The clip polygon.
-        :returns: False if no intersection, otherwise a list of lists of Polygons representing each difference.
-        """
-        return difference_2D_polys(self, poly)
+    @property
+    def zs(self):
+        # type: () -> List[float]
+        return [0.0] * len(self.vertices)
 
 
 def relative_distance(pt1, pt2):
@@ -699,6 +645,37 @@ class Polygon3D(Polygon2D):
             entry_direction = 'counterclockwise'
         outside_point = self.outside_point(entry_direction)
         return normalize_coords(self, outside_point, ggr)
+
+    def from_wkt(self, wkt_poly):
+        # type: (str) -> Polygon3D
+        """Convert a wkt representation of a polygon to GeomEppy.
+
+        This also accounts for the possible presence of inner rings by linking them to the outer ring.
+
+        :param wkt_poly: A text representation of a polygon in well known text (wkt) format.
+        :returns: A polygon.
+        """
+        poly = wkt.loads(wkt_poly)
+        exterior = Polygon3D(poly.exterior.coords)
+        if poly.interiors:
+            # make the exterior into a geomeppy poly
+            for inner_ring in poly.interiors:
+                # make the interior into a geomeppy poly
+                interior = Polygon3D(inner_ring.coords)
+                # find the nearest points on the exterior and interior
+                links = product(interior, exterior)
+                links = sorted(
+                    links, key=lambda x: relative_distance(x[0], x[1]))
+                on_interior = links[0][0]
+                on_exterior = links[0][1]
+                # join them up
+                exterior = Polygon3D(exterior[exterior.index(
+                    on_exterior):] + exterior[:exterior.index(on_exterior) + 1])
+                interior = Polygon3D(interior[interior.index(
+                    on_interior):] + interior[:interior.index(on_interior) + 1])
+                exterior = Polygon3D(exterior[:] + interior[:])
+
+        return exterior
 
 
 def normal_vector(poly):
