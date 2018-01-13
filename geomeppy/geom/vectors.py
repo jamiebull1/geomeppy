@@ -207,26 +207,6 @@ class Vector3D(Vector2D):
         return hash(self.x) ^ hash(self.y) ^ hash(self.z)
 
 
-def normalise_vector(v):
-    # type: (List[float]) -> List[float]
-    """Convert a vector to a unit vector
-
-    Parameters
-    ----------
-    v : list
-        The vector.
-
-    Returns
-    -------
-    list
-
-    """
-    magnitude = sum(abs(i) for i in v)
-    normalised_v = [i / magnitude for i in v]
-
-    return normalised_v
-
-
 def inverse_vector(v):
     # type: (Union[Vector2D, Vector3D]) -> List[float]
     """Convert a vector to the same vector but in the opposite direction

@@ -70,10 +70,10 @@ def test_polygon3d_attributes():
     assert poly3d.vertices_list == [(0,0,0), (0,1,1), (1,1,1), (1,0,0)]
     assert poly3d.vertices == [Vector3D(*v) for v in poly3d]
     assert poly3d.distance == 0
-    assert poly3d.is_horizontal == False
-    assert poly3d.normal_vector == [0.0, 0.5, -0.5]
+    assert poly3d.is_horizontal is False
+    assert almostequal(poly3d.normal_vector, [0.0, 0.70710678, -0.70710678])
     poly3d_2 = Polygon3D([(0,1,1), (0,2,2), (1,2,2), (1,1,1)])
-    assert poly3d_2.normal_vector == [0.0, 0.5, -0.5]
+    assert almostequal(poly3d_2.normal_vector, [0.0, 0.70710678, -0.70710678])
     assert poly3d_2.projection_axis == 1
     result = poly3d.is_coplanar(poly3d_2)
     assert result

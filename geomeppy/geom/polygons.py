@@ -17,7 +17,7 @@ from shapely import wkt
 from .clippers import Clipper2D, Clipper3D
 from .segments import Segment
 from .transformations import align_face, invert_align_face
-from .vectors import normalise_vector, Vector2D, Vector3D
+from .vectors import Vector2D, Vector3D
 from ..utilities import almostequal
 
 
@@ -228,13 +228,21 @@ class Polygon3D(Polygon, Clipper3D):
     @property
     def normal_vector(self):
         # type: () -> Vector3D
-        """Vector perpendicular to the polygon in the outward direction.
+        """Unit normal vector perpendicular to the polygon in the outward direction.
 
-        Uses Newell's Method.
+        We use Newell's Method since the cross-product of two edge vectors is not valid for concave polygons.
+        https://www.opengl.org/wiki/Calculating_a_Surface_Normal#Newell.27s_Method
 
-        :returns: The normal vector.
         """
-        return Vector3D(*normal_vector(self.vertices))
+        n = [0.0, 0.0, 0.0]
+
+        for i, v_curr in enumerate(self.vertices):
+            v_next = self.vertices[(i + 1) % len(self.vertices)]
+            n[0] += (v_curr.y - v_next.y) * (v_curr.z + v_next.z)
+            n[1] += (v_curr.z - v_next.z) * (v_curr.x + v_next.x)
+            n[2] += (v_curr.x - v_next.x) * (v_curr.y + v_next.y)
+
+        return Vector3D(*n).normalize()
 
     @property
     def distance(self):
@@ -262,12 +270,12 @@ class Polygon3D(Polygon, Clipper3D):
 
     @property
     def is_horizontal(self):
-        # type: () -> np.bool_
+        # type: () -> bool
         """Check if polygon is in the xy plane.
 
         :returns: True if the polygon is in the xy plane, else False.
         """
-        return np.array(self.zs).std() < 1e-8
+        return bool(np.array(self.zs).std() < 1e-8)
 
     def is_clockwise(self, viewpoint):
         # type: (Vector3D) -> np.bool_
@@ -483,29 +491,6 @@ def section(first, last, coords):
             if item == last:
                 break
     return section_on_hole
-
-
-def normal_vector(poly):
-    # type: (List[Vector3D]) -> List[float]
-    """Return the unit normal vector of a polygon.
-
-    We use Newell's Method since the cross-product of two edge vectors is not
-    valid for concave polygons.
-    https://www.opengl.org/wiki/Calculating_a_Surface_Normal#Newell.27s_Method
-
-    Parameters
-    ----------
-
-    """
-    n = [0.0, 0.0, 0.0]
-
-    for i, v_curr in enumerate(poly):
-        v_next = poly[(i + 1) % len(poly)]
-        n[0] += (v_curr.y - v_next.y) * (v_curr.z + v_next.z)
-        n[1] += (v_curr.z - v_next.z) * (v_curr.x + v_next.x)
-        n[2] += (v_curr.x - v_next.x) * (v_curr.y + v_next.y)
-
-    return normalise_vector(n)
 
 
 def project_to_2D(vertices, proj_axis):

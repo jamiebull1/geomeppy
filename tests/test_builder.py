@@ -70,7 +70,7 @@ class TestAddBlock():
         iddfhandle = StringIO(iddcurrent.iddtxt)
         if IDF.getiddname() == None:
             IDF.setiddname(iddfhandle)
-        
+
         self.idf = IDF(StringIO(idf_txt))
 
     def test_add_block_smoke_test(self):
