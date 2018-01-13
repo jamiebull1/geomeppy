@@ -12,9 +12,9 @@ from six import StringIO
 
 from geomeppy.eppy_patches import IDF
 from geomeppy.geom.intersect_match import (
-    get_adjacencies, getidfsurfaces, intersect, intersect_idf_surfaces, is_hole, match_idf_surfaces, unique,
+    get_adjacencies, getidfsurfaces, intersect_idf_surfaces, match_idf_surfaces,
 )
-from geomeppy.geom.polygons import Polygon3D
+from geomeppy.geom.polygons import intersect, is_hole, Polygon3D, unique
 from geomeppy.recipes import translate_coords
 from geomeppy.utilities import almostequal
 
@@ -72,14 +72,14 @@ class TestSetCoords():
         idf = self.idf
         ggr = idf.idfobjects['GLOBALGEOMETRYRULES']        
         wall = idf.idfobjects['BUILDINGSURFACE:DETAILED'][0]
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
         wall.setcoords(poly1, ggr)
 
 def test_unique():
     # type: () -> None
-    poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
-    poly2 = Polygon3D([(1,1,0),(1,0,0),(0,0,0),(0,1,0)])
-    poly3 = Polygon3D([(0,1,0),(1,1,0),(1,0,0),(0,0,0)])
+    poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
+    poly2 = Polygon3D([(1, 1, 0), (1, 0, 0), (0, 0, 0), (0, 1, 0)])
+    poly3 = Polygon3D([(0, 1, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
     assert poly1 != poly2
     assert poly2 == poly3
     polys = [poly1, poly2, poly3]
@@ -100,8 +100,8 @@ class TestSimpleTestPolygons():
         |_2_| 
 
         """
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
-        poly2 = Polygon3D([(1,1,0),(1,0,0),(0,0,0),(0,1,0)])
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
+        poly2 = Polygon3D([(1, 1, 0), (1, 0, 0), (0, 0, 0), (0, 1, 0)])
         adjacencies = [(poly1, poly2)]
         result = intersect(*adjacencies[0])
         expected = [poly1, poly2]
@@ -122,13 +122,13 @@ class TestSimpleTestPolygons():
         |__|_4_|_2| 
 
         """
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(2,0,0),(2,1,0)])
-        poly2 = Polygon3D([(3,1,0),(3,0,0),(1,0,0),(1,1,0)])
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly2 = Polygon3D([(3, 1, 0), (3, 0, 0), (1, 0, 0), (1, 1, 0)])
         adjacencies = [(poly1, poly2)]
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
-        poly2 = Polygon3D([(3,1,0),(3,0,0),(2,0,0),(2,1,0)])
-        poly3 = Polygon3D([(1,1,0),(1,0,0),(2,0,0),(2,1,0)])
-        poly4 = Polygon3D([(2,1,0),(2,0,0),(1,0,0),(1,1,0)])
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
+        poly2 = Polygon3D([(3, 1, 0), (3, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly3 = Polygon3D([(1, 1, 0), (1, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly4 = Polygon3D([(2, 1, 0), (2, 0, 0), (1, 0, 0), (1, 1, 0)])
         result = intersect(*adjacencies[0])
         expected = [poly1, poly2, poly3, poly4]
         assert len(result) == len(expected)
@@ -151,15 +151,15 @@ class TestSimpleTestPolygons():
         |/_______|
         
         """
-        poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-        poly2 = Polygon3D([(2,2,0),(2,1,0),(1,1,0),(1,2,0)])
+        poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)])
+        poly2 = Polygon3D([(2, 2, 0), (2, 1, 0), (1, 1, 0), (1, 2, 0)])
         adjacencies = [(poly1, poly2)]
         
-        poly1 = Polygon3D([(0,4,0), (0,0,0), (1,1,0), (1,2,0)])  # smaller section
-        poly2 = Polygon3D([(1,2,0),(1,1,0),(2,1,0),(2,2,0)])  # inverse hole
-        poly3 = Polygon3D([(2,2,0),(2,1,0),(1,1,0),(1,2,0)])  # hole
-        poly4 = Polygon3D([(4,4,0), (0,4,0), (1,2,0), (2,2,0),
-                           (2,1,0), (1,1,0), (0,0,0), (4,0,0)])  # larger section
+        poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (1, 1, 0), (1, 2, 0)])  # smaller section
+        poly2 = Polygon3D([(1, 2, 0), (1, 1, 0), (2, 1, 0), (2, 2, 0)])  # inverse hole
+        poly3 = Polygon3D([(2, 2, 0), (2, 1, 0), (1, 1, 0), (1, 2, 0)])  # hole
+        poly4 = Polygon3D([(4, 4, 0), (0, 4, 0), (1, 2, 0), (2, 2, 0), 
+                           (2, 1, 0), (1, 1, 0), (0, 0, 0), (4, 0, 0)])  # larger section
         result = intersect(*adjacencies[0])
         expected = [poly1, poly2, poly3, poly4]
         assert len(result) == len(expected)
@@ -178,17 +178,17 @@ class TestSimpleTestPolygons():
         |__|_3_|_5|__| 
         
         """
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(2,0,0),(2,1,0)])
-        poly2 = Polygon3D([(3,1,0),(3,0,0),(1,0,0),(1,1,0)])
-        poly3 = Polygon3D([(2,1,0),(2,0,0),(4,0,0),(4,1,0)])
-        adjacencies = [(poly1, poly2),
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly2 = Polygon3D([(3, 1, 0), (3, 0, 0), (1, 0, 0), (1, 1, 0)])
+        poly3 = Polygon3D([(2, 1, 0), (2, 0, 0), (4, 0, 0), (4, 1, 0)])
+        adjacencies = [(poly1, poly2), 
                        (poly2, poly3)]
-        poly1 = Polygon3D([(0,1,0),(0,0,0),(1,0,0),(1,1,0)])
-        poly2 = Polygon3D([(2,1,0),(2,0,0),(1,0,0),(1,1,0)])
-        poly3 = Polygon3D([(1,1,0),(1,0,0),(2,0,0),(2,1,0)])
-        poly4 = Polygon3D([(2,1,0),(2,0,0),(3,0,0),(3,1,0)])
-        poly5 = Polygon3D([(3,1,0),(3,0,0),(2,0,0),(2,1,0)])
-        poly6 = Polygon3D([(3,1,0),(3,0,0),(4,0,0),(4,1,0)])
+        poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
+        poly2 = Polygon3D([(2, 1, 0), (2, 0, 0), (1, 0, 0), (1, 1, 0)])
+        poly3 = Polygon3D([(1, 1, 0), (1, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly4 = Polygon3D([(2, 1, 0), (2, 0, 0), (3, 0, 0), (3, 1, 0)])
+        poly5 = Polygon3D([(3, 1, 0), (3, 0, 0), (2, 0, 0), (2, 1, 0)])
+        poly6 = Polygon3D([(3, 1, 0), (3, 0, 0), (4, 0, 0), (4, 1, 0)])
         expected = [poly1, poly2, poly3, poly4, poly5, poly6]
         
         result = intersect(*adjacencies[0])
@@ -215,18 +215,18 @@ class TestSimpleTestPolygons():
         |___________|
         
         """
-        poly1 = Polygon3D([(0,2,0),(0,0,0),(3,0,0),(3,2,0)])
-        poly2 = Polygon3D([(3,3,0),(3,1,0),(2,1,0),(2,2,0),
-                           (1,2,0),(1,1,0),(0,1,0),(0,3,0)])
+        poly1 = Polygon3D([(0, 2, 0), (0, 0, 0), (3, 0, 0), (3, 2, 0)])
+        poly2 = Polygon3D([(3, 3, 0), (3, 1, 0), (2, 1, 0), (2, 2, 0), 
+                           (1, 2, 0), (1, 1, 0), (0, 1, 0), (0, 3, 0)])
         adjacencies = [(poly1, poly2)]
         
-        poly1 = Polygon3D([(3,3,0), (3,2,0), (0,2,0), (0,3,0)]) 
-        poly2 = Polygon3D([(0,2,0), (0,1,0), (1,1,0), (1,2,0)])
-        poly3 = Polygon3D([(1,2,0), (1,1,0), (0,1,0), (0,2,0)])
-        poly4 = Polygon3D([(1,2,0), (1,1,0), (0,1,0), (0,0,0),
-                           (3,0,0), (3,1,0), (2,1,0), (2,2,0)])
-        poly5 = Polygon3D([(2,2,0), (2,1,0), (3,1,0), (3,2,0)])
-        poly6 = Polygon3D([(3,2,0), (3,1,0), (2,1,0), (2,2,0)])
+        poly1 = Polygon3D([(3, 3, 0), (3, 2, 0), (0, 2, 0), (0, 3, 0)]) 
+        poly2 = Polygon3D([(0, 2, 0), (0, 1, 0), (1, 1, 0), (1, 2, 0)])
+        poly3 = Polygon3D([(1, 2, 0), (1, 1, 0), (0, 1, 0), (0, 2, 0)])
+        poly4 = Polygon3D([(1, 2, 0), (1, 1, 0), (0, 1, 0), (0, 0, 0), 
+                           (3, 0, 0), (3, 1, 0), (2, 1, 0), (2, 2, 0)])
+        poly5 = Polygon3D([(2, 2, 0), (2, 1, 0), (3, 1, 0), (3, 2, 0)])
+        poly6 = Polygon3D([(3, 2, 0), (3, 1, 0), (2, 1, 0), (2, 2, 0)])
 
         result = intersect(*adjacencies[0])
         expected = [poly1, poly2, poly3, poly4, poly5, poly6]
@@ -250,13 +250,13 @@ class TestSimpleTestPolygons():
         |_4_|
          
         """
-        poly1 = Polygon3D([(0,0,1),(0,0,0),(2,0,0),(2,0,1)])
-        poly2 = Polygon3D([(3,0,1),(3,0,0),(1,0,0),(1,0,1)])
+        poly1 = Polygon3D([(0, 0, 1), (0, 0, 0), (2, 0, 0), (2, 0, 1)])
+        poly2 = Polygon3D([(3, 0, 1), (3, 0, 0), (1, 0, 0), (1, 0, 1)])
         adjacencies = [(poly1, poly2)]
-        poly1 = Polygon3D([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
-        poly2 = Polygon3D([(3,0,1),(3,0,0),(2,0,0),(2,0,1)])
-        poly3 = Polygon3D([(1,0,1),(1,0,0),(2,0,0),(2,0,1)])
-        poly4 = Polygon3D([(2,0,1),(2,0,0),(1,0,0),(1,0,1)])
+        poly1 = Polygon3D([(0, 0, 1), (0, 0, 0), (1, 0, 0), (1, 0, 1)])
+        poly2 = Polygon3D([(3, 0, 1), (3, 0, 0), (2, 0, 0), (2, 0, 1)])
+        poly3 = Polygon3D([(1, 0, 1), (1, 0, 0), (2, 0, 0), (2, 0, 1)])
+        poly4 = Polygon3D([(2, 0, 1), (2, 0, 0), (1, 0, 0), (1, 0, 1)])
         result = intersect(*adjacencies[0])
         expected = [poly1, poly2, poly3, poly4]
         assert len(result) == len(expected)
@@ -316,9 +316,9 @@ class TestAdjacencies():
         
 def test_intersect():
     # type: () -> None
-    poly1 = Polygon3D([(1.0, 2.1, 0.5), (1.0, 2.1, 0.0),
+    poly1 = Polygon3D([(1.0, 2.1, 0.5), (1.0, 2.1, 0.0), 
                        (2.0, 2.0, 0.0), (2.0, 2.0, 0.5)])
-    poly2 = Polygon3D([(2.5, 1.95, 0.5), (2.5, 1.95, 0.0),
+    poly2 = Polygon3D([(2.5, 1.95, 0.5), (2.5, 1.95, 0.0), 
                        (1.5, 2.05, 0.0), (1.5, 2.05, 0.5)])
     intersection = poly1.intersect(poly2)[0]
 #    view_polygons({'blue': [poly1, poly2], 'red': [intersect]})
@@ -334,10 +334,10 @@ def test_real_intersect():
     
     """
     poly1 = Polygon3D(
-        [(526492.65, 185910.65, 6.0), (526492.65, 185910.65, 3.0),
+        [(526492.65, 185910.65, 6.0), (526492.65, 185910.65, 3.0), 
          (526489.05, 185916.45, 3.0), (526489.05, 185916.45, 6.0)])
     poly2 = Polygon3D(
-        [(526489.05, 185916.45, 5.0), (526489.05, 185916.45, 2.5),
+        [(526489.05, 185916.45, 5.0), (526489.05, 185916.45, 2.5), 
         (526492.65, 185910.65, 2.5), (526492.65, 185910.65, 5.0)])
     min_x = min(min(s.xs) for s in [poly1, poly2])
     min_y = min(min(s.ys) for s in [poly1, poly2])
@@ -357,29 +357,29 @@ def test_is_hole():
     """Test if a surface represents a hole in one of the surfaces.
     """
     # opposite faces (all touching edges)
-    poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-    poly2 = Polygon3D(reversed([(0,4,0),(0,0,0),(4,0,0),(4,4,0)]))
+    poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)])
+    poly2 = Polygon3D(reversed([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)]))
     intersection = poly1.intersect(poly2)[0]
     assert not is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
 
     # poly2 is within poly1 and reversed (no touching edges)
-    poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-    poly2 = Polygon3D(reversed([(1,3,0),(1,1,0),(3,1,0),(3,3,0)]))
+    poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)])
+    poly2 = Polygon3D(reversed([(1, 3, 0), (1, 1, 0), (3, 1, 0), (3, 3, 0)]))
     intersection = poly1.intersect(poly2)[0]
     assert is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
 
     # poly2 is within poly1 and reversed (touches at x=0)
-    poly1 = Polygon3D([(0,4,0),(0,0,0),(4,0,0),(4,4,0)])
-    poly2 = Polygon3D(reversed([(0,3,0),(0,1,0),(3,1,0),(3,3,0)]))
+    poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)])
+    poly2 = Polygon3D(reversed([(0, 3, 0), (0, 1, 0), (3, 1, 0), (3, 3, 0)]))
     intersection = poly1.intersect(poly2)[0]
     assert not is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
 
     # poly2 overlaps poly1
-    poly1 = Polygon3D([(1,4,0),(1,0,0),(5,0,0),(5,4,0)])
-    poly2 = Polygon3D(reversed([(0,3,0),(0,1,0),(3,1,0),(3,3,0)]))
+    poly1 = Polygon3D([(1, 4, 0), (1, 0, 0), (5, 0, 0), (5, 4, 0)])
+    poly2 = Polygon3D(reversed([(0, 3, 0), (0, 1, 0), (3, 1, 0), (3, 3, 0)]))
     intersection = poly1.intersect(poly2)[0]
     assert not is_hole(poly1, intersection)
     assert not is_hole(poly2, intersection)
@@ -404,9 +404,9 @@ class TestIntersectMatchRing():
         ending = len(idf.idfobjects['BUILDINGSURFACE:DETAILED'])
         assert starting == 12
         assert ending == 14
-        for name in ['z1 Roof 0001_1',
-                     'z1 Roof 0001_2',
-                     'z1 Roof 0001_3',
+        for name in ['z1 Roof 0001_1', 
+                     'z1 Roof 0001_2', 
+                     'z1 Roof 0001_3', 
                      'z2 Floor 0001_1']:
             obj = idf.getobject('BUILDINGSURFACE:DETAILED', name)
             assert obj
@@ -437,9 +437,9 @@ class TestIntersectMatch():
         assert starting == 12
         assert ending == 14
         
-        for name in ['z1_WALL_0002_1',
-                     'z1_WALL_0002_2',
-                     'z2_WALL_0004_1',
+        for name in ['z1_WALL_0002_1', 
+                     'z1_WALL_0002_2', 
+                     'z2_WALL_0004_1', 
                      'z2_WALL_0004_2']:
             obj = idf.getobject('BUILDINGSURFACE:DETAILED', name)
             assert obj
@@ -455,19 +455,19 @@ def test_real_scale():
         IDF.setiddname(iddfhandle)
 
     idf = IDF(StringIO('Version, 8.5;'))
-    poly1 = [(526492.65,185910.65),(526489.05,185916.45),
-             (526479.15,185910.3),(526482.65,185904.6),
-             (526492.65,185910.65)]
-    poly2 = [(526483.3,185903.15),(526483.5,185903.25),
-             (526482.65,185904.6),(526479.15,185910.3),
-             (526489.05,185916.45),(526492.65,185910.65),
-             (526493.4,185909.4),(526500,185913.95),
-             (526500.45,185914.3),(526500,185914.85),
-             (526497.4,185918.95),(526499.45,185920.2),
-             (526494.4,185928.35),(526466.05,185910.95),
-             (526471.1,185902.75),(526473.05,185903.9),
-             (526476.2,185898.8),(526479.95,185901.1),
-             (526483.3,185903.15)]
+    poly1 = [(526492.65, 185910.65), (526489.05, 185916.45), 
+             (526479.15, 185910.3), (526482.65, 185904.6), 
+             (526492.65, 185910.65)]
+    poly2 = [(526483.3, 185903.15), (526483.5, 185903.25), 
+             (526482.65, 185904.6), (526479.15, 185910.3), 
+             (526489.05, 185916.45), (526492.65, 185910.65), 
+             (526493.4, 185909.4), (526500, 185913.95), 
+             (526500.45, 185914.3), (526500, 185914.85), 
+             (526497.4, 185918.95), (526499.45, 185920.2), 
+             (526494.4, 185928.35), (526466.05, 185910.95), 
+             (526471.1, 185902.75), (526473.05, 185903.9), 
+             (526476.2, 185898.8), (526479.95, 185901.1), 
+             (526483.3, 185903.15)]
     idf.add_block('small', poly1, 6.0, 2)
     idf.add_block('large', poly2, 5.0, 2)
     idf.translate_to_origin()

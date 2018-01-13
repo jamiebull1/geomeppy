@@ -573,7 +573,6 @@ class Polygon3D(Polygon):
         else:
             raise ValueError("invalid value for entry_direction '%s'" %
                              entry_direction)
-
         return inside
 
     def order_points(self, starting_position):
@@ -1106,3 +1105,68 @@ def set_starting_position(poly,  # type: Polygon3D
     poly = poly.order_points(starting_position)
 
     return poly
+
+
+def intersect(poly1, poly2):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
+    """Calculate the polygons to represent the intersection of two polygons.
+
+    :param poly1: The first polygon.
+    :param poly2: The second polygon.
+    :returns: A list of unique polygons.
+    """
+    polys = []
+    polys.extend(poly1.intersect(poly2))
+    polys.extend(poly2.intersect(poly1))
+    if is_hole(poly1, poly2):
+        polys.extend(break_polygons(poly1, poly2))
+    elif is_hole(poly2, poly1):
+        polys.extend(break_polygons(poly2, poly1))
+    else:
+        polys.extend(poly1.difference(poly2))
+        polys.extend(poly2.difference(poly1))
+    polys = unique(polys)
+    return polys
+
+
+def unique(polys):
+    # type: (List[Union[Polygon, Polygon3D]]) -> List[Union[Polygon, Polygon3D]]
+    """Make a unique set of polygons.
+
+    :param polys: A list of polygons.
+    :returns: A unique list of polygons.
+    """
+    flattened = []
+    for item in polys:
+        if isinstance(item, (Polygon, Polygon3D)):
+            flattened.append(item)
+        elif isinstance(item, list):
+            flattened.extend(item)
+
+    results = []
+    for poly in flattened:
+        if not any(poly == result for result in results):
+            results.append(poly)
+
+    return results
+
+
+def is_hole(surface, possible_hole):
+    # type: (Union[Polygon, Polygon3D], Union[Polygon, Polygon3D]) -> bool
+    """Identify if an intersection is a hole in the surface.
+
+    Check the intersection touches an edge of the surface. If it doesn't then it represents a hole, and this needs
+    further processing into valid EnergyPlus surfaces.
+
+    :param surface: The first surface.
+    :param possible_hole: The intersection into the surface.
+    :returns: True if the possible hole is a hole in the surface.
+    """
+    if surface.area < possible_hole.area:
+        return False
+    collinear_edges = (
+        edges[0]._is_collinear(
+            edges[1]) for edges in product(
+            surface.edges,
+            possible_hole.edges))
+    return not any(collinear_edges)
