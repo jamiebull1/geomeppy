@@ -127,17 +127,17 @@ class Polygon(MutableSequence):
         """
         points = np.zeros((len(self.vertices), self.n_dims))
         for i, v in enumerate(self.vertices):
-            points[i, :] = pt_to_array(v, dims=self.n_dims)
+            points[i, :] = v.as_array(dims=self.n_dims)
         return points
 
     @property
     def vertices_list(self):
-        # type: () -> Union[List[Tuple[float, float, float]], List[Tuple[float, float]]]
+        # type: () -> List[Tuple[float, float, Optional[float]]]
         """A list of the vertices in the format required by pyclipper.
 
         :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
         """
-        return [pt_to_tuple(pt, dims=self.n_dims) for pt in self.vertices]
+        return [pt.as_tuple(dims=self.n_dims) for pt in self.vertices]
 
     @property
     def xs(self):
@@ -215,43 +215,6 @@ def relative_distance(pt1, pt2):
     """
     direction = pt1 - pt2
     return sum(x ** 2 for x in direction)
-
-
-def break_polygons(poly, hole):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
-    """Break up a surface with a hole in it.
-
-    This produces two surfaces, neither of which have a hole in them.
-
-    :param poly: The surface with a hole in.
-    :param hole: The hole.
-    :returns: Two Polygon3D objects.
-    """
-    # take the two closest points on the surface perimeter
-    links = product(poly, hole)
-    links = sorted(links, key=lambda x: relative_distance(x[0], x[1]))  # fast distance check
-
-    first_on_poly = links[0][0]
-    last_on_poly = links[1][0]
-
-    first_on_hole = links[1][1]
-    last_on_hole = links[0][1]
-
-    new_poly = (
-        section(first_on_poly, last_on_poly, poly[:] + poly[:]) +
-        section(first_on_hole, last_on_hole, reversed(hole[:] + hole[:]))
-    )
-
-    new_poly = Polygon3D(new_poly)
-    union = hole.union(new_poly)
-    union = union[0]
-    new_poly2 = poly.difference(union)[0]
-    if not almostequal(new_poly.normal_vector, poly.normal_vector):
-        new_poly = new_poly.invert_orientation()
-    if not almostequal(new_poly2.normal_vector, poly.normal_vector):
-        new_poly2 = new_poly2.invert_orientation()
-
-    return [new_poly, new_poly2]
 
 
 def section(first, last, coords):
@@ -511,6 +474,43 @@ class Polygon3D(Polygon, Clipper3D):
         return exterior
 
 
+def break_polygons(poly, hole):
+    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
+    """Break up a surface with a hole in it.
+
+    This produces two surfaces, neither of which have a hole in them.
+
+    :param poly: The surface with a hole in.
+    :param hole: The hole.
+    :returns: Two Polygon3D objects.
+    """
+    # take the two closest points on the surface perimeter
+    links = product(poly, hole)
+    links = sorted(links, key=lambda x: relative_distance(x[0], x[1]))  # fast distance check
+
+    first_on_poly = links[0][0]
+    last_on_poly = links[1][0]
+
+    first_on_hole = links[1][1]
+    last_on_hole = links[0][1]
+
+    new_poly = (
+        section(first_on_poly, last_on_poly, poly[:] + poly[:]) +
+        section(first_on_hole, last_on_hole, reversed(hole[:] + hole[:]))
+    )
+
+    new_poly = Polygon3D(new_poly)
+    union = hole.union(new_poly)
+    union = union[0]
+    new_poly2 = poly.difference(union)[0]
+    if not almostequal(new_poly.normal_vector, poly.normal_vector):
+        new_poly = new_poly.invert_orientation()
+    if not almostequal(new_poly2.normal_vector, poly.normal_vector):
+        new_poly2 = new_poly2.invert_orientation()
+
+    return [new_poly, new_poly2]
+
+
 def normal_vector(poly):
     # type: (List[Vector3D]) -> List[float]
     """Return the unit normal vector of a polygon.
@@ -635,63 +635,6 @@ def project_inv(pt,  # type: np.ndarray
     c /= v[proj_axis]
     w[proj_axis] = c
     return tuple(w)
-
-
-def pt_to_tuple(pt, dims=3):
-    # type: (Union[Vector2D, Vector3D], int) -> Tuple[float, ]
-    """Convert a point to a numpy array.
-
-    Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
-    Ensures all values are floats since some other types cause problems in
-    pyclipper (notably where sympy.Zero is used to represent 0.0).
-
-    Parameters
-    ----------
-    pt : sympy.Vector3D, sympy.Vector2D
-        The point to convert.
-    dims : int, optional
-        Number of dimensions {default : 3}.
-
-    Returns
-    -------
-    tuple
-
-    """
-    # handle Vector3D
-    if dims == 3:
-        return float(pt.x), float(pt.y), float(pt.z)
-    # handle Vector2D
-    elif dims == 2:
-        return float(pt.x), float(pt.y)
-
-
-def pt_to_array(pt, dims=3):
-    # type: (Union[Vector2D, Vector3D], int) -> np.ndarray
-    """Convert a point to a numpy array.
-
-    Converts a Vector3D to a numpy.array([x,y,z]) or a Vector2D to a
-    numpy.array([x,y]).
-    Ensures all values are floats since some other types cause problems in
-    pyclipper (notably where sympy.Zero is used to represent 0.0).
-
-    Parameters
-    ----------
-    pt : sympy.Vector3D
-        The point to convert.
-    dims : int, optional
-        Number of dimensions {default : 3}.
-
-    Returns
-    -------
-    numpy.np.ndarray
-
-    """
-    # handle Vector3D
-    if dims == 3:
-        return np.array([float(pt.x), float(pt.y), float(pt.z)])
-    # handle Vector2D
-    elif dims == 2:
-        return np.array([float(pt.x), float(pt.y)])
 
 
 def normalize_coords(poly,  # type: Polygon3D

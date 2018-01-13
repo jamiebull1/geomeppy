@@ -117,6 +117,60 @@ class Vector2D(Sized):
         # type: () -> Union[Vector2D, Vector3D]
         return -self
 
+    def as_array(self, dims=3):
+        # type: (Union[Vector2D, Vector3D], int) -> np.ndarray
+        """Convert a point to a numpy array.
+
+        Converts a Vector3D to a numpy.array([x,y,z]) or a Vector2D to a numpy.array([x,y]).
+        Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+        used to represent 0.0).
+
+        Parameters
+        ----------
+        pt : sympy.Vector3D
+            The point to convert.
+        dims : int, optional
+            Number of dimensions {default : 3}.
+
+        Returns
+        -------
+        numpy.np.ndarray
+
+        """
+        # handle Vector3D
+        if dims == 3:
+            return np.array([float(self.x), float(self.y), float(self.z)])
+        # handle Vector2D
+        elif dims == 2:
+            return np.array([float(self.x), float(self.y)])
+
+    def as_tuple(self, dims=3):
+        # type: (Union[Vector2D, Vector3D], int) -> Tuple[float, ]
+        """Convert a point to a numpy array.
+
+        Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
+        Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+        used to represent 0.0).
+
+        Parameters
+        ----------
+        pt : sympy.Vector3D, sympy.Vector2D
+            The point to convert.
+        dims : int, optional
+            Number of dimensions {default : 3}.
+
+        Returns
+        -------
+        tuple
+
+        """
+        # handle Vector3D
+        if dims == 3:
+            return float(self.x), float(self.y), float(self.z)
+        # handle Vector2D
+        elif dims == 2:
+            return float(self.x), float(self.y)
+
 
 class Vector3D(Vector2D):
     """Three dimensional point."""
