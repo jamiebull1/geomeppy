@@ -22,6 +22,7 @@ from ..utilities import almostequal
 
 
 class Polygon(MutableSequence):
+    """Base class for 2D and 3D polygons."""
 
     def __init__(self, vertices):
         # type: (Any) -> None
@@ -64,7 +65,7 @@ class Polygon(MutableSequence):
 
     def __sub__(self, other):
         if len(self) == len(other) and hasattr(other[0], '__len__'):
-            # add together two equal polygons
+            # subtract two equal polygons
             vertices = [v1 - v2 for v1, v2 in zip(self, other)]
         elif len(self[0]) == len(other):
             # translate by a vector
@@ -247,8 +248,9 @@ class Polygon3D(Polygon, Clipper3D):
     @property
     def distance(self):
         # type: () -> np.float64
-        """
-        A number where v[0] * x + v[1] * y + v[2] * z = a is the equation of the plane containing the polygon (where v
+        """Distance from the origin to the polygon.
+
+        Where v[0] * x + v[1] * y + v[2] * z = a is the equation of the plane containing the polygon (and where v
         is the polygon normal vector).
 
         :returns: The distance from the origin to the polygon.
@@ -320,16 +322,8 @@ class Polygon3D(Polygon, Clipper3D):
         The point will be outside the zone, respecting the global geometry rules
         for vertex entry direction.
 
-        Parameters
-        ----------
-        entry_direction : str
-            Either "clockwise" or "counterclockwise", as seen from outside the
-            space.
-
-        Returns
-        -------
-        Vector3D
-
+        :param entry_direction: Either "clockwise" or "counterclockwise", as seen from outside the space.
+        :returns: A point vector.
         """
         entry_direction = entry_direction.lower()
         if entry_direction == 'clockwise':
@@ -345,15 +339,8 @@ class Polygon3D(Polygon, Clipper3D):
         # type: (str) -> Polygon3D
         """Reorder the vertices based on a starting position rule.
 
-        Parameters
-        ----------
-        starting_position : str
-            The string that defines vertex starting position in EnergyPlus.
-
-        Returns
-        -------
-        Polygon3D
-
+        :param starting_position: The string that defines vertex starting position in EnergyPlus.
+        :returns: The reordered polygon.
         """
         if starting_position == 'upperleftcorner':
             bbox_corner = self.bounding_box[0]
@@ -381,10 +368,7 @@ class Polygon3D(Polygon, Clipper3D):
         Project onto either the xy, yz, or xz plane. (We choose the one that
         avoids degenerate configurations, which is the purpose of proj_axis.)
 
-        Returns
-        -------
-        Polygon3D
-
+        :returns: A 2D polygon.
         """
         points = self.points_matrix
         projected_points = project_to_2D(points, self.projection_axis)
@@ -395,15 +379,8 @@ class Polygon3D(Polygon, Clipper3D):
         # type: (Union[List, None, Idf_MSequence]) -> Polygon3D
         """Order points, respecting the global geometry rules
 
-        Parameters
-        ----------
-        ggr : EpPBunch
-            GlobalGeometryRules object.
-
-        Returns
-        -------
-        Polygon3D
-
+        :param ggr: EnergyPlus GlobalGeometryRules object.
+        :returns: The normalized polygon.
         """
         try:
             entry_direction = ggr.Vertex_Entry_Direction
@@ -497,22 +474,9 @@ def project_to_2D(vertices, proj_axis):
     # type: (np.ndarray, int) -> List[Tuple[np.float64, np.float64]]
     """Project a 3D polygon into 2D space.
 
-    Parameters
-    ----------
-    vertices : list
-        The three-dimensional vertices of the polygon.
-    proj_axis : int
-        The axis to project into.
-    a : float
-        Distance to the origin for the plane to project into.
-    v : list
-        Normal vector of the plane to project into.
-
-    Returns
-    -------
-    list
-        The transformed vertices.
-
+    :param vertices: The three-dimensional vertices of the polygon.
+    :param proj_axis: The axis to project into.
+    :returns: The transformed vertices.
     """
     points = [project(x, proj_axis) for x in vertices]
     return points
@@ -538,22 +502,11 @@ def project_to_3D(vertices,  # type: np.ndarray
     # type: (...) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
 
-    Parameters
-    ----------
-    vertices : list
-        The two-dimensional vertices of the polygon.
-    proj_axis : int
-        The axis to project into.
-    a : float
-        Distance to the origin for the plane to project into.
-    v : list
-        Normal vector of the plane to project into.
-
-    Returns
-    -------
-    list
-        The transformed vertices.
-
+    :param vertices: The two-dimensional vertices of the polygon.
+    :param proj_axis: The axis to project into.
+    :param a: Distance to the origin for the plane to project into.
+    :param v: Normal vector of the plane to project into.
+    :returns: The transformed vertices.
     """
     return [project_inv(pt, proj_axis, a, v) for pt in vertices]
 
@@ -564,27 +517,15 @@ def project_inv(pt,  # type: np.ndarray
                 v  # type: Vector3D
                 ):
     # type: (...) -> Tuple[np.float64, np.float64, np.float64]
-    """Returns the vector w in the surface's plane such that project(w) equals
-    x.
+    """Returns the vector w in the surface's plane such that project(w) equals x.
 
     See http://stackoverflow.com/a/39008641/1706564
 
-    Parameters
-    ----------
-    pt : list
-        The two-dimensional point.
-    proj_axis : int
-        The axis to project into.
-    a : float
-        Distance to the origin for the plane to project into.
-    v : list
-        Normal vector of the plane to project into.
-
-    Returns
-    -------
-    list
-        The transformed point.
-
+    :param pt: A two-dimensional point.
+    :param proj_axis: The axis to project into.
+    :param a: Distance to the origin for the plane to project into.
+    :param v: Normal vector of the plane to project into.
+    :returns: The transformed point.
     """
     w = list(pt)
     w[proj_axis:proj_axis] = [0.0]
@@ -601,20 +542,12 @@ def normalize_coords(poly,  # type: Polygon3D
                      ggr=None  # type: Union[List, None, Idf_MSequence]
                      ):
     # type: (...) -> Polygon3D
-    """Put coordinates into the correct format for EnergyPlus.
+    """Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).
 
-    poly : Polygon3D
-        Polygon with the new coordinates.
-    outside_pt : Vector3D
-        An outside point of the new polygon.
-    ggr : EPBunch, optional
-        The section of the IDF that give rules for the order of vertices in a
-        surface {default : None}.
-
-    Returns
-    -------
-    list
-
+    :param poly: Polygon with new coordinates, but not yet checked for compliance with GGR.
+    :param outside_pt: An outside point of the new polygon.
+    :param ggr: EnergyPlus GlobalGeometryRules object.
+    :returns: The normalized polygon.
     """
     # check and set entry direction
     poly = set_entry_direction(poly, outside_pt, ggr)
