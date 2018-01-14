@@ -10,8 +10,8 @@ if False: from .polygons import Polygon2D,  Polygon3D  # noqa
 from ..utilities import almostequal
 
 
-class Clipper(object):
-    """Base class for 2D and 3D clippers."""
+class Clipper2D(object):
+    """This class is used to add clipping functionality to the Polygon2D class."""
 
     def difference(self, poly):
         # type: (Polygon3D) -> List[Polygon3D]
@@ -58,10 +58,6 @@ class Clipper(object):
 
         return self._process(unions)
 
-
-class Clipper2D(Clipper):
-    """This class is used to add clipping functionality to the Polygon2D class."""
-
     def _prepare_clipper(self, poly):
         # type: (Polygon2D) -> pc.Pyclipper
         """Prepare 2D polygons for clipping operations.
@@ -96,7 +92,7 @@ class Clipper2D(Clipper):
         return processed
 
 
-class Clipper3D(Clipper):
+class Clipper3D(Clipper2D):
     """This class is used to add clipping functionality to the Polygon3D class."""
 
     def _prepare_clipper(self, poly):
