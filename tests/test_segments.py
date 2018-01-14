@@ -1,12 +1,4 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
-"""
-Tests for Segment class, representing a line segment.
-"""
+"""Tests for Segment class, representing a line segment."""
 from geomeppy.geom.segments import Segment
 from geomeppy.geom.vectors import Vector3D
 

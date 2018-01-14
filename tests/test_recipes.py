@@ -1,11 +1,4 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
-"""pytest for recipes.py"""
-
+"""Tests for recipes."""
 from eppy.iddcurrent import iddcurrent
 import pytest
 from six import StringIO
@@ -272,4 +265,3 @@ class TestWWR:
             pass
         idf.set_wwr(wwr, force=True)
         assert self.is_expected_wwr(idf, wwr)
-

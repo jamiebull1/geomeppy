@@ -71,9 +71,6 @@ def idfreader1(fname,  # type: StringIO
                block=None  # type: Optional[List[List[str]]]
                ):
     # type: (...) -> Tuple[Dict, List, Eplusdata, List[Dict, Dict], Dict, Tuple[int]]
-    # would like to have:
-    # - type: (...) -> Tuple[Dict[str, Idf_MSequence], List[List[str]], Eplusdata, List[Union[List[Dict[str, Any]],
-    # List[Dict[str, Optional[str]]]]], Dict[str, Dict[str, Any]], Tuple[int]]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.

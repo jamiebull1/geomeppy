@@ -1,9 +1,3 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
 """
 A module to handle translations, using Christopher Gohlke's transforms3d as far
 as possible, but also trying to respect the intent of the algorithms used in

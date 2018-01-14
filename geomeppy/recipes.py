@@ -1,9 +1,3 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
 """Recipes for making changes to EnergyPlus IDF files."""
 import itertools
 from typing import List, Tuple, Union  # noqa
