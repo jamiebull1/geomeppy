@@ -74,6 +74,9 @@ class Polygon(MutableSequence):
             raise ValueError("Incompatible objects: %s + %s" % (self, other))
         return self.__class__(vertices)
 
+    def insert(self, key, value):
+        self.vertices.insert(key, value)
+
     @property
     def area(self):
         # type: () -> np.float64
@@ -111,9 +114,6 @@ class Polygon(MutableSequence):
         edges = [Segment(vertices[i], vertices[(i + 1) % len(self)])
                  for i in range(len(self))]
         return edges
-
-    def insert(self, key, value):
-        self.vertices.insert(key, value)
 
     def invert_orientation(self):
         # type: () -> Union[Polygon2D, Polygon3D]
