@@ -2,6 +2,8 @@
 
 PyClipper is used for clipping.
 """
+from typing import List  # noqa
+
 import pyclipper as pc
 
 if False: from .polygons import Polygon2D,  Polygon3D  # noqa

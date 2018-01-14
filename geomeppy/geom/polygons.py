@@ -1,7 +1,7 @@
 """Heavy lifting geometry for IDF surfaces."""
 from collections import MutableSequence
 from itertools import product
-from typing import Any, List, Tuple, Union  # noqa
+from typing import Any, List, Optional, Tuple, Union  # noqa
 
 import numpy as np
 from eppy.geometry.surface import area
@@ -44,9 +44,9 @@ class Polygon(MutableSequence):
         self.vertices[key] = value
 
     def __add__(self,
-                other  # type: Union[Polygon2D, Vector2D, Vector3D]
+                other  # type: Polygon
                 ):
-        # type: (...) -> Union[None, Polygon2D, Polygon3D]
+        # type: (...) -> Union[None, Polygon]
         if len(self) == len(other) and hasattr(other[0], '__len__'):
             # add together two equal polygons
             vertices = [v1 + v2 for v1, v2 in zip(self, other)]
@@ -78,7 +78,7 @@ class Polygon(MutableSequence):
 
     @property
     def bounding_box(self):
-        # type: () -> Polygon3D
+        # type: () -> Polygon
         aligned = align_face(self)
         top_left = Vector3D(min(aligned.xs), max(aligned.ys), max(aligned.zs))
         bottom_left = Vector3D(
@@ -110,7 +110,7 @@ class Polygon(MutableSequence):
         return edges
 
     def invert_orientation(self):
-        # type: () -> Union[Polygon2D, Polygon3D]
+        # type: () -> Polygon
         """Reverse the order of the vertices.
 
         This can be used to create a matching surface, e.g. the other side of a wall.

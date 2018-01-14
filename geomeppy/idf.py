@@ -1,3 +1,8 @@
+from typing import Any, Dict, List, Optional, Union  # noqa
+
+from eppy.bunch_subclass import EpBunch  # noqa
+from eppy.idf_msequence import Idf_MSequence  # noqa
+
 from .geom.intersect_match import (
     intersect_idf_surfaces,
     getidfsurfaces,
