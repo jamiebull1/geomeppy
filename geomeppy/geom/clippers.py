@@ -10,7 +10,7 @@ from ..utilities import almostequal
 
 class Clipper(object):
     """Base class for 2D and 3D clippers."""
-    
+
     def difference(self, poly):
         # type: (Polygon3D) -> List[Polygon3D]
         """Intersect with another 2D polygon.

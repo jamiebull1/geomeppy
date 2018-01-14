@@ -27,7 +27,7 @@ install:
   - pip install -e .[testing]
 
 before_script:
-  - flake8 --count geomeppy
+  - flake8 --count geomeppy tests
   - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy || :; fi  # force a zero return code
 
 script:
