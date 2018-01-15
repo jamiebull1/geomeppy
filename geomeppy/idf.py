@@ -18,6 +18,17 @@ from .recipes import set_default_constructions, set_wwr, rotate, scale, translat
 from .view_geometry import view_idf
 
 
+def new_idf(fname):
+    # type (Optional[str]) -> IDF
+    """Create a new blank IDF.
+
+    :param fname: A name for the new IDF.
+    """
+    idf = IDF()
+    idf.new(fname)
+    return idf
+
+
 class IDF(PatchedIDF):
     """Geometry-enabled IDF class, usable in the same way as Eppy's IDF.
 

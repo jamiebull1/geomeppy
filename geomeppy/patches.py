@@ -235,7 +235,6 @@ class PatchedIDF(BaseIDF):
     """Monkey-patched IDF.
 
     Patched to add read (to add additional functionality) and to fix copyidfobject and newidfobject.
-
     """
 
     def read(self):
@@ -250,7 +249,6 @@ class PatchedIDF(BaseIDF):
         - model : list
         - idd_info : list
         - idd_index : dict
-
         """
         if self.getiddname() is None:
             errortxt = (
@@ -283,7 +281,6 @@ class PatchedIDF(BaseIDF):
         :param aname: This parameter is not used. It is left there for backward compatibility.
         :param kwargs: Keyword arguments in the format `field=value` used to set fields in the EnergyPlus object.
         :returns: EpBunch object.
-
         """
         obj = newrawobject(self.model, self.idd_info, key)
         abunch = obj2bunch(self.model, self.idd_info, obj)
@@ -304,6 +301,5 @@ class PatchedIDF(BaseIDF):
 
         :param idfobject: The IDF object to copy. Usually from another IDF, or it can be used to copy within this IDF.
         :returns: EpBunch object.
-
         """
         return addthisbunch(self.idfobjects, self.model, self.idd_info, idfobject, self)
