@@ -1,3 +1,4 @@
+"""A collection of functions which act on surfaces or lists of surfaces."""
 from collections import defaultdict
 from itertools import combinations
 from typing import Dict, List, Union  # noqa

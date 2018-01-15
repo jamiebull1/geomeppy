@@ -1,4 +1,6 @@
-"""Utilities for IDF vectors.
+"""2D and 3D vector classes.
+
+These are used to represent points in 2D and 3D, as well as directions for translations.
 """
 
 from typing import Any, Iterator, List, Sized, Tuple, Union  # noqa
