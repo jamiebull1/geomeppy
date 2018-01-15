@@ -30,16 +30,14 @@ def main(increment):
 
     # increment version
     version = __version__
-    major, minor, patch = version.split('.')
-    version = [int(i) for i in version.split('.')]
-    version[increment] += 1
-    for i in range(len(version)):
+    new_version = [int(i) for i in version.split('.')]
+    for i in range(len(new_version)):
         if i == increment:
-            version[i] += 1
+            new_version[i] += 1
         if i > increment:
-            version[i] = 1
+            new_version[i] = 1
 
-    new_version = '%d.%d.%d' % (major, minor, int(patch) + 1)
+    new_version = '.'.join(str(v) for v in new_version)
     replace('geomeppy/__init__.py', version, new_version)
     replace('setup.py', "version='%s'" % version, "version='%s'" % new_version)
     replace('setup.py', "tarball/v%s" % version, "tarball/v%s" % new_version)
