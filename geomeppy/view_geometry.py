@@ -1,9 +1,3 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
 """Tool for visualising geometry."""
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent

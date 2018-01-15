@@ -1,10 +1,6 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
-"""Utilities for IDF vectors.
+"""2D and 3D vector classes.
+
+These are used to represent points in 2D and 3D, as well as directions for translations.
 """
 
 from typing import Any, Iterator, List, Sized, Tuple, Union  # noqa
@@ -117,6 +113,72 @@ class Vector2D(Sized):
         # type: () -> Union[Vector2D, Vector3D]
         return -self
 
+    def as_array(self, dims=3):
+        # type: (Union[Vector2D, Vector3D], int) -> np.ndarray
+        """Convert a point to a numpy array.
+
+        Converts a Vector3D to a numpy.array([x,y,z]) or a Vector2D to a numpy.array([x,y]).
+        Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+        used to represent 0.0).
+
+        Parameters
+        ----------
+        pt : sympy.Vector3D
+            The point to convert.
+        dims : int, optional
+            Number of dimensions {default : 3}.
+
+        Returns
+        -------
+        numpy.np.ndarray
+
+        """
+        # handle Vector3D
+        if dims == 3:
+            return np.array([float(self.x), float(self.y), float(self.z)])
+        # handle Vector2D
+        elif dims == 2:
+            return np.array([float(self.x), float(self.y)])
+
+    def as_tuple(self, dims=3):
+        # type: (Union[Vector2D, Vector3D], int) -> Tuple[float, ]
+        """Convert a point to a numpy array.
+
+        Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
+        Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+        used to represent 0.0).
+
+        Parameters
+        ----------
+        pt : sympy.Vector3D, sympy.Vector2D
+            The point to convert.
+        dims : int, optional
+            Number of dimensions {default : 3}.
+
+        Returns
+        -------
+        tuple
+
+        """
+        # handle Vector3D
+        if dims == 3:
+            return float(self.x), float(self.y), float(self.z)
+        # handle Vector2D
+        elif dims == 2:
+            return float(self.x), float(self.y)
+
+    def relative_distance(self, v2):
+        # type: (Vector3D) -> float
+        """A distance function for sorting vectors by distance.
+
+        This only provides relative distance, not actual distance since we only use it for sorting.
+
+        :param v2: Another vector.
+        :return: Relative distance between two point vectors.
+        """
+        direction = self - v2
+        return sum(x ** 2 for x in direction)
+
 
 class Vector3D(Vector2D):
     """Three dimensional point."""
@@ -139,26 +201,6 @@ class Vector3D(Vector2D):
     def __hash__(self):
         # type: () -> int
         return hash(self.x) ^ hash(self.y) ^ hash(self.z)
-
-
-def normalise_vector(v):
-    # type: (List[float]) -> List[float]
-    """Convert a vector to a unit vector
-
-    Parameters
-    ----------
-    v : list
-        The vector.
-
-    Returns
-    -------
-    list
-
-    """
-    magnitude = sum(abs(i) for i in v)
-    normalised_v = [i / magnitude for i in v]
-
-    return normalised_v
 
 
 def inverse_vector(v):

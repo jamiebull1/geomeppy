@@ -1,10 +1,4 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
-"""pytest for transformations.py"""
+"""Tests for transformations"""
 import numpy as np
 from transforms3d._gohlketransforms import translation_matrix
 
@@ -14,7 +8,7 @@ from geomeppy.geom.vectors import Vector3D
 from geomeppy.utilities import almostequal
 
 
-class TestTransormations():
+class TestTransformations():
     
     def test_translation_transformations(self):
         # type: () -> None
@@ -153,8 +147,7 @@ class TestTransormations():
         tempVertices = t._inverse() * testVertices
         expectedVertices = Polygon3D([(1,0,0),(1,1,0),(0,1,0),(0,0,0)])
         assert almostequal(tempVertices, expectedVertices, tol)
-    
-    
+
     def test_align_face_transformations_trapezoid_floor(self):
         # type: () -> None
         tol = 12  # places

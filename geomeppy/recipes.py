@@ -1,9 +1,3 @@
-# Copyright (c) 2016 Jamie Bull
-# =======================================================================
-#  Distributed under the MIT License.
-#  (See accompanying file LICENSE or copy at
-#  http://opensource.org/licenses/MIT)
-# =======================================================================
 """Recipes for making changes to EnergyPlus IDF files."""
 import itertools
 from typing import List, Tuple, Union  # noqa
@@ -18,7 +12,7 @@ from .geom.vectors import Vector2D, Vector3D  # noqa
 
 MYPY = False
 if MYPY:
-    from .eppy_patches import EpBunch, IDF  # noqa
+    from .patches import EpBunch, IDF  # noqa
 
 
 def set_default_constructions(idf):
@@ -32,9 +26,9 @@ def set_default_constructions(idf):
                      'Project Flat Roof', 'Project Ceiling',
                      'Project External Window', 'Project Door']
     for construction in constructions:
-        idf.newidfobject('CONSTRUCTION', construction,
+        idf.newidfobject('CONSTRUCTION', Name=construction,
                          Outside_Layer='DefaultMaterial')
-    idf.newidfobject('MATERIAL', 'DefaultMaterial',
+    idf.newidfobject('MATERIAL', Name='DefaultMaterial',
                      Roughness='Rough',
                      Thickness=0.1,
                      Conductivity=0.1,

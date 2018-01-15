@@ -1,6 +1,6 @@
-from geomeppy.eppy_patches import IDF
+from geomeppy.idf import IDF
 
-__version__ = "0.3.19"
+__version__ = "0.4.1"
 
 __all__ = ['IDF',
            ]
