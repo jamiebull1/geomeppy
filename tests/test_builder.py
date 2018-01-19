@@ -81,7 +81,8 @@ class TestAddBlock():
             (87.25,24.0)]
         idf.add_block(name, coordinates, height, num_stories,
                   below_ground_stories, below_ground_storey_height)
-        
+        idf.intersect_match()
+
     def test_add_two_blocks(self):
         # type: () -> None
         idf = self.idf
@@ -131,7 +132,7 @@ class TestAddBlock():
             wall = idf.getobject(
                 'BUILDINGSURFACE:DETAILED', window.Building_Surface_Name)
             assert wall.Construction_Name == 'Project Wall'
-        
+
     def test_add_two_concentric_blocks(self):
         # type: () -> None
         idf = self.idf
@@ -144,7 +145,7 @@ class TestAddBlock():
         idf.intersect_match()
         idf.set_wwr(0.25)
         idf.set_default_constructions()
-    
+
     def test_known_breaking(self):
         # type: () -> None
         idf = self.idf

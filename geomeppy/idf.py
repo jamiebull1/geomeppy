@@ -11,9 +11,10 @@ from .geom.intersect_match import (
     match_idf_surfaces,
 )
 from .builder import Block, Zone
-from .patches import PatchedIDF
 from .geom.polygons import bounding_box, Polygon2D  # noqa
 from .geom.vectors import Vector2D, Vector3D  # noqa
+from .io.obj import export_to_obj
+from .patches import PatchedIDF
 from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
 from .view_geometry import view_idf
 
@@ -179,6 +180,15 @@ class IDF(PatchedIDF):
         # type: (Optional[bool]) -> None
         """Show a zoomable, rotatable representation of the IDF."""
         view_idf(idf_txt=self.idfstr(), test=test)
+
+    def to_obj(self, fname=None, mtllib=None):
+        # type: (Optional[str], Optional[str]) -> None
+        if not fname:
+            try:
+                fname = self.idfname.replace('.idf', '.obj')
+            except AttributeError:
+                fname = 'default.obj'
+        export_to_obj(self, fname, mtllib)
 
     def add_block(self, *args, **kwargs):
         # type: (*Any, **Any) -> None
