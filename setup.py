@@ -40,6 +40,7 @@ setup(
         'shapely==1.6.2',  # geometry transformations
         'six==1.11.0',  # python2/3 compatibility
         'transforms3d==0.3.1',  # geometry transformations
+        'pypoly2tri==0.0.3',  # triangulate polygons
     ],
     classifiers = [
         'Programming Language :: Python :: 2',
