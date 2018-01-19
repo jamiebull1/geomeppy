@@ -100,7 +100,7 @@ class Block(object):
         :returns: Average storey height.
 
         """
-        return self.height / (self.num_stories - self.num_below_ground_stories)
+        return float(self.height) / (self.num_stories - self.num_below_ground_stories)
 
     @property
     def floor_heights(self):

@@ -18,13 +18,13 @@ setup(
         'geomeppy',
         'tests',
     ],
-    version='0.4.1',
+    version='0.4.2',
     description='Geometry editing for E+ idf files',
     long_description=read_rst('README.rst'),
     author='Jamie Bull',
     author_email='jamie.bull@oco-carbon.com',
     url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.4.1',
+    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.4.2',
     license='MIT License',
     keywords=[
         'EnergyPlus',
@@ -40,6 +40,7 @@ setup(
         'shapely==1.6.2',  # geometry transformations
         'six==1.11.0',  # python2/3 compatibility
         'transforms3d==0.3.1',  # geometry transformations
+        'pypoly2tri==0.0.3',  # triangulate polygons
     ],
     classifiers = [
         'Programming Language :: Python :: 2',
