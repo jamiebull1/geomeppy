@@ -6,6 +6,7 @@ These are used to represent points in 2D and 3D, as well as directions for trans
 from typing import Any, Iterator, List, Sized, Tuple, Union  # noqa
 
 import numpy as np
+from six.moves import zip
 
 MYPY = False
 if MYPY:

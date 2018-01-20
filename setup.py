@@ -34,6 +34,7 @@ setup(
     platforms='any',
     install_requires=[
         'eppy==0.5.46',
+        'pylru==1.0.9',  # caching
         'matplotlib',  # model viewer
         'numpy==1.13',
         'pyclipper==1.1.0',  # geometry intersection
