@@ -16,7 +16,7 @@ Installation
 
 GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
-To install GeomEppy, call `pip install geomeppy`.
+`pip install geomeppy`
 
 API
 ---
@@ -82,6 +82,15 @@ azimuth in the ``wwr_map``. Any omitted walls' WWR will be set to the value in
 
 ``IDF.view_model()  # shows a zoomable, rotatable transparent model``
 
+- Exporting a 3D OBJ file model
+
+``IDF.to_obj('mymodel.idf')``
+
+You can view the exported model `here <https://3dviewer.net/>`_. Just drag the .obj file
+and .mtl file into the browser window.
+
+|OBJ viewer|
+
 -  Get all surfaces in a model
 
 ``IDF.getsurfaces()``
@@ -136,8 +145,10 @@ GeomEppy also provides some additional functions such as
 ::
 
     wall = idf.newidfobject(
-        'BUILDINGSURFACE:DETAILED', 'awall',
-        Surface_Type = 'wall')
+        'BUILDINGSURFACE:DETAILED',
+        Name='awall',
+        Surface_Type = 'wall',
+        )
     wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 
 Forthcoming
@@ -145,9 +156,9 @@ Forthcoming
 
 -  Geometry validation and correction
 -  Geometry simplification
--  Better geometry visualisation
 
 .. |Build Status| image:: https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master
    :target: https://travis-ci.org/jamiebull1/geomeppy
 .. |CodeCov| image:: https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg
    :target: https://codecov.io/github/jamiebull1/geomeppy
+.. |OBJ viewer| image:: img/obj_viewer.png
