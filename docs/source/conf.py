@@ -20,7 +20,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-sys.path.insert(0, '/Users/jamiebull/PycharmProjects/geomeppy/env-geomeppy/lib/python2.7/site-packages/eppy')
 
 # -- General configuration ------------------------------------------------
 
@@ -34,6 +33,7 @@ sys.path.insert(0, '/Users/jamiebull/PycharmProjects/geomeppy/env-geomeppy/lib/p
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
+    'sphinx.ext.inheritance_diagram',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
