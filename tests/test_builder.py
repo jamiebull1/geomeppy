@@ -173,7 +173,7 @@ def test_block():
                   below_ground_stories, below_ground_storey_height)
     # number of surfaces
     assert len(block.surfaces['roofs']) == block.num_stories
-    assert all(r == [None] for r in block.surfaces['roofs'][:-1])
+    assert all(r == [] for r in block.surfaces['roofs'][:-1])
     assert len(block.surfaces['walls']) == block.num_stories
     assert len(block.surfaces['ceilings']) == block.num_stories
     assert len(block.surfaces['floors']) == block.num_stories

@@ -3,14 +3,12 @@ Segment class, representing a line segment.
 
 """
 
-from typing import Iterator  # noqa
+from typing import Any, Iterator  # noqa
 
 from .vectors import Vector3D
 from ..utilities import almostequal
 
-MYPY = False
-if MYPY:
-    from .polygons import Polygon3D  # noqa
+if False: from .polygons import Polygon3D  # noqa
 
 
 class Segment(object):
@@ -36,7 +34,7 @@ class Segment(object):
         return (i for i in self.vertices)
 
     def __eq__(self, other):
-        # type: (Segment) -> bool
+        # type: (Any) -> bool
         return self.__dict__ == other.__dict__
 
     def _is_collinear(self, other):

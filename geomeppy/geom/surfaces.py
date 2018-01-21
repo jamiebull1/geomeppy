@@ -1,19 +1,20 @@
 """A collection of functions which act on surfaces or lists of surfaces."""
 from collections import defaultdict
 from itertools import combinations
-from typing import Dict, List, Union  # noqa
+from typing import Dict, List, Tuple, Union  # noqa
 import warnings
 
+from eppy.bunch_subclass import EpBunch  # noqa
 from eppy.idf_msequence import Idf_MSequence  # noqa
 from numpy import float64  # noqa
 
-from geomeppy.geom.polygons import intersect, Polygon3D, unique
-from geomeppy.geom.vectors import Vector3D
-from geomeppy.utilities import almostequal
+from .polygons import intersect, Polygon3D, unique
+from .vectors import Vector2D, Vector3D  # noqa
+from ..utilities import almostequal
 
 
 def set_coords(surface,  # type: EpBunch
-               coords,  # type: Union[List[Vector3D], Polygon3D]
+               coords,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
                ggr  # type: Union[List, None, Idf_MSequence]
                ):
     # type: (...) -> None
@@ -55,7 +56,7 @@ def set_matched_surfaces(surface, matched):
 
 
 def set_unmatched_surface(surface, vector):
-    # type: (EpBunch, Vector3D) -> None
+    # type: (EpBunch, Union[Vector2D, Vector3D]) -> None
     """Set boundary conditions for a surface which does not adjoin another one.
 
     :param surface: The surface.
@@ -81,7 +82,7 @@ def set_unmatched_surface(surface, vector):
 
 
 def getidfplanes(surfaces):
-    # type: (Idf_MSequence) -> Dict[float64, Dict[Vector3D, List[EpBunch]]]
+    # type: (Idf_MSequence) -> Dict[float64, Dict[Union[Vector2D, Vector3D], List[EpBunch]]]
     """Fast access data structure for potentially matched surfaces.
 
     Get a data structure populated with all the surfaces in the IDF, keyed by their distance from the origin, and their
@@ -90,7 +91,7 @@ def getidfplanes(surfaces):
     :param surfaces: List of all the surfaces.
     :returns: Mapping to look up IDF surfaces.
     """
-    planes = {}
+    planes = {}  # type: Dict[float64, Dict[Union[Vector2D, Vector3D], List[EpBunch]]]
     for s in surfaces:
         poly = Polygon3D(s.coords)
         rounded_distance = round(poly.distance, 8)
@@ -109,7 +110,7 @@ def get_adjacencies(surfaces):
     :param surfaces: A mutable list of surfaces.
     :returns: Mapping of surfaces to adjacent surfaces.
     """
-    adjacencies = defaultdict(list)
+    adjacencies = defaultdict(list)  # type: defaultdict
     # find all adjacent surfaces
     for s1, s2 in combinations(surfaces, 2):
         adjacencies = populate_adjacencies(adjacencies, s1, s2)

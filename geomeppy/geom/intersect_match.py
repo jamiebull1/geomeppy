@@ -10,9 +10,7 @@ from geomeppy.geom.surfaces import (
 )
 from geomeppy.utilities import almostequal
 
-MYPY = False
-if MYPY:
-    from geomeppy.patches import IDF  # noqa
+if False: from ..idf import IDF  # noqa
 
 
 def intersect_idf_surfaces(idf):

@@ -1,4 +1,6 @@
 """Tool for visualising geometry."""
+from typing import Optional  # noqa
+
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 from eppy.modeleditor import IDF
