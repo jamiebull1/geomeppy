@@ -56,7 +56,7 @@ setup(
     ],
     extras_require={
         ':python_version>="3.4"': [
-            'mypy==0.550',  # static type checking
+            'mypy==0.560',  # static type checking
         ],
         'testing': [
             'codecov',

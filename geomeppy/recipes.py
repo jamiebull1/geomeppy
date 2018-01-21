@@ -1,6 +1,6 @@
 """Recipes for making changes to EnergyPlus IDF files."""
 import itertools
-from typing import List, Tuple, Union  # noqa
+from typing import List, Optional, Tuple, Union  # noqa
 
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
@@ -8,10 +8,8 @@ import numpy as np
 from .geom.polygons import Polygon3D
 from .geom.transformations import Transformation
 from .geom.vectors import Vector2D, Vector3D  # noqa
-
-MYPY = False
-if MYPY:
-    from .patches import EpBunch, IDF  # noqa
+if False: from .idf import IDF  # noqa
+if False: from .patches import EpBunch  # noqa
 
 
 def set_default_constructions(idf):
@@ -199,7 +197,7 @@ def translate(surfaces,  # type: Idf_MSequence
 def translate_coords(coords,  # type: Union[List[Tuple[float, float, float]], Polygon3D]
                      vector  # type: Union[List[float], Vector3D]
                      ):
-    # type: (...) -> List[Vector3D]
+    # type: (...) -> List[Union[Vector2D, Vector3D]]
     """Translate a set of coords by a direction vector.
 
     :param coords: A list of points.
@@ -225,7 +223,7 @@ def scale(surfaces, factor, axes='xy'):
 
 
 def scale_coords(coords, factor, axes):
-    # type: (Union[List[Tuple[float, float, float], Polygon3D]], int, str) -> Polygon3D
+    # type: (Union[List[Tuple[float, float, float]], Polygon3D], float, str) -> Polygon3D
     """Scale a set of coords by a factor.
 
     :param coords: A list of points.
@@ -259,7 +257,6 @@ def rotate(surfaces, angle):
 
 
 def rotate_coords(coords, radians):
-    # type: (List[Tuple[float, float, float]], float64) -> List[Tuple[float, float, float]]
     """Rotate a set of coords by an angle in radians.
 
     :param coords: A list of points.

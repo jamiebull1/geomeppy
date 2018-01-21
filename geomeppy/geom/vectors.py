@@ -3,17 +3,15 @@
 These are used to represent points in 2D and 3D, as well as directions for translations.
 """
 
-from typing import Any, Iterator, List, Sized, Tuple, Union  # noqa
+from typing import Any, Iterable, Iterator, List, Sized, Tuple, Union  # noqa
 
 import numpy as np
 from six.moves import zip
 
-MYPY = False
-if MYPY:
-    from .polygons import Polygon3D  # noqa
+if False: from .polygons import Polygon3D  # noqa
 
 
-class Vector2D(Sized):
+class Vector2D(Sized, Iterable):
     """Two dimensional point."""
 
     def __init__(self, *args):
@@ -21,6 +19,7 @@ class Vector2D(Sized):
         self.args = list(args)
         self.x = float(args[0])
         self.y = float(args[1])
+        self.z = 0.0
 
     def __iter__(self):
         # type: () -> Iterator
@@ -32,14 +31,13 @@ class Vector2D(Sized):
         return '{}({!r}, {!r})'.format(class_name, *self.args)
 
     def __eq__(self, other):
-        # type: (Union[List[float], Vector2D, Vector3D]) -> bool
         for a, b in zip(self, other):
             if a != b:
                 return False
         return True
 
     def __sub__(self, other):
-        # type: (Union[Vector2D, Vector3D, np.ndarray]) -> Union[Vector2D, Vector3D]
+        # type: (Any) -> Union[Vector2D, Vector3D]
         return self.__class__(*[self[i] - other[i] for i in range(len(self))])
 
     def __add__(self, other):
@@ -69,7 +67,7 @@ class Vector2D(Sized):
         return np.dot(self, other)
 
     def cross(self, other):
-        # type: (Vector3D) -> np.ndarray
+        # type: (Union[Vector2D, Vector3D]) -> np.ndarray
         return np.cross(self, other)
 
     @property
@@ -131,9 +129,11 @@ class Vector2D(Sized):
         # handle Vector2D
         elif dims == 2:
             return np.array([float(self.x), float(self.y)])
+        else:
+            raise ValueError('%s-dimensional vectors are not supported.' % dims)
 
     def as_tuple(self, dims=3):
-        # type: (Union[Vector2D, Vector3D], int) -> Tuple[float, ]
+        # type: (Union[Vector2D, Vector3D, int]) -> Union[Tuple[float, float], Tuple[float, float, float]]
         """Convert a point to a numpy array.
 
         Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
@@ -151,6 +151,8 @@ class Vector2D(Sized):
         # handle Vector2D
         elif dims == 2:
             return float(self.x), float(self.y)
+        else:
+            raise ValueError('%s-dimensional vectors are not supported.' % dims)
 
     def relative_distance(self, v2):
         # type: (Vector3D) -> float
@@ -172,12 +174,12 @@ class Vector3D(Vector2D):
     def __init__(self,
                  x,  # type: Union[float, np.float64]
                  y,  # type: Union[float, np.float64]
-                 z=0  # type: Union[float, np.float64]
+                 z=0,  # type: Union[float, np.float64]
                  ):
         # type: (...) -> None
-        super(Vector3D, self).__init__(x, y)
+        super(Vector3D, self).__init__(x, y, z)
         self.z = float(z)
-        self.args = (self.x, self.y, self.z)
+        self.args = [self.x, self.y, self.z]
 
     def __repr__(self):
         # type: () -> str

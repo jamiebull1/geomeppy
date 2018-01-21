@@ -6,7 +6,7 @@ from typing import List  # noqa
 
 import pyclipper as pc
 
-if False: from .polygons import Polygon2D,  Polygon3D  # noqa
+if False: from .polygons import Polygon, Polygon3D  # noqa
 from ..utilities import almostequal
 
 
@@ -14,8 +14,8 @@ class Clipper2D(object):
     """This class is used to add clipping functionality to the Polygon2D class."""
 
     def difference(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Intersect with another 2D polygon.
+        # type: (Polygon) -> List[Polygon]
+        """Intersect with another polygon.
 
         :param poly: The clip polygon.
         :returns: False if no intersection, otherwise a list of lists of Polygons representing each difference.
@@ -29,8 +29,8 @@ class Clipper2D(object):
         return self._process(differences)
 
     def intersect(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Intersect with another 3D polygon.
+        # type: (Polygon) -> List[Polygon]
+        """Intersect with another polygon.
 
         :param poly: The clip polygon.
         :returns: False if no intersection, otherwise a list of Polygons representing each intersection.
@@ -44,11 +44,11 @@ class Clipper2D(object):
         return self._process(intersections)
 
     def union(self, poly):
-        # type: (Polygon3D) -> List[Polygon3D]
-        """Union with another 3D polygon.
+        # type: (Polygon) -> List[Polygon]
+        """Union with another polygon.
 
         :param poly: The clip polygon.
-        :returns: A list of Polygon3Ds.
+        :returns: A list of Polygons.
         """
         clipper = self._prepare_clipper(poly)
         if not clipper:
@@ -59,7 +59,6 @@ class Clipper2D(object):
         return self._process(unions)
 
     def _prepare_clipper(self, poly):
-        # type: (Polygon2D) -> pc.Pyclipper
         """Prepare 2D polygons for clipping operations.
 
         :param poly: The clip polygon.
@@ -73,7 +72,6 @@ class Clipper2D(object):
         return clipper
 
     def _process(self, results):
-        # type: (List[List[List[int]]]) -> List[Polygon2D]
         """Process and return the results of a clipping operation.
 
         :param results: A list of lists of coordinates .
@@ -96,7 +94,6 @@ class Clipper3D(Clipper2D):
     """This class is used to add clipping functionality to the Polygon3D class."""
 
     def _prepare_clipper(self, poly):
-        # type: (Polygon3D) -> pc.Pyclipper
         """Prepare 3D polygons for clipping operations.
 
         :param poly: The clip polygon.
@@ -116,7 +113,6 @@ class Clipper3D(Clipper2D):
         return clipper
 
     def _process(self, results):
-        # type: (List[List[List[int]]], Polygon3D) -> List[Polygon3D]
         """Process and return the results of a clipping operation.
 
         :param results: A list of lists of coordinates .

@@ -19,20 +19,24 @@ Example polygon:
 """
 from itertools import product
 import shutil
+from typing import List, Optional, Set  # noqa
 import os
 
 import pypoly2tri as p2t
 
+if False: from ..idf import IDF  # noqa
 from ..geom.polygons import Polygon2D, Polygon3D
+from ..geom.vectors import Vector3D  # noqa
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class ObjWriter(object):
     """Container class holding the data needed to generate the .obj file."""
-    faces = []
-    vertices = []
-    v_set = set()  # used for fast testing if a vertex is in vertices
+    faces = []  # type: List[int]
+    vertices = []  # type: List[Vector3D]
+    # v_set is used for fast testing if a vertex is in vertices
+    v_set = set()  # type: Set[Vector3D]
 
     def from_surfaces(self, surfaces, subsurfaces, shading_surfaces):
         self.prepare_surfaces(surfaces, subsurfaces)
