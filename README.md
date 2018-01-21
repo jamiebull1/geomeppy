@@ -14,6 +14,11 @@ It primarily adds functions to do with IDF geometry, including zones, surfaces, 
 
 `pip install geomeppy`
 
+## Full docs
+
+Complete documentation is hosted at [Read the Docs](http://geomeppy.readthedocs.io/en/latest/?). This covers the internals of geomeppy, 
+and may be subject to change. Features documented in the API section below can be relied upon to remain stable.
+
 ## API
 
 The API for GeomEppy depends on replacing an Eppy IDF object with a GeomEppy IDF object. To use this, you will need to import IDF from GeomEppy rather than directly from Eppy.

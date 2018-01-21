@@ -18,6 +18,12 @@ GeomEppy requires Numpy, Shapely, and optionally Matplotlib.
 
 `pip install geomeppy`
 
+Full docs
+---------
+
+Complete documentation is hosted at `Read the Docs <http://geomeppy.readthedocs.io/en/latest/?>`_. This covers the internals of geomeppy,
+and may be subject to change. Features documented in the API section below can be relied upon to remain stable.
+
 API
 ---
 
