@@ -1,6 +1,8 @@
 """Utilities for use in geomeppy."""
 from typing import Any  # noqa
 
+from six.moves import zip
+
 
 def almostequal(first, second, places=7):
     # type: (Any, Any, int) -> bool

@@ -1,12 +1,14 @@
 """Heavy lifting geometry for IDF surfaces."""
 from collections import MutableSequence
 from itertools import product
+from math import atan2, pi
 from typing import Any, List, Optional, Tuple, Union  # noqa
 
-import numpy as np
 from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
+import numpy as np
 from shapely import wkt
+from six.moves import zip
 
 from .clippers import Clipper2D, Clipper3D
 from .segments import Segment
@@ -116,8 +118,14 @@ class Polygon(MutableSequence):
         This can be used to create a matching surface, e.g. the other side of a wall.
 
         :returns: A polygon.
+
         """
         return self.__class__(reversed(self.vertices))
+
+    @property
+    def is_convex(self):
+        return is_convex_polygon(self.vertices_list)
+        return False
 
     @property
     def points_matrix(self):
@@ -141,6 +149,7 @@ class Polygon(MutableSequence):
         """A list of the vertices in the format required by pyclipper.
 
         :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
+
         """
         return [pt.as_tuple(dims=self.n_dims) for pt in self.vertices]
 
@@ -186,6 +195,7 @@ class Polygon2D(Polygon, Clipper2D):
 
         :param example3D: A 3D polygon in the desired plane.
         :returns: A 3D polygon.
+
         """
         points = self.points_matrix
         proj_axis = example3d.projection_axis
@@ -248,6 +258,7 @@ class Polygon3D(Polygon, Clipper3D):
         is the polygon normal vector).
 
         :returns: The distance from the origin to the polygon.
+
         """
         v = self.normal_vector
         pt = self.points_matrix[0]  # arbitrary point in the polygon
@@ -260,6 +271,7 @@ class Polygon3D(Polygon, Clipper3D):
         """An axis which will not lead to a degenerate surface.
 
         :returns: The axis index.
+
         """
         proj_axis = max(range(3), key=lambda i: abs(self.normal_vector[i]))
         return proj_axis
@@ -270,6 +282,7 @@ class Polygon3D(Polygon, Clipper3D):
         """Check if polygon is in the xy plane.
 
         :returns: True if the polygon is in the xy plane, else False.
+
         """
         return bool(np.array(self.zs).std() < 1e-8)
 
@@ -281,6 +294,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param viewpoint: A point from which to view the polygon.
         :returns: True if vertices are ordered clockwise when observed from the given viewpoint.
+
         """
         arbitrary_pt = self.vertices[0]
         v = arbitrary_pt - viewpoint
@@ -296,6 +310,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param other: Another polygon.
         :returns: True if the two polygons are coplanar, else False.
+
         """
         n1 = self.normal_vector
         n2 = other.normal_vector
@@ -318,6 +333,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param entry_direction: Either "clockwise" or "counterclockwise", as seen from outside the space.
         :returns: A point vector.
+
         """
         entry_direction = entry_direction.lower()
         if entry_direction == 'clockwise':
@@ -335,6 +351,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param starting_position: The string that defines vertex starting position in EnergyPlus.
         :returns: The reordered polygon.
+
         """
         if starting_position == 'upperleftcorner':
             bbox_corner = self.bounding_box[0]
@@ -363,6 +380,7 @@ class Polygon3D(Polygon, Clipper3D):
         avoids degenerate configurations, which is the purpose of proj_axis.)
 
         :returns: A 2D polygon.
+
         """
         points = self.points_matrix
         projected_points = project_to_2D(points, self.projection_axis)
@@ -375,6 +393,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param ggr: EnergyPlus GlobalGeometryRules object.
         :returns: The normalized polygon.
+
         """
         try:
             entry_direction = ggr.Vertex_Entry_Direction
@@ -391,6 +410,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param wkt_poly: A text representation of a polygon in well known text (wkt) format.
         :returns: A polygon.
+
         """
         poly = wkt.loads(wkt_poly)
         exterior = Polygon3D(poly.exterior.coords)
@@ -424,6 +444,7 @@ def break_polygons(poly, hole):
     :param poly: The surface with a hole in.
     :param hole: The hole.
     :returns: Two Polygon3D objects.
+
     """
     # take the two closest points on the surface perimeter
     links = product(poly, hole)
@@ -471,6 +492,7 @@ def project_to_2D(vertices, proj_axis):
     :param vertices: The three-dimensional vertices of the polygon.
     :param proj_axis: The axis to project into.
     :returns: The transformed vertices.
+
     """
     points = [project(x, proj_axis) for x in vertices]
     return points
@@ -501,6 +523,7 @@ def project_to_3D(vertices,  # type: np.ndarray
     :param a: Distance to the origin for the plane to project into.
     :param v: Normal vector of the plane to project into.
     :returns: The transformed vertices.
+
     """
     return [project_inv(pt, proj_axis, a, v) for pt in vertices]
 
@@ -520,6 +543,7 @@ def project_inv(pt,  # type: np.ndarray
     :param a: Distance to the origin for the plane to project into.
     :param v: Normal vector of the plane to project into.
     :returns: The transformed point.
+
     """
     w = list(pt)
     w[proj_axis:proj_axis] = [0.0]
@@ -542,6 +566,7 @@ def normalize_coords(poly,  # type: Polygon3D
     :param outside_pt: An outside point of the new polygon.
     :param ggr: EnergyPlus GlobalGeometryRules object.
     :returns: The normalized polygon.
+
     """
     # check and set entry direction
     poly = set_entry_direction(poly, outside_pt, ggr)
@@ -562,6 +587,7 @@ def set_entry_direction(poly,  # type: Polygon3D
     :param outside_pt: A point beyond the outside face of the polygon.
     :param ggr: EnergyPlus global geometry rules
     :return: A polygon with the vertices correctly oriented.
+
     """
     if not ggr:
         entry_direction = 'counterclockwise'  # EnergyPlus default
@@ -598,6 +624,7 @@ def intersect(poly1, poly2):
     :param poly1: The first polygon.
     :param poly2: The second polygon.
     :returns: A list of unique polygons.
+
     """
     polys = []
     polys.extend(poly1.intersect(poly2))
@@ -619,6 +646,7 @@ def unique(polys):
 
     :param polys: A list of polygons.
     :returns: A unique list of polygons.
+
     """
     flattened = []
     for item in polys:
@@ -645,6 +673,7 @@ def is_hole(surface, possible_hole):
     :param surface: The first surface.
     :param possible_hole: The intersection into the surface.
     :returns: True if the possible hole is a hole in the surface.
+
     """
     if surface.area < possible_hole.area:
         return False
@@ -661,6 +690,7 @@ def bounding_box(polygons):
 
     :param polygons: A list of polygons.
     :return: A 2D polygon.
+
     """
     top_left = (
         min(min(c[0] for c in f.coords) for f in polygons),
@@ -679,3 +709,61 @@ def bounding_box(polygons):
         max(max(c[1] for c in f.coords) for f in polygons)
     )
     return Polygon2D([top_left, bottom_left, bottom_right, top_right])
+
+
+def is_convex_polygon(polygon):  # noqa
+    """Return True if the polynomial defined by the sequence of 2D
+    points is 'strictly convex': points are valid, side lengths non-
+    zero, interior angles are strictly between zero and a straight
+    angle, and the polygon does not intersect itself.
+
+    See: https://stackoverflow.com/a/45372025/1706564
+
+    :: NOTES:
+            1.  Algorithm: the signed changes of the direction angles
+                from one side to the next side must be all positive or
+                all negative, and their sum must equal plus-or-minus
+                one full turn (2 pi radians). Also check for too few,
+                invalid, or repeated points.
+            2.  No check is explicitly done for zero    internal angles
+                (180 degree direction-change angle) as this is covered
+                in other ways, including the `n < 3` check.
+
+    """
+    two_pi = 2 * pi
+    try:  # needed for any bad points or direction changes
+        # Check for too few points
+        if len(polygon) < 3:
+            return False
+        # Get starting information
+        old_x, old_y = polygon[-2]
+        new_x, new_y = polygon[-1]
+        new_direction = atan2(new_y - old_y, new_x - old_x)
+        angle_sum = 0.0
+        # Check each point (the side ending there, its angle) and accum. angles
+        for ndx, newpoint in enumerate(polygon):
+            # Update point coordinates and side directions, check side length
+            old_x, old_y, old_direction = new_x, new_y, new_direction
+            new_x, new_y = newpoint
+            new_direction = atan2(new_y - old_y, new_x - old_x)
+            if old_x == new_x and old_y == new_y:
+                return False  # repeated consecutive points
+            # Calculate & check the normalized direction-change angle
+            angle = new_direction - old_direction
+            if angle <= -pi:
+                angle += two_pi  # make it in half-open interval (-Pi, Pi]
+            elif angle > pi:
+                angle -= two_pi
+            if ndx == 0:  # if first time through loop, initialize orientation
+                if angle == 0.0:
+                    return False
+                orientation = 1.0 if angle > 0.0 else -1.0
+            else:  # if other time through loop, check orientation is stable
+                if orientation * angle <= 0.0:  # not both pos. or both neg.
+                    return False
+            # Accumulate the direction-change angle
+            angle_sum += angle
+        # Check that the total number of full turns is plus-or-minus 1
+        return abs(round(angle_sum / two_pi)) == 1
+    except (ArithmeticError, TypeError, ValueError):
+        return False  # any exception means not a proper convex polygon

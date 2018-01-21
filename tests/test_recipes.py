@@ -4,8 +4,7 @@ import pytest
 from six import StringIO
 
 from geomeppy.idf import IDF
-from geomeppy.geom.intersect_match import (
-    getidfsurfaces, getidfshadingsurfaces, intersect_idf_surfaces, match_idf_surfaces)
+from geomeppy.geom.intersect_match import intersect_idf_surfaces, match_idf_surfaces
 from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.vectors import Vector2D, Vector3D
 from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
@@ -48,7 +47,7 @@ class TestTranslate():
     def test_translate(self, base_idf):
         # type: () -> None
         idf = base_idf
-        surfaces = getidfsurfaces(idf)
+        surfaces = idf.getsurfaces()
         translate(surfaces, (50, 100))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
         expected = [52.0, 52.0, 51.0, 51.0]
@@ -69,14 +68,14 @@ class TestTranslate():
     def test_translate_to_origin(self, base_idf):
         # type: () -> None
         idf = base_idf
-        surfaces = getidfsurfaces(idf)
+        surfaces = idf.getsurfaces()
         translate(surfaces, (50000, 10000))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
         expected = [50002.0, 50002.0, 50001.0, 50001.0]
         assert result == expected
 
         translate_to_origin(idf)
-        surfaces = getidfsurfaces(idf)
+        surfaces = idf.getsurfaces()
         min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
         min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
         assert min_x == 0
@@ -85,7 +84,7 @@ class TestTranslate():
     def test_rotate_360(self, base_idf):
         # type: () -> None
         idf = base_idf
-        surface = getidfsurfaces(idf)[0]
+        surface = idf.getsurfaces()[0]
         coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
         surface.setcoords(coords)
         expected = surface.coords

@@ -12,7 +12,12 @@ It primarily adds functions to do with IDF geometry, including zones, surfaces, 
 
 ## Installation
 
-To install GeomEppy, call `pip install geomeppy`.
+`pip install geomeppy`
+
+## Full docs
+
+Complete documentation is hosted at [Read the Docs](http://geomeppy.readthedocs.io/en/latest/?). This covers the internals of geomeppy, 
+and may be subject to change. Features documented in the API section below can be relied upon to remain stable.
 
 ## API
 
@@ -72,6 +77,15 @@ azimuth in the `wwr_map`. Any omitted walls' WWR will be set to the value in
 
 `IDF.view_model()  # shows a zoomable, rotatable transparent model`
 
+- Exporting a 3D OBJ file model
+
+`IDF.to_obj('mymodel.idf')`
+
+You can view the exported model [here](https://3dviewer.net/). Just drag the .obj file 
+and .mtl file into the browser window.
+
+![OBJ viewer](img/obj_viewer.png?raw=true "OBJ viewer")
+
 - Get all surfaces in a model
 
 `IDF.getsurfaces()`
@@ -119,8 +133,10 @@ GeomEppy also provides some additional functions such as `surface.setcoords(...)
 
 ```
 wall = idf.newidfobject(
-    'BUILDINGSURFACE:DETAILED', 'awall',
-    Surface_Type = 'wall')
+    'BUILDINGSURFACE:DETAILED', 
+    Name='awall',
+    Surface_Type = 'wall',
+    )
 wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 ```
 
@@ -128,4 +144,3 @@ wall.setcoords([(0,0,1),(0,0,0),(1,0,0),(1,0,1)])
 
 - Geometry validation and correction
 - Geometry simplification
-- Better geometry visualisation

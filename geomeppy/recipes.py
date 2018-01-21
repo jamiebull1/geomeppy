@@ -5,7 +5,6 @@ from typing import List, Tuple, Union  # noqa
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
 
-from .geom.intersect_match import getidfsurfaces
 from .geom.polygons import Polygon3D
 from .geom.transformations import Transformation
 from .geom.vectors import Vector2D, Vector3D  # noqa
@@ -136,15 +135,16 @@ def window_vertices_given_wall(wall, wwr):
     # type: (EpBunch, float) -> Polygon3D
     """Calculate window vertices given wall vertices and glazing ratio.
 
-    For each axis:
-    1) Translate the axis points so that they are centred around zero
-    2) Either:
-        a) Multiply the z dimension by the glazing ratio to shrink it vertically
-        b) Multiply the x or y dimension by 0.995 to keep inside the surface
-    3) Translate the axis points back to their original positions
+    :: For each axis:
+        1) Translate the axis points so that they are centred around zero
+        2) Either:
+            a) Multiply the z dimension by the glazing ratio to shrink it vertically
+            b) Multiply the x or y dimension by 0.995 to keep inside the surface
+        3) Translate the axis points back to their original positions
 
     :param wall: The wall to add a window on. We expect each wall to have four vertices.
     :param wwr: Window to wall ratio.
+
     :returns: Window vertices bounding a vertical strip midway up the surface.
 
     """
@@ -170,7 +170,7 @@ def translate_to_origin(idf):
     :param idf: The IDF to edit.
 
     """
-    surfaces = getidfsurfaces(idf)
+    surfaces = idf.getsurfaces()
     windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
 
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
@@ -205,6 +205,7 @@ def translate_coords(coords,  # type: Union[List[Tuple[float, float, float]], Po
     :param coords: A list of points.
     :param vector: Representation of a vector to translate by.
     :returns: List of translated vectors.
+
     """
     return [Vector3D(*v) + vector for v in coords]
 
@@ -216,6 +217,7 @@ def scale(surfaces, factor, axes='xy'):
     :param surfaces: A list of EpBunch objects.
     :param factor: Factor to scale the surfaces by.
     :param axes: Axes to scale on. Default 'xy'.
+
     """
     for s in surfaces:
         new_coords = scale_coords(s.coords, factor, axes)
@@ -230,6 +232,7 @@ def scale_coords(coords, factor, axes):
     :param factor: Factor to scale the surfaces by.
     :param axes: Axes to scale on.
     :returns: A scaled polygon.
+
     """
     coords = Polygon3D(coords)
     vertices = []
@@ -246,7 +249,8 @@ def rotate(surfaces, angle):
     """Rotate all surfaces by an angle.
 
     :param surfaces: A list of EpBunch objects or a mutable sequence.
-    :param angle : An angle in degrees.
+    :param angle: An angle in degrees.
+
     """
     radians = np.deg2rad(angle)
     for s in surfaces:
@@ -261,6 +265,7 @@ def rotate_coords(coords, radians):
     :param coords: A list of points.
     :param radians: The angle to rotate by.
     :returns: List of Vector3D objects.
+
     """
     coords = Polygon3D(coords)
     rotation = Transformation()._rotation(Vector3D(0, 0, 1), radians)

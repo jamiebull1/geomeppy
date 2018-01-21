@@ -5,7 +5,7 @@ from six import StringIO
 
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import (
-    get_adjacencies, getidfsurfaces, intersect_idf_surfaces, match_idf_surfaces,
+    get_adjacencies, intersect_idf_surfaces, match_idf_surfaces,
 )
 from geomeppy.geom.polygons import intersect, is_hole, Polygon3D, unique
 from geomeppy.recipes import translate_coords
@@ -300,7 +300,7 @@ class TestAdjacencies():
             
     def test_get_adjacencies(self):
         # type: () -> None
-        surfaces = getidfsurfaces(self.idf)
+        surfaces = self.idf.getsurfaces()
         adjacencies = get_adjacencies(surfaces)
         assert (u'BuildingSurface:Detailed', u'z1_WALL_0002') in adjacencies
         assert (u'BuildingSurface:Detailed', u'z2_WALL_0004') in adjacencies
@@ -415,10 +415,10 @@ class TestIntersectMatch():
         
         self.idf = IDF(StringIO(idf_txt))
             
-    def test_getidfsurfaces(self):    
+    def test_getsurfaces(self):
         # type: () -> None
         idf = self.idf
-        surfaces = getidfsurfaces(idf)
+        surfaces = idf.getsurfaces()
         assert len(surfaces) == 12
     
     def test_intersect_idf_surfaces(self):       
