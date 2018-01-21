@@ -167,4 +167,4 @@ Forthcoming
    :target: https://travis-ci.org/jamiebull1/geomeppy
 .. |CodeCov| image:: https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg
    :target: https://codecov.io/github/jamiebull1/geomeppy
-.. |OBJ viewer| image:: img/obj_viewer.png
+.. |OBJ viewer| image:: https://github.com/jamiebull1/geomeppy/tree/master/img/obj_viewer.png

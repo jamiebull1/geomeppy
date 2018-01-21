@@ -84,7 +84,7 @@ azimuth in the `wwr_map`. Any omitted walls' WWR will be set to the value in
 You can view the exported model [here](https://3dviewer.net/). Just drag the .obj file 
 and .mtl file into the browser window.
 
-![OBJ viewer](img/obj_viewer.png?raw=true "OBJ viewer")
+![OBJ viewer](https://github.com/jamiebull1/geomeppy/tree/master/img/obj_viewer.png?raw=true "OBJ viewer")
 
 - Get all surfaces in a model
 
