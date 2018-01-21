@@ -8,9 +8,7 @@
 """
 Monkey patches for changes to classes and functions in Eppy. These include
 fixes which have not yet made it to the released version of Eppy. These will be
-removed if/when they are added to Eppy. It also includes the addition of features
-specific to geometry editing which may or may not be included future versions
-of Eppy.
+removed if/when they are added to Eppy.
 
 """
 import copy
