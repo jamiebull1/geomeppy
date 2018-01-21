@@ -5,7 +5,7 @@ OpenStudio for the sake of consistency between tools based on EnergyPlus.
 
 """
 
-from typing import Optional, Union  # noqa
+from typing import Any, Optional, Union  # noqa
 
 import numpy as np
 from transforms3d._gohlketransforms import (
@@ -16,11 +16,8 @@ from transforms3d._gohlketransforms import (
     translation_matrix,
 )
 
-from .vectors import Vector3D
-
-MYPY = False
-if MYPY:
-    from .polygons import Polygon3D  # noqa
+if False: from .polygons import Polygon3D  # noqa
+from .vectors import Vector2D, Vector3D  # noqa
 
 
 class Transformation(object):
@@ -34,10 +31,8 @@ class Transformation(object):
             self.matrix = mat
         assert self.matrix.shape == (4, 4)
 
-    def __mul__(self,
-                other  # type: Union[Polygon3D, Transformation, Vector3D]
-                ):
-        # type: (...) -> Union[Transformation, Vector3D]
+    def __mul__(self, other):
+        # type: (Any) -> Union[Transformation, Vector3D]
         if hasattr(other, 'matrix'):
             # matrix by a matrix
             mat = concatenate_matrices(self.matrix, other.matrix)  # type: ignore
@@ -54,7 +49,7 @@ class Transformation(object):
             return other.__class__(result)
 
     def _align_z_prime(self, zp):
-        # type: (Vector3D) -> Transformation
+        # type: (Union[Vector2D, Vector3D]) -> Transformation
         """Transform system with z' to regular system. Will try to align y'
         with z, but if that fails will align y' with y
 
@@ -83,7 +78,6 @@ class Transformation(object):
         return self
 
     def _align_face(self, polygon):
-        # type: (Polygon3D) -> Transformation
         """A transformation to align a polygon with the origin.
 
         Parameters
@@ -132,7 +126,6 @@ class Transformation(object):
 
 
 def align_face(polygon):
-    # type: (Polygon3D) -> Polygon3D
     """Transformation to align face with z-axis.
 
     :param polygon: Polygon to be aligned.
@@ -145,7 +138,6 @@ def align_face(polygon):
 
 
 def invert_align_face(original, poly2):
-    # type: (Polygon3D, Polygon3D) -> Polygon3D
     """Transformation to align face with original position.
 
     :param original: Polygon in the desired orientation.

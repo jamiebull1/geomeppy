@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple, Union  # noqa
 
 from six.moves import zip
 
-from .geom.polygons import Polygon3D
+from .geom.polygons import Polygon, Polygon3D  # noqa
 from .geom.segments import Segment  # noqa
 from .geom.vectors import Vector3D
 
@@ -160,7 +160,6 @@ class Block(object):
 
     @property
     def floors(self):
-        # type: () -> List[List[Polygon3D]]
         """Coordinates for each floor in the block.
 
         :returns: Coordinates for all floors.
@@ -172,7 +171,6 @@ class Block(object):
 
     @property
     def ceilings(self):
-        # type: () -> List[Union[List[Polygon3D], str]]
         """Coordinates for each ceiling in the block.
 
         :returns: Coordinates for all ceilings.
@@ -181,12 +179,11 @@ class Block(object):
         ceilings = [[self.footprint + Vector3D(0, 0, ch)]
                     for ch in self.ceiling_heights[:-1]]
 
-        ceilings.append('')
+        ceilings.append([])
         return ceilings
 
     @property
     def roofs(self):
-        # type: () -> List[List[Polygon3D]]
         """Coordinates for each roof of the block.
 
         This returns a list with an entry for each floor for consistency with
@@ -196,7 +193,7 @@ class Block(object):
         :returns: Coordinates for all roofs.
 
         """
-        roofs = [[None] for ch in self.ceiling_heights[:-1]]
+        roofs = [[] for ch in self.ceiling_heights[:-1]]  # type: List[List[Polygon]]
         roofs.append([self.footprint + Vector3D(0, 0, self.height)])
         return roofs
 

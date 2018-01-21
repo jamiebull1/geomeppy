@@ -25,20 +25,18 @@ from eppy.idf_msequence import Idf_MSequence
 from eppy.idfreader import convertallfields, iddversiontuple
 from eppy.modeleditor import IDF as BaseIDF
 from eppy.modeleditor import IDDNotSetError, namebunch, newrawobject
-from six import StringIO  # noqa
 
-from geomeppy.geom.intersect_match import (
-    set_coords,
-)
 from .geom.polygons import Polygon3D  # noqa
+from .geom.surfaces import set_coords
 from .geom.vectors import Vector3D  # noqa
+if False: from .idf import IDF  # noqa
 
 
 class EpBunch(BaseBunch):
     """Monkeypatched EpBunch to add the setcoords function."""
 
     def setcoords(self,
-                  poly,  # type: Union[List[Vector3D], Polygon3D]
+                  poly,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
                   ggr=None  # type: Union[List, None, Idf_MSequence]
                   ):
         # type: (...) -> None
@@ -63,14 +61,14 @@ class EpBunch(BaseBunch):
             raise AttributeError
 
 
-def idfreader1(fname,  # type: StringIO
-               iddfile,  # type: StringIO
+def idfreader1(fname,  # type: str
+               iddfile,  # type: str
                theidf,  # type: IDF
                conv=True,  # type: Optional[bool]
-               commdct=None,  # type: Optional[List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]]
-               block=None  # type: Optional[List[List[str]]]
+               commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
+               block=None  # type: Optional[List]
                ):
-    # type: (...) -> Tuple[Dict, List, Eplusdata, List[Dict, Dict], Dict, Tuple[int]]
+    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List, Eplusdata, List[List[Dict[str, Any]]], Dict, Tuple[int]]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -108,8 +106,12 @@ def idfreader1(fname,  # type: StringIO
     return bunchdt, block, data, commdct, idd_index, versiontuple
 
 
-def readdatacommdct1(idfname, iddfile='Energy+.idd', commdct=None, block=None):
-    # type: (str, Optional[str], Optional[Dict], Optional[List]) -> Tuple[List, Eplusdata, List[Dict, Dict], Dict]
+def readdatacommdct1(idfname,   # type: str
+                     iddfile='Energy+.idd',   # type: str
+                     commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
+                     block=None  # type: Optional[List]
+                     ):
+    # type: (...) -> Tuple[List, Eplusdata, List[List[Dict[str, Any]]], Dict]
     """Read the idf file.
 
     This is patched so that the IDD index is not lost when reading a new IDF without reloading the modeleditor module.
@@ -139,7 +141,7 @@ def readdatacommdct1(idfname, iddfile='Energy+.idd', commdct=None, block=None):
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
                  data,  # type: Eplusdata
-                 commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Option]]]]
+                 commdct,  # type: Optional[List[List[Dict[str, Any]]]]
                  thisbunch,  # type: EpBunch
                  _idf  # type: IDF
                  ):
@@ -164,7 +166,7 @@ def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
 
 
 def makebunches(data,  # type: Eplusdata
-                commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona]]]]
+                commdct,  # type: Optional[List[List[Dict[str, Any]]]]
                 theidf  # type: IDF
                 ):
     # type: (...) -> Dict[str, Idf_MSequence]
@@ -190,8 +192,8 @@ def makebunches(data,  # type: Eplusdata
 
 
 def obj2bunch(data,  # type: Eplusdata
-              commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optiona]]]]
-              obj  # type: Union[List[Union[float, str]], List[str]]
+              commdct,  # type: Optional[List[List[Dict[str, Any]]]]
+              obj  # type: List[str]
               ):
     # type: (...) -> EpBunch
     """Make a new bunch object using the data object.
@@ -209,7 +211,7 @@ def obj2bunch(data,  # type: Eplusdata
     return abunch
 
 
-def makeabunch(commdct,  # type: List[Union[List[Dict[str, Any]], List[Dict[str, Optional[str]]]]]
+def makeabunch(commdct,  # type: List[List[Dict[str, Any]]]
                obj,  # type: Union[List[Union[float, str]], List[str]]
                obj_i  # type: int
                ):
@@ -238,7 +240,6 @@ class PatchedIDF(BaseIDF):
     """
 
     def read(self):
-        # type: () -> None
         """Read the IDF file and the IDD file.
 
         If the IDD file had already been read, it will not be read again.

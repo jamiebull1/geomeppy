@@ -17,8 +17,20 @@ from .vectors import Vector2D, Vector3D
 from ..utilities import almostequal
 
 
-class Polygon(MutableSequence):
+class Polygon(Clipper2D, MutableSequence):
     """Base class for 2D and 3D polygons."""
+
+    @property
+    def n_dims(self):
+        pass
+
+    @property
+    def vector_class(self):
+        pass
+
+    @property
+    def normal_vector(self):
+        pass
 
     def __init__(self, vertices):
         # type: (Any) -> None
@@ -100,7 +112,7 @@ class Polygon(MutableSequence):
             sum(self.xs) / len(self),
             sum(self.ys) / len(self),
             sum(self.zs) / len(self),
-        )
+            )
 
     @property
     def edges(self):
@@ -118,6 +130,7 @@ class Polygon(MutableSequence):
         This can be used to create a matching surface, e.g. the other side of a wall.
 
         :returns: A polygon.
+
         """
         return self.__class__(reversed(self.vertices))
 
@@ -148,6 +161,7 @@ class Polygon(MutableSequence):
         """A list of the vertices in the format required by pyclipper.
 
         :returns: A list of tuples like [(x1, y1), (x2, y2),... (xn, yn)].
+
         """
         return [pt.as_tuple(dims=self.n_dims) for pt in self.vertices]
 
@@ -161,14 +175,17 @@ class Polygon(MutableSequence):
         # type: () -> List[float]
         return [pt.y for pt in self.vertices]
 
+    @property
+    def zs(self):
+        pass
 
-class Polygon2D(Polygon, Clipper2D):
+
+class Polygon2D(Polygon):
     """Two-dimensional polygon."""
     n_dims = 2
     vector_class = Vector2D
 
     def __eq__(self, other):
-        # type: (Polygon2D) -> bool
         if self.__dict__ == other.__dict__:  # try the simple case first
             return True
         else:  # also cover same shape in different rotation
@@ -193,6 +210,7 @@ class Polygon2D(Polygon, Clipper2D):
 
         :param example3D: A 3D polygon in the desired plane.
         :returns: A 3D polygon.
+
         """
         points = self.points_matrix
         proj_axis = example3d.projection_axis
@@ -207,13 +225,12 @@ class Polygon2D(Polygon, Clipper2D):
         return [0.0] * len(self.vertices)
 
 
-class Polygon3D(Polygon, Clipper3D):
+class Polygon3D(Clipper3D, Polygon):
     """Three-dimensional polygon."""
     n_dims = 3
     vector_class = Vector3D
 
     def __eq__(self, other):
-        # type: (Polygon3D) -> bool
         # check they're in the same plane
         if not almostequal(self.normal_vector, other.normal_vector):
             return False
@@ -229,7 +246,6 @@ class Polygon3D(Polygon, Clipper3D):
 
     @property
     def normal_vector(self):
-        # type: () -> Vector3D
         """Unit normal vector perpendicular to the polygon in the outward direction.
 
         We use Newell's Method since the cross-product of two edge vectors is not valid for concave polygons.
@@ -255,6 +271,7 @@ class Polygon3D(Polygon, Clipper3D):
         is the polygon normal vector).
 
         :returns: The distance from the origin to the polygon.
+
         """
         v = self.normal_vector
         pt = self.points_matrix[0]  # arbitrary point in the polygon
@@ -267,6 +284,7 @@ class Polygon3D(Polygon, Clipper3D):
         """An axis which will not lead to a degenerate surface.
 
         :returns: The axis index.
+
         """
         proj_axis = max(range(3), key=lambda i: abs(self.normal_vector[i]))
         return proj_axis
@@ -277,6 +295,7 @@ class Polygon3D(Polygon, Clipper3D):
         """Check if polygon is in the xy plane.
 
         :returns: True if the polygon is in the xy plane, else False.
+
         """
         return bool(np.array(self.zs).std() < 1e-8)
 
@@ -288,6 +307,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param viewpoint: A point from which to view the polygon.
         :returns: True if vertices are ordered clockwise when observed from the given viewpoint.
+
         """
         arbitrary_pt = self.vertices[0]
         v = arbitrary_pt - viewpoint
@@ -303,6 +323,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param other: Another polygon.
         :returns: True if the two polygons are coplanar, else False.
+
         """
         n1 = self.normal_vector
         n2 = other.normal_vector
@@ -325,6 +346,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param entry_direction: Either "clockwise" or "counterclockwise", as seen from outside the space.
         :returns: A point vector.
+
         """
         entry_direction = entry_direction.lower()
         if entry_direction == 'clockwise':
@@ -342,6 +364,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param starting_position: The string that defines vertex starting position in EnergyPlus.
         :returns: The reordered polygon.
+
         """
         if starting_position == 'upperleftcorner':
             bbox_corner = self.bounding_box[0]
@@ -370,6 +393,7 @@ class Polygon3D(Polygon, Clipper3D):
         avoids degenerate configurations, which is the purpose of proj_axis.)
 
         :returns: A 2D polygon.
+
         """
         points = self.points_matrix
         projected_points = project_to_2D(points, self.projection_axis)
@@ -377,11 +401,11 @@ class Polygon3D(Polygon, Clipper3D):
         return Polygon2D([pt[:2] for pt in projected_points])
 
     def normalize_coords(self, ggr):
-        # type: (Union[List, None, Idf_MSequence]) -> Polygon3D
         """Order points, respecting the global geometry rules
 
         :param ggr: EnergyPlus GlobalGeometryRules object.
         :returns: The normalized polygon.
+
         """
         try:
             entry_direction = ggr.Vertex_Entry_Direction
@@ -398,6 +422,7 @@ class Polygon3D(Polygon, Clipper3D):
 
         :param wkt_poly: A text representation of a polygon in well known text (wkt) format.
         :returns: A polygon.
+
         """
         poly = wkt.loads(wkt_poly)
         exterior = Polygon3D(poly.exterior.coords)
@@ -407,7 +432,7 @@ class Polygon3D(Polygon, Clipper3D):
                 # make the interior into a geomeppy poly
                 interior = Polygon3D(inner_ring.coords)
                 # find the nearest points on the exterior and interior
-                links = product(interior, exterior)
+                links = list(product(interior, exterior))
                 links = sorted(
                     links, key=lambda x: x[0].relative_distance(x[1]))
                 on_interior = links[0][0]
@@ -423,7 +448,7 @@ class Polygon3D(Polygon, Clipper3D):
 
 
 def break_polygons(poly, hole):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
+    # type: (Polygon, Polygon) -> List[Polygon]
     """Break up a surface with a hole in it.
 
     This produces two surfaces, neither of which have a hole in them.
@@ -431,9 +456,10 @@ def break_polygons(poly, hole):
     :param poly: The surface with a hole in.
     :param hole: The hole.
     :returns: Two Polygon3D objects.
+
     """
     # take the two closest points on the surface perimeter
-    links = product(poly, hole)
+    links = list(product(poly, hole))
     links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))  # fast distance check
 
     first_on_poly = links[0][0]
@@ -448,8 +474,7 @@ def break_polygons(poly, hole):
     )
 
     new_poly = Polygon3D(new_poly)
-    union = hole.union(new_poly)
-    union = union[0]
+    union = hole.union(new_poly)[0]
     new_poly2 = poly.difference(union)[0]
     if not almostequal(new_poly.normal_vector, poly.normal_vector):
         new_poly = new_poly.invert_orientation()
@@ -471,20 +496,8 @@ def section(first, last, coords):
     return section_on_hole
 
 
-def project_to_2D(vertices, proj_axis):
-    # type: (np.ndarray, int) -> List[Tuple[np.float64, np.float64]]
-    """Project a 3D polygon into 2D space.
-
-    :param vertices: The three-dimensional vertices of the polygon.
-    :param proj_axis: The axis to project into.
-    :returns: The transformed vertices.
-    """
-    points = [project(x, proj_axis) for x in vertices]
-    return points
-
-
 def project(pt, proj_axis):
-    # type: (np.ndarray, int) -> Tuple[np.float64, np.float64]
+    # type: (np.ndarray, int) -> Any
     """Project point pt onto either the xy, yz, or xz plane
 
     We choose the one that avoids degenerate configurations, which is the
@@ -493,6 +506,46 @@ def project(pt, proj_axis):
 
     """
     return tuple(c for i, c in enumerate(pt) if i != proj_axis)
+
+
+def project_inv(pt,  # type: np.ndarray
+                proj_axis,  # type: int
+                a,  # type: np.float64
+                v  # type: Vector3D
+                ):
+    # type: (...) -> Any
+    """Returns the vector w in the surface's plane such that project(w) equals x.
+
+    See http://stackoverflow.com/a/39008641/1706564
+
+    :param pt: A two-dimensional point.
+    :param proj_axis: The axis to project into.
+    :param a: Distance to the origin for the plane to project into.
+    :param v: Normal vector of the plane to project into.
+    :returns: The transformed point.
+
+    """
+    w = list(pt)
+    w[proj_axis:proj_axis] = [0.0]
+    c = a
+    for i in range(3):
+        c -= w[i] * v[i]
+    c /= v[proj_axis]
+    w[proj_axis] = c
+    return tuple(w)
+
+
+def project_to_2D(vertices, proj_axis):
+    # type: (np.ndarray, int) -> List[Tuple[np.float64, np.float64]]
+    """Project a 3D polygon into 2D space.
+
+    :param vertices: The three-dimensional vertices of the polygon.
+    :param proj_axis: The axis to project into.
+    :returns: The transformed vertices.
+
+    """
+    points = [project(x, proj_axis) for x in vertices]
+    return points
 
 
 def project_to_3D(vertices,  # type: np.ndarray
@@ -508,34 +561,9 @@ def project_to_3D(vertices,  # type: np.ndarray
     :param a: Distance to the origin for the plane to project into.
     :param v: Normal vector of the plane to project into.
     :returns: The transformed vertices.
+
     """
     return [project_inv(pt, proj_axis, a, v) for pt in vertices]
-
-
-def project_inv(pt,  # type: np.ndarray
-                proj_axis,  # type: int
-                a,  # type: np.float64
-                v  # type: Vector3D
-                ):
-    # type: (...) -> Tuple[np.float64, np.float64, np.float64]
-    """Returns the vector w in the surface's plane such that project(w) equals x.
-
-    See http://stackoverflow.com/a/39008641/1706564
-
-    :param pt: A two-dimensional point.
-    :param proj_axis: The axis to project into.
-    :param a: Distance to the origin for the plane to project into.
-    :param v: Normal vector of the plane to project into.
-    :returns: The transformed point.
-    """
-    w = list(pt)
-    w[proj_axis:proj_axis] = [0.0]
-    c = a
-    for i in range(3):
-        c -= w[i] * v[i]
-    c /= v[proj_axis]
-    w[proj_axis] = c
-    return tuple(w)
 
 
 def normalize_coords(poly,  # type: Polygon3D
@@ -549,26 +577,24 @@ def normalize_coords(poly,  # type: Polygon3D
     :param outside_pt: An outside point of the new polygon.
     :param ggr: EnergyPlus GlobalGeometryRules object.
     :returns: The normalized polygon.
+
     """
     # check and set entry direction
     poly = set_entry_direction(poly, outside_pt, ggr)
     # check and set starting position
-    poly = set_starting_position(poly, outside_pt, ggr)
+    poly = set_starting_position(poly, ggr)
 
     return poly
 
 
-def set_entry_direction(poly,  # type: Polygon3D
-                        outside_pt,  # type: Vector3D
-                        ggr=None  # type: Union[List, None, Idf_MSequence]
-                        ):
-    # type: (...) -> Polygon3D
+def set_entry_direction(poly, outside_pt, ggr=None):
     """Check and set entry direction for a polygon.
 
     :param poly: A polygon.
     :param outside_pt: A point beyond the outside face of the polygon.
     :param ggr: EnergyPlus global geometry rules
     :return: A polygon with the vertices correctly oriented.
+
     """
     if not ggr:
         entry_direction = 'counterclockwise'  # EnergyPlus default
@@ -583,11 +609,7 @@ def set_entry_direction(poly,  # type: Polygon3D
     return poly
 
 
-def set_starting_position(poly,  # type: Polygon3D
-                          outside_pt,  # type: Vector3D
-                          ggr=None  # type: Union[List, None, Idf_MSequence]
-                          ):
-    # type: (...) -> Polygon3D
+def set_starting_position(poly, ggr=None):
     """Check and set starting position."""
     if not ggr:
         starting_position = 'upperleftcorner'  # EnergyPlus default
@@ -599,14 +621,15 @@ def set_starting_position(poly,  # type: Polygon3D
 
 
 def intersect(poly1, poly2):
-    # type: (Polygon3D, Polygon3D) -> List[Polygon3D]
+    # type: (Polygon, Polygon) -> List[Polygon]
     """Calculate the polygons to represent the intersection of two polygons.
 
     :param poly1: The first polygon.
     :param poly2: The second polygon.
     :returns: A list of unique polygons.
+
     """
-    polys = []
+    polys = []  # type: List[Polygon]
     polys.extend(poly1.intersect(poly2))
     polys.extend(poly2.intersect(poly1))
     if is_hole(poly1, poly2):
@@ -621,20 +644,21 @@ def intersect(poly1, poly2):
 
 
 def unique(polys):
-    # type: (List[Union[Polygon2D, Polygon3D]]) -> List[Union[Polygon2D, Polygon3D]]
+    # type: (List[Polygon]) -> List[Polygon]
     """Make a unique set of polygons.
 
     :param polys: A list of polygons.
     :returns: A unique list of polygons.
+
     """
     flattened = []
     for item in polys:
-        if isinstance(item, (Polygon2D, Polygon3D)):
+        if isinstance(item, Polygon):
             flattened.append(item)
         elif isinstance(item, list):
             flattened.extend(item)
 
-    results = []
+    results = []  # type: List[Polygon]
     for poly in flattened:
         if not any(poly == result for result in results):
             results.append(poly)
@@ -643,7 +667,7 @@ def unique(polys):
 
 
 def is_hole(surface, possible_hole):
-    # type: (Union[Polygon2D, Polygon3D], Union[Polygon2D, Polygon3D]) -> bool
+    # type: (Polygon, Polygon) -> bool
     """Identify if an intersection is a hole in the surface.
 
     Check the intersection touches an edge of the surface. If it doesn't then it represents a hole, and this needs
@@ -652,6 +676,7 @@ def is_hole(surface, possible_hole):
     :param surface: The first surface.
     :param possible_hole: The intersection into the surface.
     :returns: True if the possible hole is a hole in the surface.
+
     """
     if surface.area < possible_hole.area:
         return False
@@ -668,6 +693,7 @@ def bounding_box(polygons):
 
     :param polygons: A list of polygons.
     :return: A 2D polygon.
+
     """
     top_left = (
         min(min(c[0] for c in f.coords) for f in polygons),
@@ -688,7 +714,7 @@ def bounding_box(polygons):
     return Polygon2D([top_left, bottom_left, bottom_right, top_right])
 
 
-def is_convex_polygon(polygon):
+def is_convex_polygon(polygon):  # noqa
     """Return True if the polynomial defined by the sequence of 2D
     points is 'strictly convex': points are valid, side lengths non-
     zero, interior angles are strictly between zero and a straight
@@ -696,14 +722,16 @@ def is_convex_polygon(polygon):
 
     See: https://stackoverflow.com/a/45372025/1706564
 
-    NOTES:  1.  Algorithm: the signed changes of the direction angles
+    :: NOTES:
+            1.  Algorithm: the signed changes of the direction angles
                 from one side to the next side must be all positive or
                 all negative, and their sum must equal plus-or-minus
                 one full turn (2 pi radians). Also check for too few,
                 invalid, or repeated points.
-            2.  No check is explicitly done for zero internal angles
+            2.  No check is explicitly done for zero    internal angles
                 (180 degree direction-change angle) as this is covered
                 in other ways, including the `n < 3` check.
+
     """
     two_pi = 2 * pi
     try:  # needed for any bad points or direction changes
