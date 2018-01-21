@@ -12,51 +12,7 @@ from geomeppy.utilities import almostequal
 
 MYPY = False
 if MYPY:
-    from geomeppy.patches import EpBunch, IDF  # noqa
-
-
-def getidfsurfaces(idf, surface_type=None):
-    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
-    """Return all surfaces in an IDF.
-
-    :param idf: The IDF to search.
-    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
-    """
-    surfaces = idf.idfobjects['BUILDINGSURFACE:DETAILED']
-    if surface_type:
-        surfaces = [s for s in surfaces if s.Surface_Type.lower() ==
-                    surface_type.lower()]
-    return surfaces
-
-
-def getidfsubsurfaces(idf, surface_type=None):
-    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
-    """Return all subsurfaces in an IDF.
-
-    :param idf: The IDF to search.
-    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
-    :returns: All matching subsurfaces.
-    """
-    surfaces = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
-    if surface_type:
-        surfaces = [s for s in surfaces
-                    if s.Surface_Type.lower() == surface_type.lower()]
-    return surfaces
-
-
-def getidfshadingsurfaces(idf, surface_type=None):
-    # type: (IDF, Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
-    """Return all shading surfaces in an IDF.
-
-    :param idf: The IDF to search.
-    :param surface_type: A surface type to specify. Default is None, which returns all surfaces.
-    :returns: All matching shading surfaces.
-    """
-    surfaces = idf.idfobjects['SHADING:ZONE:DETAILED']
-    if surface_type:
-        surfaces = [s for s in surfaces
-                    if s.Surface_Type.lower() == surface_type.lower()]
-    return surfaces
+    from geomeppy.patches import IDF  # noqa
 
 
 def intersect_idf_surfaces(idf):
@@ -65,7 +21,7 @@ def intersect_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = getidfsurfaces(idf)
+    surfaces = idf.getsurfaces()
     try:
         ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
     except IndexError:
@@ -89,7 +45,7 @@ def match_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = getidfsurfaces(idf)
+    surfaces = idf.getsurfaces()
     planes = getidfplanes(surfaces)
     for distance in planes:
         for vector in planes[distance]:

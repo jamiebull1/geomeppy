@@ -3,7 +3,7 @@ import pytest
 from six import StringIO
 
 from geomeppy.idf import IDF
-from geomeppy.io.obj import build_face, export_to_obj
+from geomeppy.io.obj import export_to_obj
 
 idf_txt = """
 Version, 8.5;
