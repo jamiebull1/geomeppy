@@ -711,7 +711,7 @@ def bounding_box(polygons):
     return Polygon2D([top_left, bottom_left, bottom_right, top_right])
 
 
-def is_convex_polygon(polygon):
+def is_convex_polygon(polygon):  # noqa
     """Return True if the polynomial defined by the sequence of 2D
     points is 'strictly convex': points are valid, side lengths non-
     zero, interior angles are strictly between zero and a straight
@@ -725,7 +725,7 @@ def is_convex_polygon(polygon):
                 all negative, and their sum must equal plus-or-minus
                 one full turn (2 pi radians). Also check for too few,
                 invalid, or repeated points.
-            2.  No check is explicitly done for zero internal angles
+            2.  No check is explicitly done for zero    internal angles
                 (180 degree direction-change angle) as this is covered
                 in other ways, including the `n < 3` check.
 
