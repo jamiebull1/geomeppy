@@ -1,0 +1,1118 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>geomeppy.geom package &#8212; geomeppy 0.4.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.4.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-geomeppy.geom">
+<span id="geomeppy-geom-package"></span><h1>geomeppy.geom package<a class="headerlink" href="#module-geomeppy.geom" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-geomeppy.geom.clippers">
+<span id="geomeppy-geom-clippers-module"></span><h2>geomeppy.geom.clippers module<a class="headerlink" href="#module-geomeppy.geom.clippers" title="Permalink to this headline">¶</a></h2>
+<p>Perform clipping operations on Polygons.</p>
+<p>PyClipper is used for clipping.</p>
+<dl class="class">
+<dt id="geomeppy.geom.clippers.Clipper2D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.clippers.</code><code class="descname">Clipper2D</code><a class="headerlink" href="#geomeppy.geom.clippers.Clipper2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class is used to add clipping functionality to the Polygon2D class.</p>
+<dl class="method">
+<dt id="geomeppy.geom.clippers.Clipper2D.difference">
+<code class="descname">difference</code><span class="sig-paren">(</span><em>poly</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.clippers.Clipper2D.difference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intersect with another 2D polygon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>poly</strong> – The clip polygon.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False if no intersection, otherwise a list of lists of Polygons representing each difference.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.clippers.Clipper2D.intersect">
+<code class="descname">intersect</code><span class="sig-paren">(</span><em>poly</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.clippers.Clipper2D.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intersect with another 3D polygon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>poly</strong> – The clip polygon.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False if no intersection, otherwise a list of Polygons representing each intersection.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.clippers.Clipper2D.union">
+<code class="descname">union</code><span class="sig-paren">(</span><em>poly</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.clippers.Clipper2D.union" title="Permalink to this definition">¶</a></dt>
+<dd><p>Union with another 3D polygon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>poly</strong> – The clip polygon.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of Polygon3Ds.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geomeppy.geom.clippers.Clipper3D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.clippers.</code><code class="descname">Clipper3D</code><a class="headerlink" href="#geomeppy.geom.clippers.Clipper3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#geomeppy.geom.clippers.Clipper2D" title="geomeppy.geom.clippers.Clipper2D"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.clippers.Clipper2D</span></code></a></p>
+<p>This class is used to add clipping functionality to the Polygon3D class.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.intersect_match">
+<span id="geomeppy-geom-intersect-match-module"></span><h2>geomeppy.geom.intersect_match module<a class="headerlink" href="#module-geomeppy.geom.intersect_match" title="Permalink to this headline">¶</a></h2>
+<p>Intersect and match all surfaces in an IDF.</p>
+<dl class="function">
+<dt id="geomeppy.geom.intersect_match.intersect_idf_surfaces">
+<code class="descclassname">geomeppy.geom.intersect_match.</code><code class="descname">intersect_idf_surfaces</code><span class="sig-paren">(</span><em>idf</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.intersect_match.intersect_idf_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intersect all surfaces in an IDF.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idf</strong> – The IDF.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.intersect_match.match_idf_surfaces">
+<code class="descclassname">geomeppy.geom.intersect_match.</code><code class="descname">match_idf_surfaces</code><span class="sig-paren">(</span><em>idf</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.intersect_match.match_idf_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Match all surfaces in an IDF.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idf</strong> – The IDF.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.polygons">
+<span id="geomeppy-geom-polygons-module"></span><h2>geomeppy.geom.polygons module<a class="headerlink" href="#module-geomeppy.geom.polygons" title="Permalink to this headline">¶</a></h2>
+<p>Heavy lifting geometry for IDF surfaces.</p>
+<dl class="class">
+<dt id="geomeppy.geom.polygons.Polygon">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">Polygon</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">_abcoll.MutableSequence</span></code></p>
+<p>Base class for 2D and 3D polygons.</p>
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.area">
+<code class="descname">area</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.area" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.bounding_box">
+<code class="descname">bounding_box</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.centroid">
+<code class="descname">centroid</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The centroid of a polygon.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.edges">
+<code class="descname">edges</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of edges represented as Segment objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon.invert_orientation">
+<code class="descname">invert_orientation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.invert_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverse the order of the vertices.</p>
+<p>This can be used to create a matching surface, e.g. the other side of a wall.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.is_convex">
+<code class="descname">is_convex</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.is_convex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.points_matrix">
+<code class="descname">points_matrix</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.points_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix representing the points in a polygon.</p>
+<dl class="docutils">
+<dt>Format::</dt>
+<dd>[[x1, x2,… xn]
+[y1, y2,… yn]
+[z1, z2,… zn]  # all 0 for 2D polygon</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.vertices_list">
+<code class="descname">vertices_list</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.vertices_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the vertices in the format required by pyclipper.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of tuples like [(x1, y1), (x2, y2),… (xn, yn)].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.xs">
+<code class="descname">xs</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.xs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon.ys">
+<code class="descname">ys</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon.ys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geomeppy.geom.polygons.Polygon2D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">Polygon2D</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#geomeppy.geom.polygons.Polygon" title="geomeppy.geom.polygons.Polygon"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.polygons.Polygon</span></code></a>, <a class="reference internal" href="#geomeppy.geom.clippers.Clipper2D" title="geomeppy.geom.clippers.Clipper2D"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.clippers.Clipper2D</span></code></a></p>
+<p>Two-dimensional polygon.</p>
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon2D.n_dims">
+<code class="descname">n_dims</code><em class="property"> = 2</em><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D.n_dims" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon2D.normal_vector">
+<code class="descname">normal_vector</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D.normal_vector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon2D.project_to_3D">
+<code class="descname">project_to_3D</code><span class="sig-paren">(</span><em>example3d</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D.project_to_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project the 2D polygon rotated into 3D space.</p>
+<p>This is used to return a previously rotated 3D polygon back to its original orientation, or to to put polygons
+generated from pyclipper into the desired orientation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>example3D</strong> – A 3D polygon in the desired plane.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 3D polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon2D.vector_class">
+<code class="descname">vector_class</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D.vector_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Vector2D</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon2D.zs">
+<code class="descname">zs</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon2D.zs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geomeppy.geom.polygons.Polygon3D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">Polygon3D</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#geomeppy.geom.polygons.Polygon" title="geomeppy.geom.polygons.Polygon"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.polygons.Polygon</span></code></a>, <a class="reference internal" href="#geomeppy.geom.clippers.Clipper3D" title="geomeppy.geom.clippers.Clipper3D"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.clippers.Clipper3D</span></code></a></p>
+<p>Three-dimensional polygon.</p>
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.distance">
+<code class="descname">distance</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance from the origin to the polygon.</p>
+<p>Where v[0] * x + v[1] * y + v[2] * z = a is the equation of the plane containing the polygon (and where v
+is the polygon normal vector).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The distance from the origin to the polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.from_wkt">
+<code class="descname">from_wkt</code><span class="sig-paren">(</span><em>wkt_poly</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.from_wkt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a wkt representation of a polygon to GeomEppy.</p>
+<p>This also accounts for the possible presence of inner rings by linking them to the outer ring.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wkt_poly</strong> – A text representation of a polygon in well known text (wkt) format.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.is_clockwise">
+<code class="descname">is_clockwise</code><span class="sig-paren">(</span><em>viewpoint</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.is_clockwise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if vertices are ordered clockwise</p>
+<p>This function checks the vertices as seen from the viewpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>viewpoint</strong> – A point from which to view the polygon.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if vertices are ordered clockwise when observed from the given viewpoint.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.is_coplanar">
+<code class="descname">is_coplanar</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.is_coplanar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if polygon is in the same plane as another polygon.</p>
+<p>This includes the same plane but opposite orientation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> – Another polygon.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two polygons are coplanar, else False.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.is_horizontal">
+<code class="descname">is_horizontal</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.is_horizontal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if polygon is in the xy plane.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the polygon is in the xy plane, else False.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.n_dims">
+<code class="descname">n_dims</code><em class="property"> = 3</em><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.n_dims" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.normal_vector">
+<code class="descname">normal_vector</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.normal_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit normal vector perpendicular to the polygon in the outward direction.</p>
+<p>We use Newell’s Method since the cross-product of two edge vectors is not valid for concave polygons.
+<a class="reference external" href="https://www.opengl.org/wiki/Calculating_a_Surface_Normal#Newell.27s_Method">https://www.opengl.org/wiki/Calculating_a_Surface_Normal#Newell.27s_Method</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.normalize_coords">
+<code class="descname">normalize_coords</code><span class="sig-paren">(</span><em>ggr</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.normalize_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order points, respecting the global geometry rules</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ggr</strong> – EnergyPlus GlobalGeometryRules object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The normalized polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.order_points">
+<code class="descname">order_points</code><span class="sig-paren">(</span><em>starting_position</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.order_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reorder the vertices based on a starting position rule.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>starting_position</strong> – The string that defines vertex starting position in EnergyPlus.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The reordered polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.outside_point">
+<code class="descname">outside_point</code><span class="sig-paren">(</span><em>entry_direction='counterclockwise'</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.outside_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a point outside the zone to which the surface belongs.</p>
+<p>The point will be outside the zone, respecting the global geometry rules
+for vertex entry direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entry_direction</strong> – Either “clockwise” or “counterclockwise”, as seen from outside the space.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A point vector.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.polygons.Polygon3D.project_to_2D">
+<code class="descname">project_to_2D</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.project_to_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project the 3D polygon into 2D space.</p>
+<p>This is so that we can perform operations on it using pyclipper library.</p>
+<p>Project onto either the xy, yz, or xz plane. (We choose the one that
+avoids degenerate configurations, which is the purpose of proj_axis.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A 2D polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.projection_axis">
+<code class="descname">projection_axis</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.projection_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>An axis which will not lead to a degenerate surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The axis index.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.vector_class">
+<code class="descname">vector_class</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.vector_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Vector3D</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.polygons.Polygon3D.zs">
+<code class="descname">zs</code><a class="headerlink" href="#geomeppy.geom.polygons.Polygon3D.zs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.bounding_box">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">bounding_box</code><span class="sig-paren">(</span><em>polygons</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bounding box which encompasses all of the polygons in the x,y plane.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>polygons</strong> – A list of polygons.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 2D polygon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.break_polygons">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">break_polygons</code><span class="sig-paren">(</span><em>poly</em>, <em>hole</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.break_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break up a surface with a hole in it.</p>
+<p>This produces two surfaces, neither of which have a hole in them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>poly</strong> – The surface with a hole in.</li>
+<li><strong>hole</strong> – The hole.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Two Polygon3D objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.intersect">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">intersect</code><span class="sig-paren">(</span><em>poly1</em>, <em>poly2</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the polygons to represent the intersection of two polygons.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>poly1</strong> – The first polygon.</li>
+<li><strong>poly2</strong> – The second polygon.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of unique polygons.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.is_convex_polygon">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">is_convex_polygon</code><span class="sig-paren">(</span><em>polygon</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.is_convex_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the polynomial defined by the sequence of 2D
+points is ‘strictly convex’: points are valid, side lengths non-
+zero, interior angles are strictly between zero and a straight
+angle, and the polygon does not intersect itself.</p>
+<p>See: <a class="reference external" href="https://stackoverflow.com/a/45372025/1706564">https://stackoverflow.com/a/45372025/1706564</a></p>
+<dl class="docutils">
+<dt>:: NOTES:</dt>
+<dd><ol class="first last arabic simple">
+<li>Algorithm: the signed changes of the direction angles
+from one side to the next side must be all positive or
+all negative, and their sum must equal plus-or-minus
+one full turn (2 pi radians). Also check for too few,
+invalid, or repeated points.</li>
+<li>No check is explicitly done for zero internal angles
+(180 degree direction-change angle) as this is covered
+in other ways, including the <cite>n &lt; 3</cite> check.</li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.is_hole">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">is_hole</code><span class="sig-paren">(</span><em>surface</em>, <em>possible_hole</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.is_hole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify if an intersection is a hole in the surface.</p>
+<p>Check the intersection touches an edge of the surface. If it doesn’t then it represents a hole, and this needs
+further processing into valid EnergyPlus surfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>surface</strong> – The first surface.</li>
+<li><strong>possible_hole</strong> – The intersection into the surface.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the possible hole is a hole in the surface.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.normalize_coords">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">normalize_coords</code><span class="sig-paren">(</span><em>poly</em>, <em>outside_pt</em>, <em>ggr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.normalize_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>poly</strong> – Polygon with new coordinates, but not yet checked for compliance with GGR.</li>
+<li><strong>outside_pt</strong> – An outside point of the new polygon.</li>
+<li><strong>ggr</strong> – EnergyPlus GlobalGeometryRules object.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The normalized polygon.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.project">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">project</code><span class="sig-paren">(</span><em>pt</em>, <em>proj_axis</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project point pt onto either the xy, yz, or xz plane</p>
+<p>We choose the one that avoids degenerate configurations, which is the
+purpose of proj_axis.
+See <a class="reference external" href="http://stackoverflow.com/a/39008641/1706564">http://stackoverflow.com/a/39008641/1706564</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.project_inv">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">project_inv</code><span class="sig-paren">(</span><em>pt</em>, <em>proj_axis</em>, <em>a</em>, <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.project_inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the vector w in the surface’s plane such that project(w) equals x.</p>
+<p>See <a class="reference external" href="http://stackoverflow.com/a/39008641/1706564">http://stackoverflow.com/a/39008641/1706564</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pt</strong> – A two-dimensional point.</li>
+<li><strong>proj_axis</strong> – The axis to project into.</li>
+<li><strong>a</strong> – Distance to the origin for the plane to project into.</li>
+<li><strong>v</strong> – Normal vector of the plane to project into.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The transformed point.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.project_to_2D">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">project_to_2D</code><span class="sig-paren">(</span><em>vertices</em>, <em>proj_axis</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.project_to_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project a 3D polygon into 2D space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vertices</strong> – The three-dimensional vertices of the polygon.</li>
+<li><strong>proj_axis</strong> – The axis to project into.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The transformed vertices.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.project_to_3D">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">project_to_3D</code><span class="sig-paren">(</span><em>vertices</em>, <em>proj_axis</em>, <em>a</em>, <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.project_to_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project a 2D polygon into 3D space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vertices</strong> – The two-dimensional vertices of the polygon.</li>
+<li><strong>proj_axis</strong> – The axis to project into.</li>
+<li><strong>a</strong> – Distance to the origin for the plane to project into.</li>
+<li><strong>v</strong> – Normal vector of the plane to project into.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The transformed vertices.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.section">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">section</code><span class="sig-paren">(</span><em>first</em>, <em>last</em>, <em>coords</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.section" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.set_entry_direction">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">set_entry_direction</code><span class="sig-paren">(</span><em>poly</em>, <em>outside_pt</em>, <em>ggr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.set_entry_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check and set entry direction for a polygon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>poly</strong> – A polygon.</li>
+<li><strong>outside_pt</strong> – A point beyond the outside face of the polygon.</li>
+<li><strong>ggr</strong> – EnergyPlus global geometry rules</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A polygon with the vertices correctly oriented.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.set_starting_position">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">set_starting_position</code><span class="sig-paren">(</span><em>poly</em>, <em>outside_pt</em>, <em>ggr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.set_starting_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check and set starting position.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.polygons.unique">
+<code class="descclassname">geomeppy.geom.polygons.</code><code class="descname">unique</code><span class="sig-paren">(</span><em>polys</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.polygons.unique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a unique set of polygons.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>polys</strong> – A list of polygons.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A unique list of polygons.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.segments">
+<span id="geomeppy-geom-segments-module"></span><h2>geomeppy.geom.segments module<a class="headerlink" href="#module-geomeppy.geom.segments" title="Permalink to this headline">¶</a></h2>
+<p>Segment class, representing a line segment.</p>
+<dl class="class">
+<dt id="geomeppy.geom.segments.Segment">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.segments.</code><code class="descname">Segment</code><span class="sig-paren">(</span><em>*vertices</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.segments.Segment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Line segment in 3D.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.surfaces">
+<span id="geomeppy-geom-surfaces-module"></span><h2>geomeppy.geom.surfaces module<a class="headerlink" href="#module-geomeppy.geom.surfaces" title="Permalink to this headline">¶</a></h2>
+<p>A collection of functions which act on surfaces or lists of surfaces.</p>
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.get_adjacencies">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">get_adjacencies</code><span class="sig-paren">(</span><em>surfaces</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.get_adjacencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dictionary mapping surfaces to their adjacent surfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>surfaces</strong> – A mutable list of surfaces.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mapping of surfaces to adjacent surfaces.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.getidfplanes">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">getidfplanes</code><span class="sig-paren">(</span><em>surfaces</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.getidfplanes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fast access data structure for potentially matched surfaces.</p>
+<p>Get a data structure populated with all the surfaces in the IDF, keyed by their distance from the origin, and their
+normal vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>surfaces</strong> – List of all the surfaces.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Mapping to look up IDF surfaces.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.populate_adjacencies">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">populate_adjacencies</code><span class="sig-paren">(</span><em>adjacencies</em>, <em>s1</em>, <em>s2</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.populate_adjacencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the adjacencies dict with any intersections between two surfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>adjacencies</strong> – Dict to contain lists of adjacent surfaces.</li>
+<li><strong>s1</strong> – Object representing an EnergyPlus surface.</li>
+<li><strong>s2</strong> – Object representing an EnergyPlus surface.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An updated dict of adjacencies.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.set_coords">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">set_coords</code><span class="sig-paren">(</span><em>surface</em>, <em>coords</em>, <em>ggr</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.set_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the coordinates of a surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>surface</strong> – The surface to modify.</li>
+<li><strong>coords</strong> – The new coordinates as lists of [x,y,z] lists.</li>
+<li><strong>ggr</strong> – Global geometry rules.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.set_matched_surfaces">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">set_matched_surfaces</code><span class="sig-paren">(</span><em>surface</em>, <em>matched</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.set_matched_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set boundary conditions for two adjoining surfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>surface</strong> – The first surface.</li>
+<li><strong>matched</strong> – The second surface.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.surfaces.set_unmatched_surface">
+<code class="descclassname">geomeppy.geom.surfaces.</code><code class="descname">set_unmatched_surface</code><span class="sig-paren">(</span><em>surface</em>, <em>vector</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.surfaces.set_unmatched_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set boundary conditions for a surface which does not adjoin another one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>surface</strong> – The surface.</li>
+<li><strong>vector</strong> – The surface normal vector.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.transformations">
+<span id="geomeppy-geom-transformations-module"></span><h2>geomeppy.geom.transformations module<a class="headerlink" href="#module-geomeppy.geom.transformations" title="Permalink to this headline">¶</a></h2>
+<p>A module to handle translations, using Christopher Gohlke’s transforms3d as far
+as possible, but also trying to respect the intent of the algorithms used in
+OpenStudio for the sake of consistency between tools based on EnergyPlus.</p>
+<dl class="class">
+<dt id="geomeppy.geom.transformations.Transformation">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.transformations.</code><code class="descname">Transformation</code><span class="sig-paren">(</span><em>mat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.transformations.Transformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.transformations.align_face">
+<code class="descclassname">geomeppy.geom.transformations.</code><code class="descname">align_face</code><span class="sig-paren">(</span><em>polygon</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.transformations.align_face" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transformation to align face with z-axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>polygon</strong> – Polygon to be aligned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Polygon3D aligned with the z-axis.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.transformations.invert_align_face">
+<code class="descclassname">geomeppy.geom.transformations.</code><code class="descname">invert_align_face</code><span class="sig-paren">(</span><em>original</em>, <em>poly2</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.transformations.invert_align_face" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transformation to align face with original position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>original</strong> – Polygon in the desired orientation.</li>
+<li><strong>poly2</strong> – Polygon previously aligned with <cite>align_face</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Polygon returned to the original orientation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-geomeppy.geom.vectors">
+<span id="geomeppy-geom-vectors-module"></span><h2>geomeppy.geom.vectors module<a class="headerlink" href="#module-geomeppy.geom.vectors" title="Permalink to this headline">¶</a></h2>
+<p>2D and 3D vector classes.</p>
+<p>These are used to represent points in 2D and 3D, as well as directions for translations.</p>
+<dl class="class">
+<dt id="geomeppy.geom.vectors.Vector2D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.vectors.</code><code class="descname">Vector2D</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">_abcoll.Sized</span></code></p>
+<p>Two dimensional point.</p>
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.as_array">
+<code class="descname">as_array</code><span class="sig-paren">(</span><em>dims=3</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.as_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a point to a numpy array.</p>
+<p>Converts a Vector3D to a numpy.array([x,y,z]) or a Vector2D to a numpy.array([x,y]).
+Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+used to represent 0.0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pt</strong> – The point to convert.</li>
+<li><strong>dims</strong> – Number of dimensions {default : 3}.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Vector as a Numpy array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.as_tuple">
+<code class="descname">as_tuple</code><span class="sig-paren">(</span><em>dims=3</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.as_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a point to a numpy array.</p>
+<p>Convert a Vector3D to an (x,y,z) tuple or a Vector2D to an (x,y) tuple.
+Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
+used to represent 0.0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pt</strong> – The point to convert.</li>
+<li><strong>dims</strong> – Number of dimensions {default : 3}.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Vector as a tuple.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.closest">
+<code class="descname">closest</code><span class="sig-paren">(</span><em>poly</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.closest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the closest vector in a polygon.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>poly</strong> – Polygon or Polygon3D</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.cross">
+<code class="descname">cross</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.cross" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.dot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.invert">
+<code class="descname">invert</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.invert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="geomeppy.geom.vectors.Vector2D.length">
+<code class="descname">length</code><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of a vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.relative_distance">
+<code class="descname">relative_distance</code><span class="sig-paren">(</span><em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.relative_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>A distance function for sorting vectors by distance.</p>
+<p>This only provides relative distance, not actual distance since we only use it for sorting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v2</strong> – Another vector.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Relative distance between two point vectors.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="geomeppy.geom.vectors.Vector2D.set_length">
+<code class="descname">set_length</code><span class="sig-paren">(</span><em>new_length</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector2D.set_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="geomeppy.geom.vectors.Vector3D">
+<em class="property">class </em><code class="descclassname">geomeppy.geom.vectors.</code><code class="descname">Vector3D</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z=0</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.Vector3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#geomeppy.geom.vectors.Vector2D" title="geomeppy.geom.vectors.Vector2D"><code class="xref py py-class docutils literal"><span class="pre">geomeppy.geom.vectors.Vector2D</span></code></a></p>
+<p>Three dimensional point.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="geomeppy.geom.vectors.inverse_vector">
+<code class="descclassname">geomeppy.geom.vectors.</code><code class="descname">inverse_vector</code><span class="sig-paren">(</span><em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#geomeppy.geom.vectors.inverse_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a vector to the same vector but in the opposite direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – The vector.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The vector reversed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">geomeppy.geom package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.clippers">geomeppy.geom.clippers module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.intersect_match">geomeppy.geom.intersect_match module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.polygons">geomeppy.geom.polygons module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.segments">geomeppy.geom.segments module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.surfaces">geomeppy.geom.surfaces module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.transformations">geomeppy.geom.transformations module</a></li>
+<li><a class="reference internal" href="#module-geomeppy.geom.vectors">geomeppy.geom.vectors module</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/geomeppy.geom.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jamie Bull.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/geomeppy.geom.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
