@@ -84,9 +84,7 @@ class Vector2D(Sized):
         # type: (Polygon3D) -> Union[Vector2D, Vector3D]
         """Find the closest vector in a polygon.
 
-        Parameters
-        ----------
-        poly : Polygon or Polygon3D
+        :param poly: Polygon or Polygon3D
 
         """
         min_d = float('inf')
@@ -122,16 +120,9 @@ class Vector2D(Sized):
         Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
         used to represent 0.0).
 
-        Parameters
-        ----------
-        pt : sympy.Vector3D
-            The point to convert.
-        dims : int, optional
-            Number of dimensions {default : 3}.
-
-        Returns
-        -------
-        numpy.np.ndarray
+        :param pt: The point to convert.
+        :param dims: Number of dimensions {default : 3}.
+        :returns: Vector as a Numpy array.
 
         """
         # handle Vector3D
@@ -149,16 +140,9 @@ class Vector2D(Sized):
         Ensures all values are floats since some other types cause problems in pyclipper (notably where sympy.Zero is
         used to represent 0.0).
 
-        Parameters
-        ----------
-        pt : sympy.Vector3D, sympy.Vector2D
-            The point to convert.
-        dims : int, optional
-            Number of dimensions {default : 3}.
-
-        Returns
-        -------
-        tuple
+        :param pt: The point to convert.
+        :param dims: Number of dimensions {default : 3}.
+        :returns: Vector as a tuple.
 
         """
         # handle Vector3D
@@ -175,7 +159,8 @@ class Vector2D(Sized):
         This only provides relative distance, not actual distance since we only use it for sorting.
 
         :param v2: Another vector.
-        :return: Relative distance between two point vectors.
+        :returns: Relative distance between two point vectors.
+
         """
         direction = self - v2
         return sum(x ** 2 for x in direction)
@@ -208,14 +193,8 @@ def inverse_vector(v):
     # type: (Union[Vector2D, Vector3D]) -> List[float]
     """Convert a vector to the same vector but in the opposite direction
 
-    Parameters
-    ----------
-    v : list
-        The vector.
-
-    Returns
-    -------
-    list
+    :param v: The vector.
+    :returns: The vector reversed.
 
     """
     return [-i for i in v]

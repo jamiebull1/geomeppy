@@ -3,13 +3,7 @@ from typing import Any, Dict, List, Optional, Union  # noqa
 from eppy.bunch_subclass import EpBunch  # noqa
 from eppy.idf_msequence import Idf_MSequence  # noqa
 
-from .geom.intersect_match import (
-    intersect_idf_surfaces,
-    getidfsurfaces,
-    getidfsubsurfaces,
-    getidfshadingsurfaces,
-    match_idf_surfaces,
-)
+from .geom.intersect_match import intersect_idf_surfaces, match_idf_surfaces
 from .builder import Block, Zone
 from .geom.polygons import bounding_box, Polygon2D  # noqa
 from .geom.vectors import Vector2D, Vector3D  # noqa
@@ -120,7 +114,11 @@ class IDF(PatchedIDF):
         :returns: IDF surfaces.
 
         """
-        return getidfsurfaces(self, surface_type)
+        surfaces = self.idfobjects['BUILDINGSURFACE:DETAILED']
+        if surface_type:
+            surfaces = [s for s in surfaces if s.Surface_Type.lower() ==
+                        surface_type.lower()]
+        return surfaces
 
     def bounding_box(self):
         # type: () -> Polygon2D
@@ -150,7 +148,11 @@ class IDF(PatchedIDF):
         :returns: IDF surfaces.
 
         """
-        return getidfsubsurfaces(self, surface_type)
+        surfaces = self.idfobjects['FENESTRATIONSURFACE:DETAILED']
+        if surface_type:
+            surfaces = [s for s in surfaces
+                        if s.Surface_Type.lower() == surface_type.lower()]
+        return surfaces
 
     def getshadingsurfaces(self, surface_type=None):
         # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
@@ -159,7 +161,11 @@ class IDF(PatchedIDF):
         :returns: IDF surfaces.
 
         """
-        return getidfshadingsurfaces(self, surface_type)
+        surfaces = self.idfobjects['SHADING:ZONE:DETAILED']
+        if surface_type:
+            surfaces = [s for s in surfaces
+                        if s.Surface_Type.lower() == surface_type.lower()]
+        return surfaces
 
     def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}):
         # type: (Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
