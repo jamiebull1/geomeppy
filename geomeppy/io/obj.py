@@ -1,20 +1,30 @@
-"""Module for import and export of .obj files as produced by Blender.
+"""
+Module for export of .obj files
+-------------------------------
 
-These can be viewed online at https://3dviewer.net/
+The OBJ file format developed by Wavefront Technologies is used in programs like Blender to represent 3D models.
 
-OBJ file specifications: https://www.cs.utah.edu/~boulos/cs3505/obj_spec.pdf
-MTL file specifications: http://people.sc.fsu.edu/~jburkardt/data/mtl/mtl.html
+`Geomeppy` is able to output simple .obj files, and accompanying .mtl files to represent materials. This module
+contains the source code for this operation. It should be treated as developers' reference only. As a user, if you
+want to create a .obj file it is best to use the `IDF.to_obj()` function.
 
-Example polygon:
+The generated files can be viewed online at https://3dviewer.net/. Drag the .obj file and the .mtl file into the
+browser and you will be able to interact with a zoomable, rotatable model of your IDF.
 
- # vertices
- v 0.0 0.0 0.0
- v 1.0 0.0 0.0
- v 1.0 0.0 1.0
- v 0.0 0.0 1.0
+`OBJ file specifications <https://www.cs.utah.edu/~boulos/cs3505/obj_spec.pdf>`_
 
- # face
- f 1// 2// 3// 4//
+`MTL file specifications <http://people.sc.fsu.edu/~jburkardt/data/mtl/mtl.html>`_
+
+Example polygon::
+
+    # vertices
+    v 0.0 0.0 0.0
+    v 1.0 0.0 0.0
+    v 1.0 0.0 1.0
+    v 0.0 0.0 1.0
+
+    # face
+    f 1// 2// 3// 4//
 
 """
 from itertools import product

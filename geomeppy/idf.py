@@ -1,3 +1,6 @@
+"""
+This module contains the implementation of `geomeppy.IDF`.
+"""
 from typing import Any, Dict, List, Optional, Union  # noqa
 
 from eppy.bunch_subclass import EpBunch  # noqa
@@ -18,6 +21,7 @@ def new_idf(fname):
     """Create a new blank IDF.
 
     :param fname: A name for the new IDF.
+
     """
     idf = IDF()
     idf.new(fname)
@@ -207,7 +211,12 @@ class IDF(PatchedIDF):
         # type: (*Any, **Any) -> None
         """Add a block to the IDF.
 
-        See Block class for parameters.
+        :param name: A name for the block.
+        :param coordinates: A list of (x, y) tuples representing the building outline.
+        :param height: The height of the block roof above ground level.
+        :param num_stories: The total number of stories including basement stories. Default : 1.
+        :param below_ground_stories: The number of stories below ground. Default : 0.
+        :param below_ground_storey_height: The height of each basement storey. Default : 2.5.
 
         """
         block = Block(*args, **kwargs)
@@ -225,7 +234,12 @@ class IDF(PatchedIDF):
         # type: (*Any, **Any) -> None
         """Add a shading block to the IDF.
 
-        See Block class for parameters.
+        :param name: A name for the block.
+        :param coordinates: A list of (x, y) tuples representing the building outline.
+        :param height: The height of the block roof above ground level.
+        :param num_stories: The total number of stories including basement stories. Default : 1.
+        :param below_ground_stories: The number of stories below ground. Default : 0.
+        :param below_ground_storey_height: The height of each basement storey. Default : 2.5.
 
         """
         block = Block(*args, **kwargs)
@@ -245,7 +259,7 @@ class IDF(PatchedIDF):
         # type: (Zone) -> None
         """Add a zone to the IDF.
 
-        :param zone:
+        :param zone: A Zone object holding details about the zone.
 
         """
         try:

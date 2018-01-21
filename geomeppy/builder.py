@@ -153,7 +153,7 @@ class Block(object):
         """
         walls = []
         for fh, ch in zip(self.floor_heights, self.ceiling_heights):
-            floor_walls = [make_wall(edge, fh, ch)
+            floor_walls = [_make_wall(edge, fh, ch)
                            for edge in self.footprint.edges]
             walls.append(floor_walls)
         return walls
@@ -211,7 +211,7 @@ class Block(object):
                 'floors': self.floors}
 
 
-def make_wall(edge, floor_height, ceiling_height):
+def _make_wall(edge, floor_height, ceiling_height):
     # type: (Segment, float, float) -> Polygon3D
     """Create a polygon representing the vertices of a wall.
 
