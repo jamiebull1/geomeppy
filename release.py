@@ -41,6 +41,12 @@ def main(increment):
     replace('geomeppy/__init__.py', version, new_version)
     replace('setup.py', "version='%s'" % version, "version='%s'" % new_version)
     replace('setup.py', "tarball/v%s" % version, "tarball/v%s" % new_version)
+    replace('docs/source/conf.py',
+            "version = '%s'" % '.'.join(version.split('.')[:-1]),
+            "version = '%s'" % '.'.join(new_version.split('.')[:-1])
+            )
+    replace('docs/source/conf.py', "release = '%s'" % version, "release = '%s'" % new_version)
+
     try:
         # add and commit changes
         print(subprocess.check_output(['git', 'add', 'geomeppy/__init__.py']))
