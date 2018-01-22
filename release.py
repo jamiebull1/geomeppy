@@ -21,7 +21,7 @@ def replace(file_path, pattern, subst):
 
 
 def main(increment):
-    # check we're on master
+    # check we're on develop
     assert b'* develop' in subprocess.check_output(['git', 'branch']), 'Not on develop branch'
     # check we're up-to-date
     status = subprocess.check_output(['git', 'status'])

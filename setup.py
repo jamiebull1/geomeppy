@@ -16,6 +16,8 @@ setup(
     name='geomeppy',
     packages=[
         'geomeppy',
+        'geomeppy.geom',
+        'geomeppy.io',
         'tests',
     ],
     version='0.4.4',
@@ -34,16 +36,15 @@ setup(
     platforms='any',
     install_requires=[
         'eppy==0.5.46',
-        'pylru==1.0.9',  # caching
-        'matplotlib',  # model viewer
-        'numpy==1.13',
+        'matplotlib==2.1.1',  # model viewer
+        'numpy==1.14',
         'pyclipper==1.1.0',  # geometry intersection
-        'shapely==1.6.2',  # geometry transformations
+        'shapely==1.6.3',  # geometry transformations
         'six==1.11.0',  # python2/3 compatibility
         'transforms3d==0.3.1',  # geometry transformations
         'pypoly2tri==0.0.3',  # triangulate polygons
     ],
-    classifiers = [
+    classifiers=[
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Development Status :: 3 - Alpha',
