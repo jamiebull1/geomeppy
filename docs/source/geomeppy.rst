@@ -13,16 +13,6 @@ bugs, should any arise).
     :undoc-members:
     :show-inheritance:
 
-Subpackages
-
-.. toctree::
-
-    geomeppy.geom
-    geomeppy.io
-
-Public submodules
------------------
-
 geomeppy.recipes module
 -----------------------
 
@@ -38,10 +28,6 @@ geomeppy.view_geometry module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Developer submodules
---------------------
 
 geomeppy.builder module
 -----------------------
@@ -74,3 +60,13 @@ geomeppy.utilities module
     :members:
     :undoc-members:
     :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    geomeppy.geom
+    geomeppy.io
+
+

@@ -79,7 +79,7 @@ azimuth in the `wwr_map`. Any omitted walls' WWR will be set to the value in
 
 - Exporting a 3D OBJ file model
 
-`IDF.to_obj('mymodel.idf')`
+`IDF.to_obj('mymodel.obj')`
 
 You can view the exported model [here](https://3dviewer.net/). Just drag the .obj file 
 and .mtl file into the browser window.

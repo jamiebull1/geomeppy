@@ -1,5 +1,5 @@
-The beginning
-=============
+Start here
+==========
 .. toctree::
    :maxdepth: 2
 
@@ -52,11 +52,10 @@ And install `geomeppy`.
 
 This will take a while to install the `geomeppy` package and its dependencies. While it's installing, we can move on to installing EnergyPlus if you don't already have it installed.
 
-The EnergyPlus installers can be found on the `energyplus.net <https://energyplus.net/downloads>`_ site. Choose the correct package for your platform and install it. Make a note of the version number of EnergyPlus as you'll need it later.
+The EnergyPlus installers can be found on the `energyplus.net <https://energyplus.net/downloads>`_ site. Choose the correct package for your platform and install it.
 
-^^^^^^^^^^^^^^^^
 Creating a model
-^^^^^^^^^^^^^^^^
+----------------
 
 Next we want to create our basic model, so we'll open a python interpreter.
 
@@ -65,6 +64,12 @@ Next we want to create our basic model, so we'll open a python interpreter.
     (venv)$ python3
 
 From now on, we're working in the Python interpreter, indicated by the ``>>>`` prompt.
+
+Be aware that this tutorial is written for the Mac and for EnergyPlus 8.8.0.
+
+If you are on Windows or Linux machine or have a different version of EnergyPlus installed, you'll need to replace the path to the EnergyPlus installation folder with the appropriate path.
+
+For example, on Windows, this is usually ``C:/EnergyPlusV8-8-0``, and on Linux, ``/usr/local/EnergyPlus-8-8-0``.
 
     >>> from geomeppy import IDF
     >>> idf = IDF('/Applications/EnergyPlus-8-8-0/ExampleFiles/Minimal.idf')
