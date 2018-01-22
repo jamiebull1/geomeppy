@@ -21,7 +21,7 @@ def replace(file_path, pattern, subst):
 
 
 def main(increment):
-    # check we're on master
+    # check we're on develop
     assert b'* develop' in subprocess.check_output(['git', 'branch']), 'Not on develop branch'
     # check we're up-to-date
     status = subprocess.check_output(['git', 'status'])
@@ -41,10 +41,17 @@ def main(increment):
     replace('geomeppy/__init__.py', version, new_version)
     replace('setup.py', "version='%s'" % version, "version='%s'" % new_version)
     replace('setup.py', "tarball/v%s" % version, "tarball/v%s" % new_version)
+    replace('docs/source/conf.py',
+            "version = '%s'" % '.'.join(version.split('.')[:-1]),
+            "version = '%s'" % '.'.join(new_version.split('.')[:-1])
+            )
+    replace('docs/source/conf.py', "release = '%s'" % version, "release = '%s'" % new_version)
+
     try:
         # add and commit changes
         print(subprocess.check_output(['git', 'add', 'geomeppy/__init__.py']))
         print(subprocess.check_output(['git', 'add', 'setup.py']))
+        print(subprocess.check_output(['git', 'add', 'docs/source/conf.py']))
         print(subprocess.check_output(['git', 'add', 'README.rst']))
         print(subprocess.check_output(['git', 'commit', '-m', 'release/%s' % new_version]))
     except Exception as e:

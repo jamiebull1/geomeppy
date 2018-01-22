@@ -1,12 +1,18 @@
-"""Perform clipping operations on Polygons.
+"""
+Perform clipping operations on Polygons
+---------------------------------------
 
-PyClipper is used for clipping.
+PyClipper is used for clipping. It's a wrapper for the C++ version of the Clipper library.
+
+We implement a few of the functions of PyClipper here as `.difference`, `.intersect`, and `.union` methods of the
+`Clipper2D` and `Clipper3D` classes. These are then used as mixins for the `Polygon2D` and `Polygon3D` classes.
+
 """
 from typing import List  # noqa
 
 import pyclipper as pc
 
-if False: from .polygons import Polygon, Polygon3D  # noqa
+if False: from .polygons import Polygon  # noqa
 from ..utilities import almostequal
 
 
@@ -15,10 +21,11 @@ class Clipper2D(object):
 
     def difference(self, poly):
         # type: (Polygon) -> List[Polygon]
-        """Intersect with another polygon.
+        """Difference from another polygon.
 
         :param poly: The clip polygon.
-        :returns: False if no intersection, otherwise a list of lists of Polygons representing each difference.
+        :returns: A list of Polygons representing the difference.
+
         """
         clipper = self._prepare_clipper(poly)
         if not clipper:
@@ -34,6 +41,7 @@ class Clipper2D(object):
 
         :param poly: The clip polygon.
         :returns: False if no intersection, otherwise a list of Polygons representing each intersection.
+
         """
         clipper = self._prepare_clipper(poly)
         if not clipper:
@@ -49,6 +57,7 @@ class Clipper2D(object):
 
         :param poly: The clip polygon.
         :returns: A list of Polygons.
+
         """
         clipper = self._prepare_clipper(poly)
         if not clipper:
@@ -63,6 +72,7 @@ class Clipper2D(object):
 
         :param poly: The clip polygon.
         :returns: A Pyclipper object.
+
         """
         s1 = pc.scale_to_clipper(self.vertices_list)
         s2 = pc.scale_to_clipper(poly.vertices_list)
@@ -76,6 +86,7 @@ class Clipper2D(object):
 
         :param results: A list of lists of coordinates .
         :returns: A list of Polygon2D results of the clipping operation.
+
         """
         if not results:
             return []
@@ -98,6 +109,7 @@ class Clipper3D(Clipper2D):
 
         :param poly: The clip polygon.
         :returns: A Pyclipper object.
+
         """
         if not self.is_coplanar(poly):
             return False
@@ -117,6 +129,7 @@ class Clipper3D(Clipper2D):
 
         :param results: A list of lists of coordinates .
         :returns: A list of Polygon3D results of the clipping operation.
+
         """
         if not results:
             return []

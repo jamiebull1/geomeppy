@@ -6,6 +6,9 @@ GeomEppy
 [![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov
 
+[![Documentation Status](https://readthedocs.org/projects/geomeppy/badge/?version=latest)](http://geomeppy.readthedocs.io/en/latest/?badge=latest)
+ on Read the Docs
+ 
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
 It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.
@@ -79,12 +82,12 @@ azimuth in the `wwr_map`. Any omitted walls' WWR will be set to the value in
 
 - Exporting a 3D OBJ file model
 
-`IDF.to_obj('mymodel.idf')`
+`IDF.to_obj('mymodel.obj')`
 
 You can view the exported model [here](https://3dviewer.net/). Just drag the .obj file 
 and .mtl file into the browser window.
 
-![OBJ viewer](img/obj_viewer.png?raw=true "OBJ viewer")
+![OBJ viewer](https://github.com/jamiebull1/geomeppy/tree/master/img/obj_viewer.png?raw=true "OBJ viewer")
 
 - Get all surfaces in a model
 
