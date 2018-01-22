@@ -1,14 +1,12 @@
-.. geomeppy documentation master file, created by
-   sphinx-quickstart on Sun Jan 21 00:22:46 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to geomeppy's documentation!
-====================================
+Welcome to Geomeppy!
+====================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   geomeppy
+   Tutorial
+   How-to guides
+   Reference
+

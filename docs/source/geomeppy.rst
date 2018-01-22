@@ -14,7 +14,6 @@ bugs, should any arise).
     :show-inheritance:
 
 Subpackages
------------
 
 .. toctree::
 
