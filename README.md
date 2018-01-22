@@ -6,6 +6,9 @@ GeomEppy
 [![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov
 
+[![Documentation Status](https://readthedocs.org/projects/geomeppy/badge/?version=latest)](http://geomeppy.readthedocs.io/en/latest/?badge=latest)
+ on Read the Docs
+ 
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
 It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.

@@ -5,6 +5,8 @@ GeomEppy
 
 |CodeCov| via CodeCov
 
+|Docs Status| on Read the Docs
+
 GeomEppy is a scripting language for use with Eppy, which in turn is a
 scripting language for EnergyPlus IDF files and output files.
 
@@ -168,3 +170,7 @@ Forthcoming
 .. |CodeCov| image:: https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg
    :target: https://codecov.io/github/jamiebull1/geomeppy
 .. |OBJ viewer| image:: https://github.com/jamiebull1/geomeppy/tree/master/img/obj_viewer.png
+
+.. |Docs Status| image:: https://readthedocs.org/projects/geomeppy/badge/?version=latest
+:target: http://geomeppy.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
