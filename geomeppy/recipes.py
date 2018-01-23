@@ -1,4 +1,9 @@
-"""Recipes for making changes to EnergyPlus IDF files."""
+"""Recipes for making changes to EnergyPlus IDF files.
+
+These are generally exposed and methods on the IDF object, e.g. `set_default_constructions(idf)`
+can be called on an existing `IDF` object like ``myidf.set_default_constructions()``.
+
+"""
 import itertools
 from typing import List, Optional, Tuple, Union  # noqa
 
