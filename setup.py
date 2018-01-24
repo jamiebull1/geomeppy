@@ -66,5 +66,6 @@ setup(
             'typing',
         ],
     },
+    include_package_data=True,
 )
 
