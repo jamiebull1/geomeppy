@@ -29,14 +29,13 @@ Installation
 ------------
 
 First we need to set up a virtual environment to keep this Python environment separate from any
-other installations on your machine.
+other installations on your machine. This tutorial assumes you're using Python 3 so make sure you have that installed.
 
 .. code::
 
-    $ pip3 install virtualenv
     $ mkdir tutorial
     $ cd tutorial
-    $ virtualenv venv
+    $ python3 -m venv venv
 
 Now we activate the virtual environment.
 
@@ -72,8 +71,8 @@ If you are on Windows or Linux machine or have a different version of EnergyPlus
 For example, on Windows, this is usually ``C:/EnergyPlusV8-8-0``, and on Linux, ``/usr/local/EnergyPlus-8-8-0``.
 
     >>> from geomeppy import IDF
+    >>> IDF.setiddname('/Applications/EnergyPlus-8-8-0/Energy+.idd')
     >>> idf = IDF('/Applications/EnergyPlus-8-8-0/ExampleFiles/Minimal.idf')
-    >>> idf.setiddname('/Applications/EnergyPlus-8-8-0/Energy+.idd')
 
 Now we have imported an EnergyPlus IDF file which contains the bare minimum required to be able to run successfully. We need to add a weather file to our IDF object first though.
 
@@ -92,13 +91,13 @@ Next we can set some default constructions for the IDF surfaces.
 
     >>> idf.set_default_constructions()
 
-Let's add some nice big windows. A window to wall ratio (WWR) of 0.6.
-
-    >>> idf.set_wwr(0.6)
-
-Last step, we need to tell `geomeppy` to match up our surfaces with the correct outside conditions. In this case, it will just set the outside boundary conditions for all the walls and roof to "outside", and that of the floor to "ground".
+Now we need to tell `geomeppy` to match up our surfaces with the correct outside conditions. In this case, it will just set the outside boundary conditions for all the walls and roof to "outside", and that of the floor to "ground".
 
     >>> idf.intersect_match()
+
+Last step, let's add some nice big windows. We'll set window to wall ratio (WWR) of 0.6 for all external walls.
+
+    >>> idf.set_wwr(0.6)
 
 So what have we built? We can export the IDF geometry as an OBJ file, a format that can be imported into a 3D geometry viewer.
 
@@ -144,12 +143,10 @@ You should see an output something like the following:
     Warming up {4}
     Warming up {5}
     Warming up {6}
-    Starting Simulation at 01/01 for San Francisco Intl Ap CA USA TMY3 WMO#=724940
-    Updating Shadowing Calculations, Start Date=01/21
-    Continuing Simulation at 01/21 for San Francisco Intl Ap CA USA TMY3 WMO#=724940
+    Starting Simulation at 07/21 for DENVER_STAPLETON ANN CLG .4% CONDNS DB=>MWB
     Writing tabular output file results using HTML format.
     Writing final SQL reports
-    EnergyPlus Run Time=00hr 00min  0.36sec
+    EnergyPlus Run Time=00hr 00min  0.26sec
 
 This indicates that EnergyPlus has run successfully.
 
