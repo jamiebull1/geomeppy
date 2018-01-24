@@ -56,7 +56,7 @@ The EnergyPlus installers can be found on the `energyplus.net <https://energyplu
 Creating a model
 ----------------
 
-Next we want to create our basic model, so we'll open a python interpreter.
+Next we want to create our basic model, so we'll open a Python interpreter.
 
 .. code::
 
