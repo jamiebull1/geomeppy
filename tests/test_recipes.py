@@ -204,7 +204,8 @@ class TestWWR:
     def is_expected_wwr(self, idf, wwr):
         windows_area = sum(w.area for w in idf.getsubsurfaces('window'))
         walls_area = sum(w.area for w in idf.getsurfaces('wall'))
-        return almostequal(windows_area, walls_area * wwr, 3)
+        expected_area = walls_area * wwr
+        return almostequal(windows_area, expected_area, 3)
 
     def test_wwr(self, wwr_idf):
         idf = wwr_idf
@@ -264,3 +265,10 @@ class TestWWR:
             pass
         idf.set_wwr(wwr, force=True)
         assert self.is_expected_wwr(idf, wwr)
+
+    def test_wwr_by_orientation(self, wwr_idf):
+        idf = wwr_idf
+        idf.set_wwr(wwr=0.2, orientation='south')  # there is a south-facing wall
+        idf.set_wwr(wwr=0.2, orientation='west')  # there is no west-facing wall
+        expected_wwr = 0.1
+        assert self.is_expected_wwr(idf, expected_wwr), 'WWR not set correctly by orientation'

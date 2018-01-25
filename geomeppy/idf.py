@@ -171,20 +171,24 @@ class IDF(PatchedIDF):
                         if s.Surface_Type.lower() == surface_type.lower()]
         return surfaces
 
-    def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}):
-        # type: (Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
+    def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None):
+        # type: (Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
         """Add strip windows to all external walls.
 
         Different WWR can be applied to specific wall orientations using the `wwr_map` keyword arg.
         This map is a dict of wwr values, keyed by `wall.azimuth`, which overrides the default passed as `wwr`.
 
+        They can also be applied to walls oriented to a compass point, e.g. north, which will apply to walls which
+        have an azimuth within 45 degrees of due north.
+
         :param wwr: Window to wall ratio in the range 0.0 to 1.0.
         :param construction: Name of a window construction.
         :param force: True to remove all subsurfaces before setting the WWR.
         :param wwr_map: Mapping from wall orientation (azimuth) to WWR, e.g. {180: 0.25, 90: 0.2}.
+        :param orientation: One of "north", "east", "south", "west". Walls within 45 degrees will be affected.
 
         """
-        set_wwr(self, wwr, construction, force, wwr_map)
+        set_wwr(self, wwr, construction, force, wwr_map, orientation)
 
     def view_model(self, test=False):
         # type: (Optional[bool]) -> None

@@ -73,8 +73,8 @@ def set_default_construction(surface):
         surface.Construction_Name = 'Project Door'
 
 
-def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
-    # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
+def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None):
+    # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
     """Set the window to wall ratio on all external walls.
 
     :param idf: The IDF to edit.
@@ -82,16 +82,27 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
     :param construction: Name of a window construction.
     :param force: True to remove all subsurfaces before setting the WWR.
     :param wwr_map: Mapping from wall orientation (azimuth) to WWR, e.g. {180: 0.25, 90: 0.2}.
+    :param orientation: One of "north", "east", "south", "west". Walls within 45 degrees will be affected.
 
     """
     try:
         ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
     except IndexError:
         ggr = []
+
     external_walls = [
         s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
         if s.Surface_Type.lower() == 'wall' and s.Outside_Boundary_Condition.lower() == 'outdoors'
     ]
+    # check orientation
+    orientations = {
+        'north': 0.0,
+        'east': 90.0,
+        'south': 180.0,
+        'west': 270.0,
+    }
+    degrees = orientations.get(orientation, None)
+    external_walls = [w for w in external_walls if _has_correct_orientation(w, degrees)]
     subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index['ref2names']['SubSurfNames']]
     base_wwr = wwr
     for wall in external_walls:
@@ -127,6 +138,22 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
             View_Factor_to_Ground='autocalculate',  # from the surface angle
         )
         window.setcoords(coords, ggr)
+
+
+def _has_correct_orientation(wall, orientation_degrees):
+    # type: (EpBunch, Optional[float]) -> bool
+    """Check that the wall has an orientation which requires WWR to be set.
+
+    :param wall: An EpBunch representing a wall.
+    :param orientation: Orientation in degrees.
+    :return: True if the wall is within 45 degrees of the orientation passed, or no orientation passed.
+             False if the wall is not within 45 of the orientation passed.
+    """
+    if not orientation_degrees:
+        return True
+    if abs(wall.azimuth - orientation_degrees) < 45:
+        return True
+    return False
 
 
 def _is_window(subsurface):
