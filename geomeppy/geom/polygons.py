@@ -8,6 +8,7 @@ from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
 from shapely import wkt
+from shapely.geometry.polygon import Polygon as SPoly
 from six.moves import zip
 
 from .clippers import Clipper2D, Clipper3D
@@ -103,6 +104,17 @@ class Polygon(Clipper2D, MutableSequence):
 
         bbox = Polygon3D([top_left, bottom_left, bottom_right, top_right])
         return invert_align_face(self, bbox)
+
+    def buffer(self, distance=None, join_style=2):
+        # type: (Optional[float], Optional[int]) -> Polygon2D
+        """Returns a representation of all points within a given distance of the polygon.
+
+        :param join_style: The styles of joins between offset segments: 1 (round), 2 (mitre), and 3 (bevel).
+
+        """
+        s_poly = SPoly(self.vertices)
+        core = s_poly.buffer(distance=distance, join_style=join_style)
+        return Polygon2D(core.boundary.coords)
 
     @property
     def centroid(self):
