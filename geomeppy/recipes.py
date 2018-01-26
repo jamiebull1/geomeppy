@@ -4,8 +4,8 @@ These are generally exposed and methods on the IDF object, e.g. `set_default_con
 can be called on an existing `IDF` object like ``myidf.set_default_constructions()``.
 
 """
-import itertools
 from typing import List, Optional, Tuple, Union  # noqa
+import warnings
 
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
@@ -103,14 +103,15 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientatio
     }
     degrees = orientations.get(orientation, None)
     external_walls = [w for w in external_walls if _has_correct_orientation(w, degrees)]
-    subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index['ref2names']['SubSurfNames']]
+    subsurfaces = idf.getsubsurfaces()
     base_wwr = wwr
     for wall in external_walls:
         # get any subsurfaces on the wall
-        wall_subsurfaces = [
-            ss for ss in itertools.chain(*subsurfaces)
-            if ss.Building_Surface_Name == wall.Name
-        ]
+        # wall_subsurfaces = [
+        #     ss for ss in itertools.chain(*subsurfaces)
+        #     if ss.Building_Surface_Name == wall.Name
+        # ]
+        wall_subsurfaces = filter(lambda x: x.Building_Surface_Name == wall.Name, subsurfaces)
         if not all(_is_window(wss) for wss in wall_subsurfaces) and not force:
             raise ValueError(
                 'Not all subsurfaces on wall "{name}" are windows. '
@@ -201,13 +202,13 @@ def translate_to_origin(idf):
 
     """
     surfaces = idf.getsurfaces()
-    windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
+    subsurfaces = idf.getsubsurfaces()
 
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
-    translate(windows, (-min_x, -min_y))
+    translate(subsurfaces, (-min_x, -min_y))
 
 
 def translate(surfaces,  # type: Idf_MSequence
@@ -222,6 +223,9 @@ def translate(surfaces,  # type: Idf_MSequence
     """
     vector = Vector3D(*vector)
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = translate_coords(s.coords, vector)
         s.setcoords(new_coords)
 
@@ -250,6 +254,9 @@ def scale(surfaces, factor, axes='xy'):
 
     """
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = scale_coords(s.coords, factor, axes)
         s.setcoords(new_coords)
 
@@ -284,6 +291,9 @@ def rotate(surfaces, angle):
     """
     radians = np.deg2rad(angle)
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = rotate_coords(s.coords, radians)
         s.setcoords(new_coords)
 

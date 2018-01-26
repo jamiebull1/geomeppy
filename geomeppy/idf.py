@@ -1,6 +1,5 @@
-"""
-This module contains the implementation of `geomeppy.IDF`.
-"""
+"""This module contains the implementation of `geomeppy.IDF`."""
+import itertools
 from typing import Any, Dict, List, Optional, Union  # noqa
 
 from eppy.bunch_subclass import EpBunch  # noqa
@@ -110,20 +109,6 @@ class IDF(PatchedIDF):
         # type: () -> None
         set_default_constructions(self)
 
-    def getsurfaces(self, surface_type=None):
-        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
-        """Return all surfaces in the IDF.
-
-        :param surface: Type of surface to get. Defaults to all.
-        :returns: IDF surfaces.
-
-        """
-        surfaces = self.idfobjects['BUILDINGSURFACE:DETAILED']
-        if surface_type:
-            surfaces = [s for s in surfaces if s.Surface_Type.lower() ==
-                        surface_type.lower()]
-        return surfaces
-
     def bounding_box(self):
         # type: () -> Polygon2D
         """Calculate the site bounding box.
@@ -145,31 +130,50 @@ class IDF(PatchedIDF):
         bbox = self.bounding_box()
         return bbox.centroid
 
+    def getsurfaces(self, surface_type=None):
+        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+        """Return all surfaces in the IDF.
+
+        :param surface_type: Type of surface to get. Defaults to all.
+        :returns: IDF surfaces.
+
+        """
+        surfaces = itertools.chain.from_iterable(
+            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['SurfaceNames']]
+        )
+        if surface_type:
+            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+        return list(surfaces)
+
     def getsubsurfaces(self, surface_type=None):
         # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
 
+        :param surface_type: Type of subsurface to get. Defaults to all.
         :returns: IDF surfaces.
 
         """
-        surfaces = self.idfobjects['FENESTRATIONSURFACE:DETAILED']
+        surfaces = itertools.chain.from_iterable(
+            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['SubSurfNames']]
+        )
         if surface_type:
-            surfaces = [s for s in surfaces
-                        if s.Surface_Type.lower() == surface_type.lower()]
-        return surfaces
+            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+        return list(surfaces)
 
     def getshadingsurfaces(self, surface_type=None):
         # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
 
+        :param surface_type: Type of shading surface to get. Defaults to all.
         :returns: IDF surfaces.
 
         """
-        surfaces = self.idfobjects['SHADING:ZONE:DETAILED']
+        surfaces = itertools.chain.from_iterable(
+            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['AllShadingSurfNames']]
+        )
         if surface_type:
-            surfaces = [s for s in surfaces
-                        if s.Surface_Type.lower() == surface_type.lower()]
-        return surfaces
+            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+        return list(surfaces)
 
     def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None):
         # type: (Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
