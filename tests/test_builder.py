@@ -1,13 +1,5 @@
 """Test for builder module."""
-from eppy.iddcurrent import iddcurrent
-from six import StringIO
-
 from geomeppy.builder import Block
-from geomeppy.idf import IDF
-
-idf_txt = """
-Version, 8.5;
-"""
 
 breaking_coords = [
             (531023.28, 183220.85), (531023.09, 183220.78), (531022.99, 183220.74), 
@@ -58,17 +50,9 @@ breaking_coords = [
 
 class TestAddBlock():
 
-    def setup(self):
+    def test_add_block_smoke_test(self, new_idf):
         # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_add_block_smoke_test(self):
-        # type: () -> None
-        idf = self.idf
+        idf = new_idf
         name = "test"
         height = 7.5
         num_stories = 4
@@ -79,13 +63,12 @@ class TestAddBlock():
             (89.55,31.55),(89.15,31.35),(85.1,29.8),
             (86.1,27.2),(84.6,26.65),(85.8,23.5),
             (87.25,24.0)]
-        idf.add_block(name, coordinates, height, num_stories,
-                  below_ground_stories, below_ground_storey_height)
+        idf.add_block(name, coordinates, height, num_stories, below_ground_stories, below_ground_storey_height)
         idf.intersect_match()
 
-    def test_add_two_blocks(self):
+    def test_add_two_blocks(self, new_idf):
         # type: () -> None
-        idf = self.idf
+        idf = new_idf
         height = 5
         num_stories = 2
         block1 = [(0,0),(3,0),(3,3),(0,3)]
@@ -133,9 +116,9 @@ class TestAddBlock():
                 'BUILDINGSURFACE:DETAILED', window.Building_Surface_Name)
             assert wall.Construction_Name == 'Project Wall'
 
-    def test_add_two_concentric_blocks(self):
+    def test_add_two_concentric_blocks(self, new_idf):
         # type: () -> None
-        idf = self.idf
+        idf = new_idf
         height = 5
         num_stories = 2
         block1 = [(0,0),(4,0),(4,4),(0,4)]
@@ -146,9 +129,9 @@ class TestAddBlock():
         idf.set_wwr(0.25)
         idf.set_default_constructions()
 
-    def test_known_breaking(self):
+    def test_known_breaking(self, new_idf):
         # type: () -> None
-        idf = self.idf
+        idf = new_idf
         height = 5
         num_stories = 2
         coordinates = breaking_coords
