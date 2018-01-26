@@ -4,8 +4,8 @@ These are generally exposed and methods on the IDF object, e.g. `set_default_con
 can be called on an existing `IDF` object like ``myidf.set_default_constructions()``.
 
 """
-import itertools
 from typing import List, Optional, Tuple, Union  # noqa
+import warnings
 
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
@@ -73,7 +73,7 @@ def set_default_construction(surface):
         surface.Construction_Name = 'Project Door'
 
 
-def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None):
+def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None):
     # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
     """Set the window to wall ratio on all external walls.
 
@@ -85,15 +85,8 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientatio
     :param orientation: One of "north", "east", "south", "west". Walls within 45 degrees will be affected.
 
     """
-    try:
-        ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
-    except IndexError:
-        ggr = []
+    ggr = next(idf.idfobjects['GLOBALGEOMETRYRULES'], None)
 
-    external_walls = [
-        s for s in idf.idfobjects['BUILDINGSURFACE:DETAILED']
-        if s.Surface_Type.lower() == 'wall' and s.Outside_Boundary_Condition.lower() == 'outdoors'
-    ]
     # check orientation
     orientations = {
         'north': 0.0,
@@ -102,15 +95,13 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientatio
         'west': 270.0,
     }
     degrees = orientations.get(orientation, None)
-    external_walls = [w for w in external_walls if _has_correct_orientation(w, degrees)]
-    subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index['ref2names']['SubSurfNames']]
+    external_walls = filter(lambda x: x.Outside_Boundary_Condition.lower() == 'outdoors', idf.getsurfaces('wall'))
+    external_walls = filter(lambda x: _has_correct_orientation(x, degrees), external_walls)
+    subsurfaces = idf.getsubsurfaces()
     base_wwr = wwr
     for wall in external_walls:
         # get any subsurfaces on the wall
-        wall_subsurfaces = [
-            ss for ss in itertools.chain(*subsurfaces)
-            if ss.Building_Surface_Name == wall.Name
-        ]
+        wall_subsurfaces = list(filter(lambda x: x.Building_Surface_Name == wall.Name, subsurfaces))
         if not all(_is_window(wss) for wss in wall_subsurfaces) and not force:
             raise ValueError(
                 'Not all subsurfaces on wall "{name}" are windows. '
@@ -125,7 +116,8 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}, orientatio
         # remove all subsurfaces
         for ss in wall_subsurfaces:
             idf.removeidfobject(ss)
-        wwr = wwr_map.get(wall.azimuth) or base_wwr
+        if wwr_map:
+            wwr = wwr_map.get(wall.azimuth) or base_wwr
         if not wwr:
             return
         coords = window_vertices_given_wall(wall, wwr)
@@ -145,7 +137,7 @@ def _has_correct_orientation(wall, orientation_degrees):
     """Check that the wall has an orientation which requires WWR to be set.
 
     :param wall: An EpBunch representing a wall.
-    :param orientation: Orientation in degrees.
+    :param orientation_degrees: Orientation in degrees.
     :return: True if the wall is within 45 degrees of the orientation passed, or no orientation passed.
              False if the wall is not within 45 of the orientation passed.
     """
@@ -201,13 +193,13 @@ def translate_to_origin(idf):
 
     """
     surfaces = idf.getsurfaces()
-    windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
+    subsurfaces = idf.getsubsurfaces()
 
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
-    translate(windows, (-min_x, -min_y))
+    translate(subsurfaces, (-min_x, -min_y))
 
 
 def translate(surfaces,  # type: Idf_MSequence
@@ -222,6 +214,9 @@ def translate(surfaces,  # type: Idf_MSequence
     """
     vector = Vector3D(*vector)
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = translate_coords(s.coords, vector)
         s.setcoords(new_coords)
 
@@ -250,6 +245,9 @@ def scale(surfaces, factor, axes='xy'):
 
     """
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = scale_coords(s.coords, factor, axes)
         s.setcoords(new_coords)
 
@@ -284,6 +282,9 @@ def rotate(surfaces, angle):
     """
     radians = np.deg2rad(angle)
     for s in surfaces:
+        if not s.coords:
+            warnings.warn('%s was not affected by this operation since it does not define vertices.' % s.Name)
+            continue
         new_coords = rotate_coords(s.coords, radians)
         s.setcoords(new_coords)
 
@@ -296,7 +297,7 @@ def rotate_coords(coords, radians):
     :returns: List of Vector3D objects.
 
     """
-    coords = Polygon3D(coords)
+    poly = Polygon3D(coords)
     rotation = Transformation()._rotation(Vector3D(0, 0, 1), radians)
-    coords = rotation * coords
+    coords = rotation * poly
     return coords

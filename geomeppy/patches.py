@@ -35,7 +35,7 @@ class EpBunch(BaseBunch):
 
     def setcoords(self,
                   poly,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
-                  ggr=None  # type: Union[List, None, Idf_MSequence]
+                  ggr=None  # type: Optional[Idf_MSequence]
                   ):
         # type: (...) -> None
         """Set the coordinates of a surface.
