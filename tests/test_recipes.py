@@ -1,6 +1,4 @@
 """Tests for recipes."""
-import pytest
-
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import intersect_idf_surfaces, match_idf_surfaces
 from geomeppy.geom.polygons import Polygon3D
