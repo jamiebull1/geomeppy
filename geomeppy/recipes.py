@@ -85,7 +85,10 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientat
     :param orientation: One of "north", "east", "south", "west". Walls within 45 degrees will be affected.
 
     """
-    ggr = next(idf.idfobjects['GLOBALGEOMETRYRULES'], None)
+    try:
+        ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]  # type: Optional[Idf_MSequence]
+    except IndexError:
+        ggr = None
 
     # check orientation
     orientations = {
