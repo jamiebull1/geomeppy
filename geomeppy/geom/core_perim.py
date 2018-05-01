@@ -4,7 +4,9 @@ import itertools
 
 
 def slope_intercept(x_1, x_2, y_1, y_2):
-    """Calculates the slope, intercept and intercept correction coefficient (case where x = constant) using two data points."""
+    """Calculates the slope, intercept and intercept correction coefficient 
+    (case where x = constant) using two data points."""
+
     if (x_1 - x_2) != 0:
         slope = (y_1 - y_2) / (x_1 - x_2)
         corr_intercept = 1
@@ -25,7 +27,9 @@ def distance_on_curve(slope, intercept, perim_depth):
 
 
 def ajust_distance_on_curve(x_1, x_2, y_1, y_2, dist_on_curve):
-    """Adjust calculated projection of the perimeter depth on the curve based on the position of two specified data points."""
+    """Adjust calculated projection of the perimeter depth on the curve based on the 
+    position of two specified data points."""
+
     if x_1 == x_2 and y_1 > y_2:
         adj_dist_on_curve = - dist_on_curve
     elif x_1 == x_2 and y_1 < y_2:
@@ -58,7 +62,8 @@ def intersection_coordinates(corr_intercept_1, corr_intercept_2,
 
 
 def core_perim_zone_coordinates(floor_plan, perim_depth):
-    """Returns a dictionary with the coordinates of the core/perimeter zones and a list of tuples containing the coordinates for the core zone."""
+    """Returns a dictionary with the coordinates of the core/perimeter zones and
+    a list of tuples containing the coordinates for the core zone."""
 
     floor_plan_it = itertools.cycle(floor_plan)
 
