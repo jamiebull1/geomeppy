@@ -14,7 +14,7 @@ from .io.obj import export_to_obj
 from .patches import PatchedIDF
 from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
 from .view_geometry import view_idf
-from .utilities import core_perim_zone_coordinates
+from .geom.core_perim import core_perim_zone_coordinates
 
 
 def new_idf(fname):
@@ -219,8 +219,8 @@ class IDF(PatchedIDF):
         :param num_stories: The total number of stories including basement stories. Default : 1.
         :param below_ground_stories: The number of stories below ground. Default : 0.
         :param below_ground_storey_height: The height of each basement storey. Default : 2.5.
-		:param zoning: The zoning pattern of the block. Default : by_storey
-		:param perim_depth: Depth of the perimeter zones if the core/perim zoning pattern is requested. Default : 3.0.		
+        :param zoning: The zoning pattern of the block. Default : by_storey
+        :param perim_depth: Depth of the perimeter zones if the core/perim zoning pattern is requested. Default : 3.0.
 
         """
         block = Block(*args, **kwargs)
@@ -228,16 +228,16 @@ class IDF(PatchedIDF):
             zones = [Zone('Block %s Storey %i' %
                           (block.name, storey['storey_no']), storey)
                      for storey in block.stories]
-            for zone in zones:
-                self.add_zone(zone)		
         elif block.zoning == 'core/perim':
-            for name, coords in core_perim_zone_coordinates(block.coordinates,block.perim_depth)[0].iteritems():			
-				block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)			
-				zones = [Zone('Block %s Storey %i' % (block.name, storey['storey_no']), storey) for storey in block.stories]
-				for zone in zones:	
-				    self.add_zone(zone)
+            zones = []
+            for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
+                block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
+                zones += [Zone('Block %s Storey %i' % (block.name, storey['storey_no']), storey) for storey in block.stories]
         else:
-            raise ValueError('%s is not a valid zoning rule' % zoning)
+            raise ValueError('%s is not a valid zoning rule' % block.zoning)
+
+        for zone in zones:
+            self.add_zone(zone)
 
     def add_shading_block(self, *args, **kwargs):
         # type: (*Any, **Any) -> None
