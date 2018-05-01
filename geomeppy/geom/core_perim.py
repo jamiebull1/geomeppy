@@ -4,7 +4,7 @@ import itertools
 
 
 def slope_intercept(x_1, x_2, y_1, y_2):
-    """Calculates the slope, intercept and intercept correction coefficient 
+    """Calculates the slope, intercept and intercept correction coefficient
     (case where x = constant) using two data points."""
 
     if (x_1 - x_2) != 0:
@@ -27,7 +27,7 @@ def distance_on_curve(slope, intercept, perim_depth):
 
 
 def ajust_distance_on_curve(x_1, x_2, y_1, y_2, dist_on_curve):
-    """Adjust calculated projection of the perimeter depth on the curve based on the 
+    """Adjust calculated projection of the perimeter depth on the curve based on the
     position of two specified data points."""
 
     if x_1 == x_2 and y_1 > y_2:
