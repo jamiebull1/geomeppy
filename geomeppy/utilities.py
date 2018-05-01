@@ -3,6 +3,7 @@ from typing import Any  # noqa
 
 from six.moves import zip
 
+
 def almostequal(first, second, places=7):
     # type: (Any, Any, int) -> bool
     """Tests a range of types for near equality."""

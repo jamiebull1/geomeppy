@@ -34,8 +34,8 @@ class Block(object):
                  num_stories=1,  # type: int
                  below_ground_stories=0,  # type: int
                  below_ground_storey_height=2.5,  # type: float
-				 zoning='by_storey',  # type: str
-				 perim_depth=3.0  # type: float
+                 zoning='by_storey',  # type: str
+                 perim_depth=3.0  # type: float
                  ):
         # type: (...) -> None
         """Represents a single block for translation into an IDF.
@@ -46,8 +46,8 @@ class Block(object):
         :param num_stories: The total number of stories including basement stories. Default : 1.
         :param below_ground_stories: The number of stories below ground. Default : 0.
         :param below_ground_storey_height: The height of each basement storey. Default : 2.5.
-		:param zoning: The zoning pattern of the block. Default : by_storey
-		:param perim_depth: Depth of the perimeter zones if the core/perim zoning pattern is requested. Default : 3.0.
+        :param zoning: The zoning pattern of the block. Default : by_storey
+        :param perim_depth: Depth of the perimeter zones if the core/perim zoning pattern is requested. Default : 3.0.
 
         """
         self.name = name
