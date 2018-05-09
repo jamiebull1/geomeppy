@@ -49,7 +49,7 @@ pandocfilters==1.4.2
 pathlib2==2.3.2
 pexpect==4.5.0
 pickleshare==0.7.4
-pkginfo==1.4.1
+pkginfo==1.4.2
 pluggy==0.6.0
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
