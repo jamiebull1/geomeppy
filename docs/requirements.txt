@@ -20,7 +20,7 @@ docutils==0.14
 entrypoints==0.2.3
 enum34==1.1.6
 eppy==0.5.46
-Fiona==1.7.11
+Fiona==1.7.11.post2
 funcsigs==1.0.2
 functools32==3.2.3.post2
 html5lib==1.0.1
