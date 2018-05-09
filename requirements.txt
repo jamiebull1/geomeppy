@@ -5,7 +5,7 @@ decorator==4.2.1
 eppy==0.5.46
 lxml==4.1.1
 matplotlib==2.1.1
-munch==2.2.0
+munch==2.3.2
 mypy==0.560
 numpy==1.14.0
 pluggy==0.6.0
