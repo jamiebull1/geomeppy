@@ -3,7 +3,7 @@ beautifulsoup4==4.6.0
 cycler==0.10.0
 decorator==4.2.1
 eppy==0.5.46
-lxml==4.1.1
+lxml==4.2.1
 matplotlib==2.1.1
 munch==2.2.0
 mypy==0.560
