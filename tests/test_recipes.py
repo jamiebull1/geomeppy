@@ -1,8 +1,4 @@
 """Tests for recipes."""
-from eppy.iddcurrent import iddcurrent
-import pytest
-from six import StringIO
-
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import intersect_idf_surfaces, match_idf_surfaces
 from geomeppy.geom.polygons import Polygon3D
@@ -10,36 +6,6 @@ from geomeppy.geom.vectors import Vector2D, Vector3D
 from geomeppy.recipes import rotate, set_wwr, translate, translate_to_origin
 from geomeppy.utilities import almostequal
 from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces
-
-
-idf_txt = """
-Version, 8.5;
-Building, Building 1, , , , , , , ;
-Zone, z1 Thermal Zone, 0.0, 0.0, 0.0, 0.0, , 1, , , , , , Yes;
-Zone, z2 Thermal Zone, 0.0, 0.0, 0.0, 0.0, , 1, , , , , , Yes;
-BuildingSurface:Detailed, z1_FLOOR, Floor, , z1 Thermal Zone, ground, , NoSun, NoWind, , , 1.0, 2.1, 0.0, 2.0, 2.0, 0.0, 2.0, 1.0, 0.0, 1.0, 1.1, 0.0;
-BuildingSurface:Detailed, z1_ROOF, Roof, , z1 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.0, 1.0, 0.5, 2.0, 2.0, 0.5, 1.0, 2.1, 0.5, 1.0, 1.1, 0.5;
-BuildingSurface:Detailed, z1_WALL_0001, WALL, , z1 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 1.0, 1.1, 0.5, 1.0, 1.1, 0.0, 1.0, 2.1, 0.0, 1.0, 2.1, 0.5;
-BuildingSurface:Detailed, z1_WALL_0002, Wall, , z1 Thermal Zone, Outdoors, , SunExposed, WindExposed, , , 1.0, 2.1, 0.5, 1.0, 2.1, 0.0, 2.0, 2.0, 0.0, 2.0, 2.0, 0.5;
-BuildingSurface:Detailed, z1_WALL_0003, WALL, , z1 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.0, 2.0, 0.5, 2.0, 2.0, 0.0, 2.0, 1.0, 0.0, 2.0, 1.0, 0.5;
-BuildingSurface:Detailed, z1_WALL_0004, WALL, , z1 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.0, 1.0, 0.5, 2.0, 1.0, 0.0, 1.0, 1.1, 0.0, 1.0, 1.1, 0.5;
-BuildingSurface:Detailed, z2_FLOOR, Floor, , z2 Thermal Zone, ground, , NoSun, NoWind, , , 1.5, 3.05, 0.0, 2.5, 2.95, 0.0, 2.5, 1.95, 0.0, 1.5, 2.05, 0.0;
-BuildingSurface:Detailed, z2_ROOF, Roof, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.5, 1.95, 0.5, 2.5, 2.95, 0.5, 1.5, 3.05, 0.5, 1.5, 2.05, 0.5;
-BuildingSurface:Detailed, z2_WALL_0001, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 1.5, 2.05, 0.5, 1.5, 2.05, 0.0, 1.5, 3.05, 0.0, 1.5, 3.05, 0.5;
-BuildingSurface:Detailed, z2_WALL_0002, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 1.5, 3.05, 0.5, 1.5, 3.05, 0.0, 2.5, 2.95, 0.0, 2.5, 2.95, 0.5;
-BuildingSurface:Detailed, z2_WALL_0003, WALL, , z2 Thermal Zone, outdoors, , SunExposed, WindExposed, , , 2.5, 2.95, 0.5, 2.5, 2.95, 0.0, 2.5, 1.95, 0.0, 2.5, 1.95, 0.5;
-BuildingSurface:Detailed, z2_WALL_0004, Wall, , z2 Thermal Zone, Outdoors, , SunExposed, WindExposed, , , 2.5, 1.95, 0.5, 2.5, 1.95, 0.0, 1.5, 2.05, 0.0, 1.5, 2.05, 0.5;
-Shading:Zone:Detailed, z2_SHADE_0003, z2_WALL_0003, , 4, 2.5, 2.95, 0.5, 2.6, 2.95, 0.3, 2.6, 1.95, 0.3, 2.5, 1.95, 0.5;
-"""
-
-@pytest.fixture()
-def base_idf():
-    # type: () -> None
-    iddfhandle = StringIO(iddcurrent.iddtxt)
-    if IDF.getiddname() == None:
-        IDF.setiddname(iddfhandle)
-
-    return IDF(StringIO(idf_txt))
 
 
 class TestTranslate():
@@ -169,42 +135,13 @@ class TestViewGeometry():
         idf.view_model(test=True)
 
 
-@pytest.fixture()
-def new_idf():
-    IDF.iddname == None
-    iddfhandle = StringIO(iddcurrent.iddtxt)
-    IDF.setiddname(iddfhandle, testing=True)
-    idf = IDF()
-    idf.new()
-    return idf
-
-@pytest.fixture()
-def wwr_idf(new_idf):
-    test_walls = [[0,0,0], [0,1,0], [0,1,1], [0,0,1]], [[0,0,0], [1,0,0], [1,0,1], [0,0,1]]
-    for i, coords in enumerate(test_walls, 1):
-        new_idf.newidfobject(
-            'FENESTRATIONSURFACE:DETAILED',
-            Name='window%s' % i,
-            Surface_Type='window',
-            Construction_Name='ExtWindow',
-            Building_Surface_Name='wall%s' % i,
-        )
-        wall = new_idf.newidfobject(
-            'BUILDINGSURFACE:DETAILED',
-            Name='wall%s' % i,
-            Surface_Type='wall',
-            Outside_Boundary_Condition='Outdoors',
-        )
-        wall.setcoords(coords)
-    return new_idf
-
-
 class TestWWR:
 
     def is_expected_wwr(self, idf, wwr):
         windows_area = sum(w.area for w in idf.getsubsurfaces('window'))
         walls_area = sum(w.area for w in idf.getsurfaces('wall'))
-        return almostequal(windows_area, walls_area * wwr, 3)
+        expected_area = walls_area * wwr
+        return almostequal(windows_area, expected_area, 3)
 
     def test_wwr(self, wwr_idf):
         idf = wwr_idf
@@ -264,3 +201,10 @@ class TestWWR:
             pass
         idf.set_wwr(wwr, force=True)
         assert self.is_expected_wwr(idf, wwr)
+
+    def test_wwr_by_orientation(self, wwr_idf):
+        idf = wwr_idf
+        idf.set_wwr(wwr=0.2, orientation='south')  # there is a south-facing wall
+        idf.set_wwr(wwr=0.2, orientation='west')  # there is no west-facing wall
+        expected_wwr = 0.1
+        assert self.is_expected_wwr(idf, expected_wwr), 'WWR not set correctly by orientation'

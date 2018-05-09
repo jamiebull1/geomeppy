@@ -32,7 +32,7 @@ before_script:
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir
-  - py.test -v --cov-config .coveragerc --cov=geomeppy tests
+  - py.test --fixtures -v --cov-config .coveragerc --cov=geomeppy tests
 
 after_success:
   # coverage reporting on CodeCov
