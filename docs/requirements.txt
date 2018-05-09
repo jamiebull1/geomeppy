@@ -63,7 +63,7 @@ pypoly2tri==0.0.3
 pyproj==1.9.5.1
 pytest==3.5.1
 python-dateutil==2.7.2
-pytz==2017.3
+pytz==2018.4
 pyzmq==16.0.3
 qtconsole==4.3.1
 requests==2.18.4
