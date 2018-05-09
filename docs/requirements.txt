@@ -64,7 +64,7 @@ pyproj==1.9.5.1
 pytest==3.5.1
 python-dateutil==2.7.2
 pytz==2018.4
-pyzmq==16.0.3
+pyzmq==17.0.0
 qtconsole==4.3.1
 requests==2.18.4
 requests-toolbelt==0.8.0
