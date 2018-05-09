@@ -1,4 +1,4 @@
-attrs==17.4.0
+attrs==18.1.0
 beautifulsoup4==4.6.0
 cycler==0.10.0
 decorator==4.2.1
