@@ -6,7 +6,7 @@ eppy==0.5.46
 lxml==4.1.1
 matplotlib==2.1.1
 munch==2.2.0
-mypy==0.560
+mypy==0.600
 numpy==1.14.0
 pluggy==0.6.0
 psutil==5.4.3
