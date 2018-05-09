@@ -33,7 +33,7 @@ ipywidgets==7.2.1
 Jinja2==2.10
 jsonschema==2.6.0
 jupyter==1.0.0
-jupyter-client==5.2.1
+jupyter-client==5.2.3
 jupyter-console==5.2.0
 jupyter-core==4.4.0
 lxml==4.1.1
