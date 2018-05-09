@@ -18,7 +18,7 @@ pypoly2tri==0.0.3
 pytest==3.3.2
 python-dateutil==2.6.1
 pytz==2017.3
-Shapely==1.6.2
+Shapely==1.6.4.post1
 six==1.11.0
 tinynumpy==1.2.1
 transforms3d==0.3.1
