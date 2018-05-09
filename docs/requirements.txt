@@ -22,7 +22,6 @@ enum34==1.1.6
 eppy==0.5.46
 Fiona==1.7.11.post2
 funcsigs==1.0.2
-functools32==3.2.3.post2
 html5lib==1.0.1
 idna==2.6
 imagesize==1.0.0
@@ -76,7 +75,6 @@ six==1.11.0
 snowballstemmer==1.2.1
 Sphinx==1.7.4
 sphinxcontrib-websupport==1.0.1
-subprocess32==3.2.7
 terminado==0.8.1
 testpath==0.3.1
 tinynumpy==1.2.1
@@ -85,7 +83,6 @@ tqdm==4.23.3
 traitlets==4.3.2
 transforms3d==0.3.1
 twine==1.11.0
-typing==3.6.4
 urllib3==1.22
 wcwidth==0.1.7
 webencodings==0.5.1
