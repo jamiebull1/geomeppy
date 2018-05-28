@@ -1,7 +1,7 @@
 alabaster==0.7.10
 appnope==0.1.0
 attrs==18.1.0
-Babel==2.5.3
+Babel==2.6.0
 backports-abc==0.5
 backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
