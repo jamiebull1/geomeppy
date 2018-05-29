@@ -14,7 +14,7 @@ click-plugins==1.0.3
 cligj==0.4.0
 configparser==3.5.0
 cycler==0.10.0
-Cython==0.28.2
+Cython==0.28.3
 decorator==4.2.1
 docutils==0.14
 entrypoints==0.2.3
