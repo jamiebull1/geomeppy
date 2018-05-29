@@ -15,7 +15,7 @@ pyclipper==1.1.0
 pydot3k==1.0.17
 pyparsing==2.2.0
 pypoly2tri==0.0.3
-pytest==3.3.2
+pytest==3.6.0
 python-dateutil==2.7.3
 pytz==2017.3
 Shapely==1.6.2
