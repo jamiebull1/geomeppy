@@ -88,12 +88,13 @@ class IDF(PatchedIDF):
         rotate(shadingsurfaces, angle)
         self.translate(anchor)
 
-    def scale(self, factor, anchor=None):
+    def scale(self, factor, anchor=None, axes='xy'):
         # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
         """Scale the IDF by a scaling factor.
 
         :param factor: Factor to scale by.
         :param anchor: Point to scale around. Default is the centre of the the IDF's bounding box.
+        :param axes: Axes to scale on. Default 'xy'.
 
         """
         anchor = anchor or self.centroid
@@ -101,9 +102,9 @@ class IDF(PatchedIDF):
         subsurfaces = self.getsubsurfaces()
         shadingsurfaces = self.getshadingsurfaces()
         self.translate(-anchor)
-        scale(surfaces, factor)
-        scale(subsurfaces, factor)
-        scale(shadingsurfaces, factor)
+        scale(surfaces, factor, axes)
+        scale(subsurfaces, factor, axes)
+        scale(shadingsurfaces, factor, axes)
         self.translate(anchor)
 
     def set_default_constructions(self):
