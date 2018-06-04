@@ -248,7 +248,7 @@ def scale_coords(coords, factor, axes):
 
 
 def rotate(surfaces, angle):
-    # type: (Union[List[EpBunch], Idf_MSequence], Union[int, float]) -> None
+    # type: (Union[List[EpBunch], Idf_MSequence], float) -> None
     """Rotate all surfaces by an angle.
 
     :param surfaces: A list of EpBunch objects or a mutable sequence.
