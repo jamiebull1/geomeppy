@@ -61,7 +61,7 @@ pylru==1.1.0
 pyparsing==2.2.0
 pypoly2tri==0.0.3
 pyproj==1.9.5.1
-pytest==3.6.0
+pytest==3.6.1
 python-dateutil==2.7.3
 pytz==2018.4
 pyzmq==17.0.0
