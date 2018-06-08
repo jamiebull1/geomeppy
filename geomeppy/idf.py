@@ -224,16 +224,20 @@ class IDF(PatchedIDF):
 
         """
         block = Block(*args, **kwargs)
+        zoning = kwargs.get('zoning', 'by_storey')
         if block.zoning == 'by_storey':
             zones = [Zone('Block %s Storey %i' %
                           (block.name, storey['storey_no']), storey)
                      for storey in block.stories]
         elif block.zoning == 'core/perim':
             zones = []
-            for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
-                block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
-                zones += [Zone('Block %s Storey %i' % (block.name, storey['storey_no']),
-                               storey) for storey in block.stories]
+            try:
+                for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
+                    block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
+                    zones += [Zone('Block %s Storey %i' % (block.name, storey['storey_no']),
+                                   storey) for storey in block.stories]
+            except NotImplementedError:
+                raise ValueError("Perimeter depth is too great")
         else:
             raise ValueError('%s is not a valid zoning rule' % block.zoning)
 
