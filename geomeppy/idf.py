@@ -224,7 +224,7 @@ class IDF(PatchedIDF):
 
         """
         block = Block(*args, **kwargs)
-        zoning = kwargs.get('zoning', 'by_storey')
+        block.zoning = kwargs.get('zoning', 'by_storey')
         if block.zoning == 'by_storey':
             zones = [Zone('Block %s Storey %i' %
                           (block.name, storey['storey_no']), storey)
