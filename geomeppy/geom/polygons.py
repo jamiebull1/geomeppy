@@ -108,7 +108,7 @@ class Polygon(Clipper2D, MutableSequence):
     def buffer(self, distance=None, join_style=2):
         s_poly = SPoly(self.vertices)
         core = s_poly.buffer(distance=distance, join_style=join_style)
-        return Polygon2D(core.boundary.coords)		
+        return Polygon2D(core.boundary.coords)
 
     @property
     def centroid(self):
