@@ -36,7 +36,8 @@ def get_perims(footprint, core):
 
 
 def core_perim_zone_coordinates(footprint, perim_depth):
-    """Returns a dictionary with the coordinates of the core/perimeter zones and a list of tuples containing the coordinates for the core zone."""
+    """Returns a dictionary with the coordinates of the core/perimeter zones and 
+    a list of tuples containing the coordinates for the core zone."""
     zones_perim = get_perims(footprint, get_core(footprint, perim_depth))
     core = get_core(footprint, perim_depth)
 
