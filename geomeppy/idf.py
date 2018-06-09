@@ -17,7 +17,7 @@ from .view_geometry import view_idf
 
 
 def new_idf(fname):
-    # type (Optional[str]) -> IDF
+    # type (str) -> IDF
     """Create a new blank IDF.
 
     :param fname: A name for the new IDF.
@@ -71,7 +71,7 @@ class IDF(PatchedIDF):
         translate(shadingsurfaces, vector)
 
     def rotate(self, angle, anchor=None):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
+        # type: (float, Optional[Union[Vector2D, Vector3D]]) -> None
         """Rotate the IDF counterclockwise by the angle given.
 
         :param angle: Angle (in degrees) to rotate by.
@@ -89,7 +89,7 @@ class IDF(PatchedIDF):
         self.translate(anchor)
 
     def scale(self, factor, anchor=None, axes='xy'):
-        # type: (Union[int, float], Optional[Union[Vector2D, Vector3D]]) -> None
+        # type: (float, Optional[Union[Vector2D, Vector3D]], Optional[str]) -> None
         """Scale the IDF by a scaling factor.
 
         :param factor: Factor to scale by.
