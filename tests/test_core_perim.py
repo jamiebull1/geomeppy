@@ -1,3 +1,4 @@
+import pytest
 from geomeppy.geom.core_perim import core_perim_zone_coordinates
 
 footprint_1 = [(-20, 20), (30, -30), (50, 0), (50, 65), (-25, 50)]
@@ -53,10 +54,6 @@ def test_core_perim():
         == expected_footprint_1
     assert core_perim_zone_coordinates(footprint_2, 5)[0] \
         == expected_footprint_2
-    try:
+    with pytest.raises(NotImplementedError) as excinfo:
         core_perim_zone_coordinates(footprint_2, 10)[0]
-        perim_too_deep = False
-    except NotImplementedError:
-        perim_too_deep = True
-    if perim_too_deep is False:
-        raise AssertionError()
+    assert str(excinfo.value) == 'Multi-part geometries do not provide a coordinate sequence'
