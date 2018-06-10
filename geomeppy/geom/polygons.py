@@ -106,7 +106,7 @@ class Polygon(Clipper2D, MutableSequence):
         return invert_align_face(self, bbox)
 
     def buffer(self, distance=None, join_style=2):
-        # type: (Optional[float]), Optional[int]) -> Polygon2D
+        # type: (Optional[float], Optional[int]) -> Polygon2D
         """Returns a representation of all points within a given distance of the polygon.
 
         :param join_style: The styles of joins between offset segments: 1 (round), 2 (mitre), and 3 (bevel).
