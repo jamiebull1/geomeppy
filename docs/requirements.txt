@@ -24,7 +24,7 @@ Fiona==1.7.11.post2
 funcsigs==1.0.2
 functools32==3.2.3.post2
 html5lib==1.0.1
-idna==2.6
+idna==2.7
 imagesize==1.0.0
 ipykernel==4.8.2
 ipython==6.4.0
