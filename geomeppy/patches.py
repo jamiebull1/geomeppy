@@ -35,7 +35,7 @@ class EpBunch(BaseBunch):
 
     def setcoords(self,
                   poly,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
-                  ggr=None  # type: Union[List, None, Idf_MSequence]
+                  ggr=None  # type: Optional[Union[List, None, Idf_MSequence]]
                   ):
         # type: (...) -> None
         """Set the coordinates of a surface.
@@ -63,10 +63,10 @@ def idfreader1(fname,  # type: str
                iddfile,  # type: str
                theidf,  # type: IDF
                conv=True,  # type: Optional[bool]
-               commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
+               commdct=None,  # type: List[List[Dict[str, Any]]]
                block=None  # type: Optional[List]
                ):
-    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List, Eplusdata, List[List[Dict[str, Any]]], Dict, Tuple[int]]
+    # type: (...) -> Tuple[Dict[str, Any], Optional[List[Any]], Any, List[List[Dict[str, Any]]], Any, Any]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -92,7 +92,7 @@ def idfreader1(fname,  # type: str
         convertallfields(data, commdct)
     # fill gaps in idd
     if versiontuple < (8,):
-        skiplist = ["TABLE:MULTIVARIABLELOOKUP"]
+        skiplist = ["TABLE:MULTIVARIABLELOOKUP"]  # type: Optional[List[str]]
     else:
         skiplist = None
     nofirstfields = iddgaps.missingkeys_standard(
@@ -109,7 +109,7 @@ def readdatacommdct1(idfname,   # type: str
                      commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
                      block=None  # type: Optional[List]
                      ):
-    # type: (...) -> Tuple[List, Eplusdata, List[List[Dict[str, Any]]], Dict]
+    # type: (...) -> Tuple[Optional[List[Any]], Any, List[List[Dict[str, Any]]], Any]
     """Read the idf file.
 
     This is patched so that the IDD index is not lost when reading a new IDF without reloading the modeleditor module.
@@ -125,21 +125,21 @@ def readdatacommdct1(idfname,   # type: str
 
     """
     if not commdct:
-        block, commlst, commdct, idd_index = parse_idd.extractidddata(iddfile)
+        block, commlst, updated_commdct, idd_index = parse_idd.extractidddata(iddfile)
         theidd = eplusdata.Idd(block, 2)
     else:
         theidd = eplusdata.Idd(block, 2)
         name2refs = iddindex.makename2refdct(commdct)
         ref2namesdct = iddindex.makeref2namesdct(name2refs)
         idd_index = dict(name2refs=name2refs, ref2names=ref2namesdct)
-        commdct = iddindex.ref2names2commdct(ref2namesdct, commdct)
+        updated_commdct = iddindex.ref2names2commdct(ref2namesdct, commdct)
     data = eplusdata.Eplusdata(theidd, idfname)
-    return block, data, commdct, idd_index
+    return block, data, updated_commdct, idd_index
 
 
 def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
                  data,  # type: Eplusdata
-                 commdct,  # type: Optional[List[List[Dict[str, Any]]]]
+                 commdct,  # type: List[List[Dict[str, Any]]]
                  thisbunch,  # type: EpBunch
                  _idf  # type: IDF
                  ):
@@ -164,7 +164,7 @@ def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
 
 
 def makebunches(data,  # type: Eplusdata
-                commdct,  # type: Optional[List[List[Dict[str, Any]]]]
+                commdct,  # type: List[List[Dict[str, Any]]]
                 theidf  # type: IDF
                 ):
     # type: (...) -> Dict[str, Idf_MSequence]
@@ -190,7 +190,7 @@ def makebunches(data,  # type: Eplusdata
 
 
 def obj2bunch(data,  # type: Eplusdata
-              commdct,  # type: Optional[List[List[Dict[str, Any]]]]
+              commdct,  # type: List[List[Dict[str, Any]]]
               obj  # type: List[str]
               ):
     # type: (...) -> EpBunch
@@ -223,7 +223,7 @@ def makeabunch(commdct,  # type: List[List[Dict[str, Any]]]
 
     """
     objidd = commdct[obj_i]
-    objfields = [comm.get('field') for comm in commdct[obj_i]]
+    objfields = [comm.get('field') for comm in commdct[obj_i]]  # type: List
     objfields[0] = ['key']
     objfields = [field[0] for field in objfields]
     obj_fields = [bunchhelpers.makefieldname(field) for field in objfields]
