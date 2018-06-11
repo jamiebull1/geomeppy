@@ -3,7 +3,7 @@
 These are used to represent points in 2D and 3D, as well as directions for translations.
 """
 
-from typing import Any, Iterable, Iterator, List, Sized, Tuple, Union  # noqa
+from typing import Any, Iterable, Iterator, List, Optional, Sized, Tuple, Union  # noqa
 
 import numpy as np
 from six.moves import zip
@@ -79,7 +79,7 @@ class Vector2D(Sized, Iterable):
         return length
 
     def closest(self, poly):
-        # type: (Polygon3D) -> Union[Vector2D, Vector3D]
+        # type: (Polygon3D) -> Optional[Any]
         """Find the closest vector in a polygon.
 
         :param poly: Polygon or Polygon3D

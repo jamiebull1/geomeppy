@@ -12,34 +12,32 @@ from typing import Optional  # noqa
 from .idf import EpBunch, Idf_MSequence, IDF, new_idf  # noqa
 
 
-def copy_constructions(source_idf, target_idf=None, fname=None):
+def copy_constructions(source_idf, target_idf=None, fname='new.idf'):
     # type: (IDF, Optional[IDF], str) -> IDF
     """Extract construction objects from a source IDF and add them to a target IDF or a new IDF.
 
     :param source_idf: An IDF to source objects from.
     :param target_idf: An optional IDF to add objects to. If none is passed, a new IDF is returned.
-    :param fname: A name for the new IDF created if no target IDF is passed in.
+    :param fname: A name for the new IDF created if no target IDF is passed in. Default: "new.idf".
     :returns: Either the target IDF or a new IDF containing the construction objects.
     """
     group = 'Surface Construction Elements'
-    if not target_idf:
-        target_idf = new_idf(fname)
+    target_idf = target_idf or new_idf(fname)
     idf = copy_group(source_idf, target_idf, group)
     return idf
 
 
-def copy_geometry(source_idf, target_idf=None, fname=None):
+def copy_geometry(source_idf, target_idf=None, fname='new.idf'):
     # type: (IDF, Optional[IDF], str) -> IDF
     """Extract geometry objects from a source IDF and add them to a target IDF or a new IDF..
 
     :param source_idf: An IDF to source objects from.
     :param target_idf: An optional IDF to add objects to. If none is passed, a new IDF is returned.
-    :param fname: A name for the new IDF created if no target IDF is passed in.
+    :param fname: A name for the new IDF created if no target IDF is passed in. Default: "new.idf".
     :returns: Either the target IDF or a new IDF containing the geometry objects.
     """
     group = 'Thermal Zones and Surfaces'
-    if not target_idf:
-        target_idf = new_idf(fname)
+    target_idf = target_idf or new_idf(fname)
     idf = copy_group(source_idf, target_idf, group)
     return idf
 

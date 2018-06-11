@@ -11,7 +11,7 @@ from geomeppy.view_geometry import _get_collections, _get_shading, _get_surfaces
 class TestTranslate():
     
     def test_translate(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surfaces = idf.getsurfaces()
         translate(surfaces, (50, 100))  # move to x + 50, y + 100
@@ -32,7 +32,7 @@ class TestTranslate():
         assert result == expected
 
     def test_translate_to_origin(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surfaces = idf.getsurfaces()
         translate(surfaces, (50000, 10000))  # move to x + 50, y + 100
@@ -48,7 +48,7 @@ class TestTranslate():
         assert min_y == 0
 
     def test_rotate_360(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surface = idf.getsurfaces()[0]
         coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
@@ -59,7 +59,7 @@ class TestTranslate():
         assert almostequal(result, expected)
 
     def test_rotate_idf_360(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf1 = base_idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
@@ -72,14 +72,14 @@ class TestTranslate():
         assert almostequal(shade1, shade2)
 
     def test_centre(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         result = idf.centroid
         expected = Vector2D(1.75, 2.025)
         assert result == expected
 
     def test_scale_idf(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf1 = base_idf
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
@@ -93,7 +93,7 @@ class TestTranslate():
 class TestMatchSurfaces():
 
     def test_set_wwr(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
@@ -110,19 +110,19 @@ class TestMatchSurfaces():
 class TestViewGeometry():
 
     def test_get_surfaces(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surfaces = _get_surfaces(idf)
         assert len(surfaces) == 12
 
     def test_get_shading(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         shading = _get_shading(idf)
         assert len(shading) == 1
 
     def test_get_collections(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         collections = _get_collections(idf)
         assert len(collections) == 5
@@ -130,7 +130,7 @@ class TestViewGeometry():
             assert c
 
     def test_view_model(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         idf.view_model(test=True)
 
