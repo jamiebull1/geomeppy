@@ -73,7 +73,7 @@ def set_default_construction(surface):
         surface.Construction_Name = 'Project Door'
 
 
-def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
+def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map=None):
     # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict]) -> None
     """Set the window to wall ratio on all external walls.
 
@@ -114,7 +114,7 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map={}):
         # remove all subsurfaces
         for ss in wall_subsurfaces:
             idf.removeidfobject(ss)
-        wwr = wwr_map.get(wall.azimuth) or base_wwr
+        wwr = (wwr_map or {}).get(wall.azimuth) or base_wwr
         if not wwr:
             return
         coords = window_vertices_given_wall(wall, wwr)
@@ -213,13 +213,13 @@ def translate_coords(coords,  # type: Union[List[Tuple[float, float, float]], Po
     return [Vector3D(*v) + vector for v in coords]
 
 
-def scale(surfaces, factor, axes='xy'):
-    # type: (Idf_MSequence, float, Optional[str]) -> None
+def scale(surfaces, factor, axes):
+    # type: (Idf_MSequence, float, str) -> None
     """Scale all surfaces by a factor.
 
     :param surfaces: A list of EpBunch objects.
     :param factor: Factor to scale the surfaces by.
-    :param axes: Axes to scale on. Default 'xy'.
+    :param axes: Axes to scale on.
 
     """
     for s in surfaces:
@@ -227,7 +227,7 @@ def scale(surfaces, factor, axes='xy'):
         s.setcoords(new_coords)
 
 
-def scale_coords(coords, factor, axes):
+def scale_coords(coords, factor, axes='xy'):
     # type: (Union[List[Tuple[float, float, float]], Polygon3D], float, str) -> Polygon3D
     """Scale a set of coords by a factor.
 

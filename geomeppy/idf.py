@@ -17,7 +17,7 @@ from .view_geometry import view_idf
 
 
 def new_idf(fname):
-    # type (str) -> IDF
+    # type: (str) -> IDF
     """Create a new blank IDF.
 
     :param fname: A name for the new IDF.
@@ -89,7 +89,7 @@ class IDF(PatchedIDF):
         self.translate(anchor)
 
     def scale(self, factor, anchor=None, axes='xy'):
-        # type: (float, Optional[Union[Vector2D, Vector3D]], Optional[str]) -> None
+        # type: (float, Optional[Union[Vector2D, Vector3D]], str) -> None
         """Scale the IDF by a scaling factor.
 
         :param factor: Factor to scale by.
@@ -264,7 +264,7 @@ class IDF(PatchedIDF):
 
         """
         try:
-            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]  # type: Dict[str, Idf_MSequence]
+            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]  # type: Optional[Dict[str, Idf_MSequence]]
         except IndexError:
             ggr = None
         # add zone object
