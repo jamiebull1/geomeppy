@@ -6,11 +6,16 @@ from eppy.idf_msequence import Idf_MSequence  # noqa
 
 from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.surfaces import (
-    get_adjacencies, getidfplanes, set_coords, set_matched_surfaces, set_unmatched_surface,
+    get_adjacencies,
+    getidfplanes,
+    set_coords,
+    set_matched_surfaces,
+    set_unmatched_surface,
 )
 from geomeppy.utilities import almostequal
 
-if False: from ..idf import IDF  # noqa
+if False:
+    from ..idf import IDF  # noqa
 
 
 def intersect_idf_surfaces(idf):
@@ -21,7 +26,7 @@ def intersect_idf_surfaces(idf):
     """
     surfaces = idf.getsurfaces()
     try:
-        ggr = idf.idfobjects['GLOBALGEOMETRYRULES'][0]
+        ggr = idf.idfobjects["GLOBALGEOMETRYRULES"][0]
     except IndexError:
         ggr = None
     # get all the intersected surfaces

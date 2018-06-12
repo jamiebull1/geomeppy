@@ -12,7 +12,8 @@ from typing import List  # noqa
 
 import pyclipper as pc
 
-if False: from .polygons import Polygon  # noqa
+if False:
+    from .polygons import Polygon  # noqa
 from ..utilities import almostequal
 
 
@@ -30,8 +31,7 @@ class Clipper2D(object):
         clipper = self._prepare_clipper(poly)
         if not clipper:
             return []
-        differences = clipper.Execute(
-            pc.CT_DIFFERENCE, pc.PFT_NONZERO, pc.PFT_NONZERO)
+        differences = clipper.Execute(pc.CT_DIFFERENCE, pc.PFT_NONZERO, pc.PFT_NONZERO)
 
         return self._process(differences)
 
@@ -46,8 +46,7 @@ class Clipper2D(object):
         clipper = self._prepare_clipper(poly)
         if not clipper:
             return []
-        intersections = clipper.Execute(
-            pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
+        intersections = clipper.Execute(pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
 
         return self._process(intersections)
 
@@ -62,8 +61,7 @@ class Clipper2D(object):
         clipper = self._prepare_clipper(poly)
         if not clipper:
             return []
-        unions = clipper.Execute(
-            pc.CT_UNION, pc.PFT_NONZERO, pc.PFT_NONZERO)
+        unions = clipper.Execute(pc.CT_UNION, pc.PFT_NONZERO, pc.PFT_NONZERO)
 
         return self._process(unions)
 

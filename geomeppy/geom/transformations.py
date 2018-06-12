@@ -16,11 +16,13 @@ from transforms3d._gohlketransforms import (
     translation_matrix,
 )
 
-if False: from .polygons import Polygon3D  # noqa
+if False:
+    from .polygons import Polygon3D  # noqa
 from .vectors import Vector2D, Vector3D  # noqa
 
 
 class Transformation(object):
+
     def __init__(self, mat=None):
         # type: (Optional[np.ndarray]) -> None
         if mat is None:
@@ -33,11 +35,11 @@ class Transformation(object):
 
     def __mul__(self, other):
         # type: (Any) -> Union[Transformation, Vector3D]
-        if hasattr(other, 'matrix'):
+        if hasattr(other, "matrix"):
             # matrix by a matrix
             mat = concatenate_matrices(self.matrix, other.matrix)  # type: ignore
             return Transformation(mat)
-        elif hasattr(other, 'x'):
+        elif hasattr(other, "x"):
             # matrix by a vector
             vector = other
             temp = [vector.x, vector.y, vector.z, 1]  # type: ignore
