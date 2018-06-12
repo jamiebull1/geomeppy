@@ -32,6 +32,7 @@ BuildingSurface:Detailed, z2_WALL_0004, Wall, , z2 Thermal Zone, Outdoors, , Sun
 Shading:Zone:Detailed, z2_SHADE_0003, z2_WALL_0003, , 4, 2.5, 2.95, 0.5, 2.6, 2.95, 0.3, 2.6, 1.95, 0.3, 2.5, 1.95, 0.5;
 """
 
+
 @pytest.fixture()
 def base_idf():
     # type: () -> None
@@ -42,8 +43,8 @@ def base_idf():
     return IDF(StringIO(idf_txt))
 
 
-class TestTranslate():
-    
+class TestTranslate:
+
     def test_translate(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
@@ -53,13 +54,13 @@ class TestTranslate():
         expected = [52.0, 52.0, 51.0, 51.0]
         assert result == expected
         translate(surfaces, (-50, -100))  # move back
-        
+
         translate(surfaces, Vector2D(50, 100))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
         expected = [52.0, 52.0, 51.0, 51.0]
         assert result == expected
         translate(surfaces, (-50, -100))  # move back
-        
+
         translate(surfaces, Vector3D(50, 100, 0))  # move to x + 50, y + 100
         result = Polygon3D(surfaces[0].coords).xs
         expected = [52.0, 52.0, 51.0, 51.0]
@@ -85,7 +86,7 @@ class TestTranslate():
         # type: (IDF) -> None
         idf = base_idf
         surface = idf.getsurfaces()[0]
-        coords = [Vector3D(*v) for v in [(0,0,0), (1,0,0), (1,1,0), (0,1,0)]]
+        coords = [Vector3D(*v) for v in [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)]]
         surface.setcoords(coords)
         expected = surface.coords
         rotate([surface], 360)
@@ -98,8 +99,8 @@ class TestTranslate():
         idf2 = IDF()
         idf2.initreadtxt(idf1.idfstr())
         idf1.rotate(360)
-        floor1 = Polygon3D(idf1.getsurfaces('floor')[0].coords).normalize_coords(None)
-        floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
+        floor1 = Polygon3D(idf1.getsurfaces("floor")[0].coords).normalize_coords(None)
+        floor2 = Polygon3D(idf2.getsurfaces("floor")[0].coords).normalize_coords(None)
         assert almostequal(floor1, floor2)
         shade1 = Polygon3D(idf1.getshadingsurfaces()[0].coords).normalize_coords(None)
         shade2 = Polygon3D(idf1.getshadingsurfaces()[0].coords).normalize_coords(None)
@@ -119,12 +120,12 @@ class TestTranslate():
         idf2.initreadtxt(idf1.idfstr())
         idf1.scale(10)
         idf1.scale(0.1)
-        floor1 = Polygon3D(idf1.getsurfaces('floor')[0].coords).normalize_coords(None)
-        floor2 = Polygon3D(idf2.getsurfaces('floor')[0].coords).normalize_coords(None)
+        floor1 = Polygon3D(idf1.getsurfaces("floor")[0].coords).normalize_coords(None)
+        floor2 = Polygon3D(idf2.getsurfaces("floor")[0].coords).normalize_coords(None)
         assert almostequal(floor1, floor2)
 
 
-class TestMatchSurfaces():
+class TestMatchSurfaces:
 
     def test_set_wwr(self, base_idf):
         # type: (IDF) -> None
@@ -133,15 +134,14 @@ class TestMatchSurfaces():
         match_idf_surfaces(idf)
         wwr = 0.25
         set_wwr(idf, wwr)
-        windows = idf.idfobjects['FENESTRATIONSURFACE:DETAILED']
+        windows = idf.idfobjects["FENESTRATIONSURFACE:DETAILED"]
         assert len(windows) == 8
         for window in windows:
-            wall = idf.getobject('BUILDINGSURFACE:DETAILED',
-                                 window.Building_Surface_Name)
+            wall = idf.getobject("BUILDINGSURFACE:DETAILED", window.Building_Surface_Name)
             assert almostequal(window.area, wall.area * wwr, 3)
 
 
-class TestViewGeometry():
+class TestViewGeometry:
 
     def test_get_surfaces(self, base_idf):
         # type: (IDF) -> None
@@ -178,22 +178,20 @@ def new_idf():
     idf.new()
     return idf
 
+
 @pytest.fixture()
 def wwr_idf(new_idf):
-    test_walls = [[0,0,0], [0,1,0], [0,1,1], [0,0,1]], [[0,0,0], [1,0,0], [1,0,1], [0,0,1]]
+    test_walls = [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]], [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]]
     for i, coords in enumerate(test_walls, 1):
         new_idf.newidfobject(
-            'FENESTRATIONSURFACE:DETAILED',
-            Name='window%s' % i,
-            Surface_Type='window',
-            Construction_Name='ExtWindow',
-            Building_Surface_Name='wall%s' % i,
+            "FENESTRATIONSURFACE:DETAILED",
+            Name="window%s" % i,
+            Surface_Type="window",
+            Construction_Name="ExtWindow",
+            Building_Surface_Name="wall%s" % i,
         )
         wall = new_idf.newidfobject(
-            'BUILDINGSURFACE:DETAILED',
-            Name='wall%s' % i,
-            Surface_Type='wall',
-            Outside_Boundary_Condition='Outdoors',
+            "BUILDINGSURFACE:DETAILED", Name="wall%s" % i, Surface_Type="wall", Outside_Boundary_Condition="Outdoors"
         )
         wall.setcoords(coords)
     return new_idf
@@ -202,64 +200,59 @@ def wwr_idf(new_idf):
 class TestWWR:
 
     def is_expected_wwr(self, idf, wwr):
-        windows_area = sum(w.area for w in idf.getsubsurfaces('window'))
-        walls_area = sum(w.area for w in idf.getsurfaces('wall'))
+        windows_area = sum(w.area for w in idf.getsubsurfaces("window"))
+        walls_area = sum(w.area for w in idf.getsurfaces("wall"))
         return almostequal(windows_area, walls_area * wwr, 3)
 
     def test_wwr(self, wwr_idf):
         idf = wwr_idf
         wwr = 0.2
         idf.set_wwr(wwr)
-        assert self.is_expected_wwr(idf, wwr), 'Not all walls have the expected WWR set'
+        assert self.is_expected_wwr(idf, wwr), "Not all walls have the expected WWR set"
 
     def test_wwr_map(self, wwr_idf):
         idf = wwr_idf
         expected_wwr = 0.2
         idf.set_wwr(wwr=0.99, wwr_map={90.0: 0.1, 180: 0.3})
-        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
+        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
 
     def test_wwr_zero(self, wwr_idf):
         idf = wwr_idf
         idf.set_wwr(wwr=0, wwr_map={90.0: 0.1})
         expected_wwr = 0.05
-        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
+        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
 
     def test_wwr_none(self, wwr_idf):
         idf = wwr_idf
         idf.set_wwr(wwr=None, wwr_map={90.0: 0.3})
         expected_wwr = 0.15
-        assert self.is_expected_wwr(idf, expected_wwr), 'Not all walls have the expected WWR set'
+        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
 
     def test_wwr_two_window_constructions(self, wwr_idf):
         idf = wwr_idf
         idf.newidfobject(
-            'FENESTRATIONSURFACE:DETAILED',
-            Name='window2',
-            Surface_Type='window',
-            Construction_Name='ExtWindow2',
-            Building_Surface_Name='wall1',
+            "FENESTRATIONSURFACE:DETAILED",
+            Name="window2",
+            Surface_Type="window",
+            Construction_Name="ExtWindow2",
+            Building_Surface_Name="wall1",
         )
         wwr = 0.2
         try:
             idf.set_wwr(wwr)
-            assert False, 'Should have raised an error since windows with more than one construction are present'
+            assert False, "Should have raised an error since windows with more than one construction are present"
         except ValueError:
             pass
-        idf.set_wwr(wwr, construction='ExtWindow')
+        idf.set_wwr(wwr, construction="ExtWindow")
         assert self.is_expected_wwr(idf, wwr)
 
     def test_wwr_mixed_subsurfaces(self, wwr_idf):
         idf = wwr_idf
-        idf.newidfobject(
-            'DOOR',
-            Name='door1',
-            Construction_Name='ExtDoor',
-            Building_Surface_Name='wall1',
-        )
+        idf.newidfobject("DOOR", Name="door1", Construction_Name="ExtDoor", Building_Surface_Name="wall1")
         wwr = 0.2
         try:
             idf.set_wwr(wwr)
-            assert False, 'Should have raised an error since not all subsurfaces are windows'
+            assert False, "Should have raised an error since not all subsurfaces are windows"
         except ValueError:
             pass
         idf.set_wwr(wwr, force=True)

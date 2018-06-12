@@ -13,14 +13,8 @@ def get_perims(footprint, core):
     perims = []
     poly = Polygon2D(footprint)
     for edge in poly.edges:
-        c1 = sorted(
-            product([edge.p1] * len(core), core),
-            key=lambda x: x[0].relative_distance(x[1])
-        )[0][1]
-        c2 = sorted(
-            product([edge.p2] * len(core), core),
-            key=lambda x: x[0].relative_distance(x[1])
-        )[0][1]
+        c1 = sorted(product([edge.p1] * len(core), core), key=lambda x: x[0].relative_distance(x[1]))[0][1]
+        c2 = sorted(product([edge.p2] * len(core), core), key=lambda x: x[0].relative_distance(x[1]))[0][1]
         perims.append(Polygon2D([c1, edge.p1, edge.p2, c2]))
     return perims
 

@@ -42,7 +42,7 @@ class Polygon(Clipper2D, MutableSequence):
     def __repr__(self):
         # type: () -> str
         class_name = type(self).__name__
-        return '{}({!r})'.format(class_name, self.vertices)
+        return "{}({!r})".format(class_name, self.vertices)
 
     def __len__(self):
         # type: () -> int
@@ -58,11 +58,9 @@ class Polygon(Clipper2D, MutableSequence):
     def __setitem__(self, key, value):
         self.vertices[key] = value
 
-    def __add__(self,
-                other  # type: Polygon
-                ):
+    def __add__(self, other):  # type: Polygon
         # type: (...) -> Union[None, Polygon]
-        if len(self) == len(other) and hasattr(other[0], '__len__'):
+        if len(self) == len(other) and hasattr(other[0], "__len__"):
             # add together two equal polygons
             vertices = [v1 + v2 for v1, v2 in zip(self, other)]
         elif len(self[0]) == len(other):
@@ -73,7 +71,7 @@ class Polygon(Clipper2D, MutableSequence):
         return self.__class__(vertices)
 
     def __sub__(self, other):
-        if len(self) == len(other) and hasattr(other[0], '__len__'):
+        if len(self) == len(other) and hasattr(other[0], "__len__"):
             # subtract two equal polygons
             vertices = [v1 - v2 for v1, v2 in zip(self, other)]
         elif len(self[0]) == len(other):
@@ -96,10 +94,8 @@ class Polygon(Clipper2D, MutableSequence):
         # type: () -> Polygon
         aligned = align_face(self)
         top_left = Vector3D(min(aligned.xs), max(aligned.ys), max(aligned.zs))
-        bottom_left = Vector3D(
-            min(aligned.xs), min(aligned.ys), min(aligned.zs))
-        bottom_right = Vector3D(
-            max(aligned.xs), min(aligned.ys), min(aligned.zs))
+        bottom_left = Vector3D(min(aligned.xs), min(aligned.ys), min(aligned.zs))
+        bottom_right = Vector3D(max(aligned.xs), min(aligned.ys), min(aligned.zs))
         top_right = Vector3D(max(aligned.xs), max(aligned.ys), max(aligned.zs))
 
         bbox = Polygon3D([top_left, bottom_left, bottom_right, top_right])
@@ -120,19 +116,14 @@ class Polygon(Clipper2D, MutableSequence):
     def centroid(self):
         # type: () -> Vector2D
         """The centroid of a polygon."""
-        return self.vector_class(
-            sum(self.xs) / len(self),
-            sum(self.ys) / len(self),
-            sum(self.zs) / len(self),
-            )
+        return self.vector_class(sum(self.xs) / len(self), sum(self.ys) / len(self), sum(self.zs) / len(self))
 
     @property
     def edges(self):
         # type: () -> List[Segment]
         """A list of edges represented as Segment objects."""
         vertices = self.vertices
-        edges = [Segment(vertices[i], vertices[(i + 1) % len(self)])
-                 for i in range(len(self))]
+        edges = [Segment(vertices[i], vertices[(i + 1) % len(self)]) for i in range(len(self))]
         return edges
 
     def invert_orientation(self):
@@ -249,7 +240,7 @@ class Polygon3D(Clipper3D, Polygon):
         if not almostequal(self.distance, other.distance):
             return False
         # if they are in the same plane, check they completely overlap in 2D
-        return (self.project_to_2D() == other.project_to_2D())
+        return self.project_to_2D() == other.project_to_2D()
 
     @property
     def zs(self):
@@ -342,14 +333,14 @@ class Polygon3D(Clipper3D, Polygon):
         d1 = self.distance
         d2 = other.distance
 
-        if (almostequal(n1, n2) and almostequal(d1, d2)):
+        if almostequal(n1, n2) and almostequal(d1, d2):
             return True
-        elif (almostequal(n1, -n2) and almostequal(d1, -d2)):
+        elif almostequal(n1, -n2) and almostequal(d1, -d2):
             return True
         else:
             return False
 
-    def outside_point(self, entry_direction='counterclockwise'):
+    def outside_point(self, entry_direction="counterclockwise"):
         # type: (str) -> Vector3D
         """Return a point outside the zone to which the surface belongs.
 
@@ -361,13 +352,12 @@ class Polygon3D(Clipper3D, Polygon):
 
         """
         entry_direction = entry_direction.lower()
-        if entry_direction == 'clockwise':
+        if entry_direction == "clockwise":
             inside = self.vertices[0] - self.normal_vector
-        elif entry_direction == 'counterclockwise':
+        elif entry_direction == "counterclockwise":
             inside = self.vertices[0] + self.normal_vector
         else:
-            raise ValueError("invalid value for entry_direction '%s'" %
-                             entry_direction)
+            raise ValueError("invalid value for entry_direction '%s'" % entry_direction)
         return inside
 
     def order_points(self, starting_position):
@@ -378,20 +368,18 @@ class Polygon3D(Clipper3D, Polygon):
         :returns: The reordered polygon.
 
         """
-        if starting_position == 'upperleftcorner':
+        if starting_position == "upperleftcorner":
             bbox_corner = self.bounding_box[0]
-        elif starting_position == 'lowerleftcorner':
+        elif starting_position == "lowerleftcorner":
             bbox_corner = self.bounding_box[1]
-        elif starting_position == 'lowerrightcorner':
+        elif starting_position == "lowerrightcorner":
             bbox_corner = self.bounding_box[2]
-        elif starting_position == 'upperrightcorner':
+        elif starting_position == "upperrightcorner":
             bbox_corner = self.bounding_box[3]
         else:
-            raise ValueError(
-                '%s is not a valid starting position' % starting_position)
+            raise ValueError("%s is not a valid starting position" % starting_position)
         start_index = self.index(bbox_corner.closest(self))
-        new_vertices = [self[(start_index + i) % len(self)]
-                        for i in range(len(self))]
+        new_vertices = [self[(start_index + i) % len(self)] for i in range(len(self))]
 
         return Polygon3D(new_vertices)
 
@@ -422,7 +410,7 @@ class Polygon3D(Clipper3D, Polygon):
         try:
             entry_direction = ggr.Vertex_Entry_Direction
         except AttributeError:
-            entry_direction = 'counterclockwise'
+            entry_direction = "counterclockwise"
         outside_point = self.outside_point(entry_direction)
         return normalize_coords(self, outside_point, ggr)
 
@@ -445,15 +433,16 @@ class Polygon3D(Clipper3D, Polygon):
                 interior = Polygon3D(inner_ring.coords)
                 # find the nearest points on the exterior and interior
                 links = list(product(interior, exterior))
-                links = sorted(
-                    links, key=lambda x: x[0].relative_distance(x[1]))
+                links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
                 on_interior = links[0][0]
                 on_exterior = links[0][1]
                 # join them up
-                exterior = Polygon3D(exterior[exterior.index(
-                    on_exterior):] + exterior[:exterior.index(on_exterior) + 1])
-                interior = Polygon3D(interior[interior.index(
-                    on_interior):] + interior[:interior.index(on_interior) + 1])
+                exterior = Polygon3D(
+                    exterior[exterior.index(on_exterior) :] + exterior[: exterior.index(on_exterior) + 1]
+                )
+                interior = Polygon3D(
+                    interior[interior.index(on_interior) :] + interior[: interior.index(on_interior) + 1]
+                )
                 exterior = Polygon3D(exterior[:] + interior[:])
 
         return exterior
@@ -480,9 +469,8 @@ def break_polygons(poly, hole):
     first_on_hole = links[1][1]
     last_on_hole = links[0][1]
 
-    new_poly = (
-        section(first_on_poly, last_on_poly, poly[:] + poly[:]) +
-        section(first_on_hole, last_on_hole, reversed(hole[:] + hole[:]))
+    new_poly = section(first_on_poly, last_on_poly, poly[:] + poly[:]) + section(
+        first_on_hole, last_on_hole, reversed(hole[:] + hole[:])
     )
 
     new_poly = Polygon3D(new_poly)
@@ -520,11 +508,7 @@ def project(pt, proj_axis):
     return tuple(c for i, c in enumerate(pt) if i != proj_axis)
 
 
-def project_inv(pt,  # type: np.ndarray
-                proj_axis,  # type: int
-                a,  # type: np.float64
-                v  # type: Vector3D
-                ):
+def project_inv(pt, proj_axis, a, v):  # type: np.ndarray  # type: int  # type: np.float64  # type: Vector3D
     # type: (...) -> Any
     """Returns the vector w in the surface's plane such that project(w) equals x.
 
@@ -560,11 +544,7 @@ def project_to_2D(vertices, proj_axis):
     return points
 
 
-def project_to_3D(vertices,  # type: np.ndarray
-                  proj_axis,  # type: int
-                  a,  # type: np.float64
-                  v  # type: Vector3D
-                  ):
+def project_to_3D(vertices, proj_axis, a, v):  # type: np.ndarray  # type: int  # type: np.float64  # type: Vector3D
     # type: (...) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
 
@@ -578,10 +558,9 @@ def project_to_3D(vertices,  # type: np.ndarray
     return [project_inv(pt, proj_axis, a, v) for pt in vertices]
 
 
-def normalize_coords(poly,  # type: Polygon3D
-                     outside_pt,  # type: Vector3D
-                     ggr=None  # type: Union[List, None, Idf_MSequence]
-                     ):
+def normalize_coords(
+    poly, outside_pt, ggr=None  # type: Polygon3D  # type: Vector3D  # type: Union[List, None, Idf_MSequence]
+):
     # type: (...) -> Polygon3D
     """Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).
 
@@ -609,13 +588,13 @@ def set_entry_direction(poly, outside_pt, ggr=None):
 
     """
     if not ggr:
-        entry_direction = 'counterclockwise'  # EnergyPlus default
+        entry_direction = "counterclockwise"  # EnergyPlus default
     else:
         entry_direction = ggr.Vertex_Entry_Direction.lower()
-    if entry_direction == 'counterclockwise':
+    if entry_direction == "counterclockwise":
         if poly.is_clockwise(outside_pt):
             poly = poly.invert_orientation()
-    elif entry_direction == 'clockwise':
+    elif entry_direction == "clockwise":
         if not poly.is_clockwise(outside_pt):
             poly = poly.invert_orientation()
     return poly
@@ -624,7 +603,7 @@ def set_entry_direction(poly, outside_pt, ggr=None):
 def set_starting_position(poly, ggr=None):
     """Check and set starting position."""
     if not ggr:
-        starting_position = 'upperleftcorner'  # EnergyPlus default
+        starting_position = "upperleftcorner"  # EnergyPlus default
     else:
         starting_position = ggr.Starting_Vertex_Position.lower()
     poly = poly.order_points(starting_position)
@@ -692,11 +671,7 @@ def is_hole(surface, possible_hole):
     """
     if surface.area < possible_hole.area:
         return False
-    collinear_edges = (
-        edges[0]._is_collinear(
-            edges[1]) for edges in product(
-            surface.edges,
-            possible_hole.edges))
+    collinear_edges = (edges[0]._is_collinear(edges[1]) for edges in product(surface.edges, possible_hole.edges))
     return not any(collinear_edges)
 
 
@@ -707,22 +682,16 @@ def bounding_box(polygons):
     :return: A 2D polygon.
 
     """
-    top_left = (
-        min(min(c[0] for c in f.coords) for f in polygons),
-        max(max(c[1] for c in f.coords) for f in polygons)
-    )
+    top_left = (min(min(c[0] for c in f.coords) for f in polygons), max(max(c[1] for c in f.coords) for f in polygons))
     bottom_left = (
         min(min(c[0] for c in f.coords) for f in polygons),
-        min(min(c[1] for c in f.coords) for f in polygons)
+        min(min(c[1] for c in f.coords) for f in polygons),
     )
     bottom_right = (
         max(max(c[0] for c in f.coords) for f in polygons),
-        min(min(c[1] for c in f.coords) for f in polygons)
+        min(min(c[1] for c in f.coords) for f in polygons),
     )
-    top_right = (
-        max(max(c[0] for c in f.coords) for f in polygons),
-        max(max(c[1] for c in f.coords) for f in polygons)
-    )
+    top_right = (max(max(c[0] for c in f.coords) for f in polygons), max(max(c[1] for c in f.coords) for f in polygons))
     return Polygon2D([top_left, bottom_left, bottom_right, top_right])
 
 

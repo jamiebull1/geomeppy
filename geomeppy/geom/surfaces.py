@@ -13,10 +13,11 @@ from .vectors import Vector2D, Vector3D  # noqa
 from ..utilities import almostequal
 
 
-def set_coords(surface,  # type: EpBunch
-               coords,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
-               ggr  # type: Union[List, None, Idf_MSequence]
-               ):
+def set_coords(
+    surface,  # type: EpBunch
+    coords,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
+    ggr,  # type: Union[List, None, Idf_MSequence]
+):
     # type: (...) -> None
     """Update the coordinates of a surface.
 
@@ -29,11 +30,11 @@ def set_coords(surface,  # type: EpBunch
     coords = [i for vertex in poly for i in vertex]
     if len(coords) > 120:
         warnings.warn(
-            'To create surfaces with >120 vertices, ensure you have customised your IDD before running EnergyPlus. '
-            'https://unmethours.com/question/9343/energy-idf-parsing-error/?answer=9344#post-id-9344'
+            "To create surfaces with >120 vertices, ensure you have customised your IDD before running EnergyPlus. "
+            "https://unmethours.com/question/9343/energy-idf-parsing-error/?answer=9344#post-id-9344"
         )
     # find the vertex fields
-    n_vertices_index = surface.objls.index('Number_of_Vertices')
+    n_vertices_index = surface.objls.index("Number_of_Vertices")
     first_x = n_vertices_index + 1  # X of first coordinate
     surface.obj = surface.obj[:first_x]
     # set the vertex field values
@@ -48,9 +49,9 @@ def set_matched_surfaces(surface, matched):
     :param matched: The second surface.
     """
     for s in [surface, matched]:
-        s.Outside_Boundary_Condition = 'surface'
-        s.Sun_Exposure = 'NoSun'
-        s.Wind_Exposure = 'NoWind'
+        s.Outside_Boundary_Condition = "surface"
+        s.Sun_Exposure = "NoSun"
+        s.Wind_Exposure = "NoWind"
     surface.Outside_Boundary_Condition_Object = matched.Name
     matched.Outside_Boundary_Condition_Object = surface.Name
 
@@ -62,23 +63,23 @@ def set_unmatched_surface(surface, vector):
     :param surface: The surface.
     :param vector: The surface normal vector.
     """
-    surface.View_Factor_to_Ground = 'autocalculate'
+    surface.View_Factor_to_Ground = "autocalculate"
     poly = Polygon3D(surface.coords)
     if min(poly.zs) < 0 or all(z == 0 for z in poly.zs):
         # below ground or ground-adjacent surfaces
-        surface.Outside_Boundary_Condition_Object = ''
-        surface.Outside_Boundary_Condition = 'ground'
-        surface.Sun_Exposure = 'NoSun'
-        surface.Wind_Exposure = 'NoWind'
+        surface.Outside_Boundary_Condition_Object = ""
+        surface.Outside_Boundary_Condition = "ground"
+        surface.Sun_Exposure = "NoSun"
+        surface.Wind_Exposure = "NoWind"
     else:
-        surface.Outside_Boundary_Condition = 'outdoors'
-        surface.Outside_Boundary_Condition_Object = ''
-        surface.Wind_Exposure = 'WindExposed'
+        surface.Outside_Boundary_Condition = "outdoors"
+        surface.Outside_Boundary_Condition_Object = ""
+        surface.Wind_Exposure = "WindExposed"
         if almostequal(vector, (0, 0, -1)):
             # downward facing surfaces
-            surface.Sun_Exposure = 'NoSun'
+            surface.Sun_Exposure = "NoSun"
         else:
-            surface.Sun_Exposure = 'SunExposed'  # other external surfaces
+            surface.Sun_Exposure = "SunExposed"  # other external surfaces
 
 
 def getidfplanes(surfaces):
@@ -95,11 +96,8 @@ def getidfplanes(surfaces):
     for s in surfaces:
         poly = Polygon3D(s.coords)
         rounded_distance = round(poly.distance, 8)
-        rounded_normal_vector = Vector3D(*[round(axis, 8)
-                                           for axis in poly.normal_vector])
-        planes.setdefault(rounded_distance,
-                          {}).setdefault(rounded_normal_vector,
-                                         []).append(s)
+        rounded_normal_vector = Vector3D(*[round(axis, 8) for axis in poly.normal_vector])
+        planes.setdefault(rounded_distance, {}).setdefault(rounded_normal_vector, []).append(s)
     return planes
 
 
@@ -141,10 +139,8 @@ def populate_adjacencies(adjacencies, s1, s2):
     intersection = poly1.intersect(poly2)
     if intersection:
         new_surfaces = intersect(poly1, poly2)
-        new_s1 = [s for s in new_surfaces
-                  if almostequal(s.normal_vector, poly1.normal_vector, 4)]
-        new_s2 = [s for s in new_surfaces
-                  if almostequal(s.normal_vector, poly2.normal_vector, 4)]
+        new_s1 = [s for s in new_surfaces if almostequal(s.normal_vector, poly1.normal_vector, 4)]
+        new_s2 = [s for s in new_surfaces if almostequal(s.normal_vector, poly2.normal_vector, 4)]
         adjacencies[(s1.key, s1.Name)] += new_s1
         adjacencies[(s2.key, s2.Name)] += new_s2
     return adjacencies

@@ -39,4 +39,4 @@ def base_idf():
 
 
 def test_export_to_obj(base_idf):
-    export_to_obj(base_idf, 'test.obj')
+    export_to_obj(base_idf, "test.obj")

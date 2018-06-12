@@ -11,6 +11,7 @@ Zone, z1 Thermal Zone, 0.0, 0.0, 0.0, 0.0, , 1, , , , , , Yes;
 Material, Spam, Rough, 0.1, 1, 1000, 1000, 0.9, 0.9, 0.9;
 """
 
+
 @pytest.fixture()
 def base_idf():
     # type: () -> None
@@ -23,11 +24,11 @@ def base_idf():
 
 def test_copy_geometry(base_idf):
     idf = copy_geometry(base_idf)
-    assert idf.getobject('ZONE', 'z1 Thermal Zone')
-    assert not idf.getobject('MATERIAL', 'Spam')
+    assert idf.getobject("ZONE", "z1 Thermal Zone")
+    assert not idf.getobject("MATERIAL", "Spam")
 
 
 def test_copy_constructions(base_idf):
     idf = copy_constructions(base_idf)
-    assert not idf.getobject('ZONE', 'z1 Thermal Zone')
-    assert idf.getobject('MATERIAL', 'Spam')
+    assert not idf.getobject("ZONE", "z1 Thermal Zone")
+    assert idf.getobject("MATERIAL", "Spam")

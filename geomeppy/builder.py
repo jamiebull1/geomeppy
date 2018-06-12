@@ -20,23 +20,25 @@ class Zone(object):
 
         """
         self.name = name
-        self.walls = [s for s in surfaces['walls'] if s.area > 0]
-        self.floors = surfaces['floors']
-        self.roofs = surfaces['roofs']
-        self.ceilings = surfaces['ceilings']
+        self.walls = [s for s in surfaces["walls"] if s.area > 0]
+        self.floors = surfaces["floors"]
+        self.roofs = surfaces["roofs"]
+        self.ceilings = surfaces["ceilings"]
 
 
 class Block(object):
-    def __init__(self,
-                 name,  # type: str
-                 coordinates,  # type: Union[List[Tuple[float, float]], List[Tuple[int, int]]]
-                 height,  # type: float
-                 num_stories=1,  # type: int
-                 below_ground_stories=0,  # type: int
-                 below_ground_storey_height=2.5,  # type: float
-                 zoning='by_storey',  # type: str
-                 perim_depth=3.0,  # type: float
-                 ):
+
+    def __init__(
+        self,
+        name,  # type: str
+        coordinates,  # type: Union[List[Tuple[float, float]], List[Tuple[int, int]]]
+        height,  # type: float
+        num_stories=1,  # type: int
+        below_ground_stories=0,  # type: int
+        below_ground_storey_height=2.5,  # type: float
+        zoning="by_storey",  # type: str
+        perim_depth=3.0,  # type: float
+    ):
         # type: (...) -> None
         """Represents a single block for translation into an IDF.
 
@@ -81,11 +83,8 @@ class Block(object):
             floor_no = -self.num_below_ground_stories
         else:
             floor_no = 0
-        for floor, ceiling, wall, roof in zip(
-                self.floors, self.ceilings, self.walls, self.roofs):
-            stories.append({
-                'storey_no': floor_no,
-                'floors': floor, 'ceilings': ceiling, 'walls': wall, 'roofs': roof})
+        for floor, ceiling, wall, roof in zip(self.floors, self.ceilings, self.walls, self.roofs):
+            stories.append({"storey_no": floor_no, "floors": floor, "ceilings": ceiling, "walls": wall, "roofs": roof})
             floor_no += 1
         return stories
 
@@ -144,8 +143,7 @@ class Block(object):
         :returns: Lowest floor height.
 
         """
-        return -(self.num_below_ground_stories *
-                 self.below_ground_storey_height)
+        return -(self.num_below_ground_stories * self.below_ground_storey_height)
 
     @property
     def walls(self):
@@ -159,8 +157,7 @@ class Block(object):
         """
         walls = []
         for fh, ch in zip(self.floor_heights, self.ceiling_heights):
-            floor_walls = [_make_wall(edge, fh, ch)
-                           for edge in self.footprint.edges]
+            floor_walls = [_make_wall(edge, fh, ch) for edge in self.footprint.edges]
             walls.append(floor_walls)
         return walls
 
@@ -171,8 +168,7 @@ class Block(object):
         :returns: Coordinates for all floors.
 
         """
-        floors = [[self.footprint.invert_orientation() + Vector3D(0, 0, fh)]
-                  for fh in self.floor_heights]
+        floors = [[self.footprint.invert_orientation() + Vector3D(0, 0, fh)] for fh in self.floor_heights]
         return floors
 
     @property
@@ -182,8 +178,7 @@ class Block(object):
         :returns: Coordinates for all ceilings.
 
         """
-        ceilings = [[self.footprint + Vector3D(0, 0, ch)]
-                    for ch in self.ceiling_heights[:-1]]
+        ceilings = [[self.footprint + Vector3D(0, 0, ch)] for ch in self.ceiling_heights[:-1]]
 
         ceilings.append([])
         return ceilings
@@ -211,10 +206,7 @@ class Block(object):
         :returns: Coordinates for all surfaces.
 
         """
-        return {'walls': self.walls,
-                'ceilings': self.ceilings,
-                'roofs': self.roofs,
-                'floors': self.floors}
+        return {"walls": self.walls, "ceilings": self.ceilings, "roofs": self.roofs, "floors": self.floors}
 
 
 def _make_wall(edge, floor_height, ceiling_height):
@@ -226,8 +218,11 @@ def _make_wall(edge, floor_height, ceiling_height):
     :param ceiling_height: Ceiling height.
 
     """
-    return Polygon3D([edge.p1 + (0, 0, ceiling_height),  # upper left
-                      edge.p1 + (0, 0, floor_height),  # lower left
-                      edge.p2 + (0, 0, floor_height),  # lower right
-                      edge.p2 + (0, 0, ceiling_height),  # upper right
-                      ])
+    return Polygon3D(
+        [
+            edge.p1 + (0, 0, ceiling_height),  # upper left
+            edge.p1 + (0, 0, floor_height),  # lower left
+            edge.p2 + (0, 0, floor_height),  # lower right
+            edge.p2 + (0, 0, ceiling_height),  # upper right
+        ]
+    )

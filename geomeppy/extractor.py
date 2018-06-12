@@ -12,7 +12,7 @@ from typing import Optional  # noqa
 from .idf import EpBunch, Idf_MSequence, IDF, new_idf  # noqa
 
 
-def copy_constructions(source_idf, target_idf=None, fname='new.idf'):
+def copy_constructions(source_idf, target_idf=None, fname="new.idf"):
     # type: (IDF, Optional[IDF], str) -> IDF
     """Extract construction objects from a source IDF and add them to a target IDF or a new IDF.
 
@@ -21,13 +21,13 @@ def copy_constructions(source_idf, target_idf=None, fname='new.idf'):
     :param fname: A name for the new IDF created if no target IDF is passed in. Default: "new.idf".
     :returns: Either the target IDF or a new IDF containing the construction objects.
     """
-    group = 'Surface Construction Elements'
+    group = "Surface Construction Elements"
     target_idf = target_idf or new_idf(fname)
     idf = copy_group(source_idf, target_idf, group)
     return idf
 
 
-def copy_geometry(source_idf, target_idf=None, fname='new.idf'):
+def copy_geometry(source_idf, target_idf=None, fname="new.idf"):
     # type: (IDF, Optional[IDF], str) -> IDF
     """Extract geometry objects from a source IDF and add them to a target IDF or a new IDF..
 
@@ -36,7 +36,7 @@ def copy_geometry(source_idf, target_idf=None, fname='new.idf'):
     :param fname: A name for the new IDF created if no target IDF is passed in. Default: "new.idf".
     :returns: Either the target IDF or a new IDF containing the geometry objects.
     """
-    group = 'Thermal Zones and Surfaces'
+    group = "Thermal Zones and Surfaces"
     target_idf = target_idf or new_idf(fname)
     idf = copy_group(source_idf, target_idf, group)
     return idf
