@@ -27,8 +27,8 @@ install:
   - pip install -e .[testing]
 
 before_script:
-  - flake8 --count geomeppy tests
-  - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy ; fi
+  - if [[ $PYTHON == 3.6 ]]; then black -l 88 geomeppy tests docs setup.py release.py --check; fi
+  - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy; fi
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir

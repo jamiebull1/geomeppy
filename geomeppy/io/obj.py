@@ -34,7 +34,8 @@ import os
 
 import pypoly2tri as p2t
 
-if False: from ..idf import IDF  # noqa
+if False:
+    from ..idf import IDF  # noqa
 from ..geom.polygons import Polygon2D, Polygon3D
 from ..geom.vectors import Vector3D  # noqa
 
@@ -43,6 +44,7 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class ObjWriter(object):
     """Container class holding the data needed to generate the .obj file."""
+
     faces = []  # type: List[int]
     vertices = []  # type: List[Vector3D]
     # v_set is used for fast testing if a vertex is in vertices
@@ -54,7 +56,9 @@ class ObjWriter(object):
 
     def prepare_surfaces(self, surfaces, subsurfaces):
         for i, surface in enumerate(surfaces):
-            face_subsurfaces = [ss for ss in subsurfaces if ss.Building_Surface_Name == surface.Name]
+            face_subsurfaces = [
+                ss for ss in subsurfaces if ss.Building_Surface_Name == surface.Name
+            ]
             if face_subsurfaces:
                 subsurface = face_subsurfaces[0]
                 self.build_surface_with_subsurface(surface, subsurface)
@@ -93,7 +97,7 @@ class ObjWriter(object):
 
     def prepare_shadingsurfaces(self, shading_surfaces):
         for s in shading_surfaces:
-            self.add_face(s.coords, 'shade')
+            self.add_face(s.coords, "shade")
 
     def add_face(self, coords, mtl, test=True):
         face = []
@@ -104,7 +108,7 @@ class ObjWriter(object):
                 face.append(len(self.vertices))
             else:
                 face.append(self.vertices.index(v) + 1)
-        self.faces.append({'face': face, 'mtl': mtl})
+        self.faces.append({"face": face, "mtl": mtl})
 
     def write(self, fname, mtllib):
         """Write the .obj file.
@@ -112,17 +116,19 @@ class ObjWriter(object):
         :param fname: A filename for the .obj file.
         :param mtllib: The name of a .mtl file to be referenced from the .obj file.
         """
-        with open(fname, 'w') as f_out:
-            f_out.write('# exported using geomeppy\n# https://github.com/jamiebull1/geomeppy\n')
-            f_out.write('\n# vertices\n')
+        with open(fname, "w") as f_out:
+            f_out.write(
+                "# exported using geomeppy\n# https://github.com/jamiebull1/geomeppy\n"
+            )
+            f_out.write("\n# vertices\n")
             for v in self.vertices:
-                f_out.write('v %.6f %.6f %.6f\n' % (v[0], v[1], v[2]))
-            f_out.write('\n# materials library\n')
-            f_out.write('mtllib %s\n' % os.path.basename(mtllib))
-            f_out.write('\n# faces\n')
+                f_out.write("v %.6f %.6f %.6f\n" % (v[0], v[1], v[2]))
+            f_out.write("\n# materials library\n")
+            f_out.write("mtllib %s\n" % os.path.basename(mtllib))
+            f_out.write("\n# faces\n")
             for f in self.faces:
-                f_out.write('usemtl %s\n' % f['mtl'].lower())
-                f_out.write('f %s//\n' % '// '.join((str(i) for i in f['face'])))
+                f_out.write("usemtl %s\n" % f["mtl"].lower())
+                f_out.write("f %s//\n" % "// ".join((str(i) for i in f["face"])))
 
 
 def export_to_obj(idf, fname=None, mtllib=None):
@@ -137,11 +143,11 @@ def export_to_obj(idf, fname=None, mtllib=None):
     """
     if not fname:
         name, _ext = os.path.splitext(idf.idfname)
-        fname = '%s.obj' % name
+        fname = "%s.obj" % name
     if not mtllib:
         name, _ext = os.path.splitext(fname)
-        mtllib = '%s.mtl' % name
-        shutil.copy(os.path.join(THIS_DIR, 'default.mtl'), mtllib)
+        mtllib = "%s.mtl" % name
+        shutil.copy(os.path.join(THIS_DIR, "default.mtl"), mtllib)
     obj_writer = ObjWriter()
     surfaces = idf.getsurfaces()
     subsurfaces = idf.getsubsurfaces()

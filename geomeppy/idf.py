@@ -13,7 +13,14 @@ from .geom.polygons import bounding_box, Polygon2D  # noqa
 from .geom.vectors import Vector2D, Vector3D  # noqa
 from .io.obj import export_to_obj
 from .patches import PatchedIDF
-from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
+from .recipes import (
+    set_default_constructions,
+    set_wwr,
+    rotate,
+    scale,
+    translate,
+    translate_to_origin,
+)
 from .view_geometry import view_idf
 from .geom.core_perim import core_perim_zone_coordinates
 
@@ -90,7 +97,7 @@ class IDF(PatchedIDF):
         rotate(shadingsurfaces, angle)
         self.translate(anchor)
 
-    def scale(self, factor, anchor=None, axes='xy'):
+    def scale(self, factor, anchor=None, axes="xy"):
         # type: (float, Optional[Union[Vector2D, Vector3D]], str) -> None
         """Scale the IDF by a scaling factor.
 
@@ -120,7 +127,7 @@ class IDF(PatchedIDF):
         :returns: A polygon of the bounding box.
 
         """
-        floors = self.getsurfaces('floor')
+        floors = self.getsurfaces("floor")
         return bounding_box(floors)
 
     @property
@@ -134,8 +141,8 @@ class IDF(PatchedIDF):
         bbox = self.bounding_box()
         return bbox.centroid
 
-    def getsurfaces(self, surface_type=None):
-        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+    def getsurfaces(self, surface_type=""):
+        # type: (str) -> Union[List[EpBunch], Idf_MSequence]
         """Return all surfaces in the IDF.
 
         :param surface_type: Type of surface to get. Defaults to all.
@@ -143,14 +150,19 @@ class IDF(PatchedIDF):
 
         """
         surfaces = itertools.chain.from_iterable(
-            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['SurfaceNames']]
+            [
+                self.idfobjects[key.upper()]
+                for key in self.idd_index["ref2names"]["SurfaceNames"]
+            ]
         )
         if surface_type:
-            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+            surfaces = filter(
+                lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces
+            )
         return list(surfaces)
 
-    def getsubsurfaces(self, surface_type=None):
-        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+    def getsubsurfaces(self, surface_type=""):
+        # type: (str) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
 
         :param surface_type: Type of surface to get. Defaults to all.
@@ -158,14 +170,19 @@ class IDF(PatchedIDF):
 
         """
         surfaces = itertools.chain.from_iterable(
-            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['SubSurfNames']]
+            [
+                self.idfobjects[key.upper()]
+                for key in self.idd_index["ref2names"]["SubSurfNames"]
+            ]
         )
         if surface_type:
-            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+            surfaces = filter(
+                lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces
+            )
         return list(surfaces)
 
-    def getshadingsurfaces(self, surface_type=None):
-        # type: (Optional[str]) -> Union[List[EpBunch], Idf_MSequence]
+    def getshadingsurfaces(self, surface_type=""):
+        # type: (str) -> Union[List[EpBunch], Idf_MSequence]
         """Return all subsurfaces in the IDF.
 
         :param surface_type: Type of surface to get. Defaults to all.
@@ -173,13 +190,20 @@ class IDF(PatchedIDF):
 
         """
         surfaces = itertools.chain.from_iterable(
-            [self.idfobjects[key.upper()] for key in self.idd_index['ref2names']['AllShadingSurfNames']]
+            [
+                self.idfobjects[key.upper()]
+                for key in self.idd_index["ref2names"]["AllShadingSurfNames"]
+            ]
         )
         if surface_type:
-            surfaces = filter(lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces)
+            surfaces = filter(
+                lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces
+            )
         return list(surfaces)
 
-    def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None):
+    def set_wwr(
+        self, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None
+    ):
         # type: (Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
         """Add strip windows to all external walls.
 
@@ -214,9 +238,9 @@ class IDF(PatchedIDF):
         """
         if not fname:
             try:
-                fname = self.idfname.replace('.idf', '.obj')
+                fname = self.idfname.replace(".idf", ".obj")
             except AttributeError:
-                fname = 'default.obj'
+                fname = "default.obj"
         export_to_obj(self, fname, mtllib)
 
     def add_block(self, *args, **kwargs):
@@ -234,22 +258,35 @@ class IDF(PatchedIDF):
 
         """
         block = Block(*args, **kwargs)
-        block.zoning = kwargs.get('zoning', 'by_storey')
-        if block.zoning == 'by_storey':
-            zones = [Zone('Block %s Storey %i' %
-                          (block.name, storey['storey_no']), storey)
-                     for storey in block.stories]
-        elif block.zoning == 'core/perim':
+        block.zoning = kwargs.get("zoning", "by_storey")
+        if block.zoning == "by_storey":
+            zones = [
+                Zone("Block %s Storey %i" % (block.name, storey["storey_no"]), storey)
+                for storey in block.stories
+            ]
+        elif block.zoning == "core/perim":
             zones = []
             try:
-                for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
-                    block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
-                    zones += [Zone('Block %s Storey %i' % (block.name, storey['storey_no']),
-                                   storey) for storey in block.stories]
+                for name, coords in core_perim_zone_coordinates(
+                    block.coordinates, block.perim_depth
+                )[0].iteritems():
+                    block = Block(
+                        name=name,
+                        coordinates=coords,
+                        height=block.height,
+                        num_stories=block.num_stories,
+                    )
+                    zones += [
+                        Zone(
+                            "Block %s Storey %i" % (block.name, storey["storey_no"]),
+                            storey,
+                        )
+                        for storey in block.stories
+                    ]
             except NotImplementedError:
                 raise ValueError("Perimeter depth is too great")
         else:
-            raise ValueError('%s is not a valid zoning rule' % block.zoning)
+            raise ValueError("%s is not a valid zoning rule" % block.zoning)
 
         for zone in zones:
             self.add_zone(zone)
@@ -271,8 +308,7 @@ class IDF(PatchedIDF):
             if wall.area <= 0:
                 continue
             s = self.newidfobject(
-                'SHADING:SITE:DETAILED',
-                Name='%s_%s' % (block.name, i),
+                "SHADING:SITE:DETAILED", Name="%s_%s" % (block.name, i)
             )
             try:
                 s.setcoords(wall)
@@ -287,21 +323,25 @@ class IDF(PatchedIDF):
 
         """
         try:
-            ggr = self.idfobjects['GLOBALGEOMETRYRULES'][0]  # type: Optional[Dict[str, Idf_MSequence]]
+            ggr = self.idfobjects["GLOBALGEOMETRYRULES"][
+                0
+            ]  # type: Optional[Dict[str, Idf_MSequence]]
         except IndexError:
             ggr = None
         # add zone object
-        self.newidfobject('ZONE', Name=zone.name)
+        self.newidfobject("ZONE", Name=zone.name)
 
         for surface_type in zone.__dict__.keys():
-            if surface_type == 'name':
+            if surface_type == "name":
                 continue
             for i, surface_coords in enumerate(zone.__dict__[surface_type], 1):
                 if not surface_coords:
                     continue
-                name = '{name} {s_type} {num:04d}'.format(name=zone.name, s_type=surface_type[:-1].title(), num=i)
+                name = "{name} {s_type} {num:04d}".format(
+                    name=zone.name, s_type=surface_type[:-1].title(), num=i
+                )
                 s = self.newidfobject(
-                    'BUILDINGSURFACE:DETAILED',
+                    "BUILDINGSURFACE:DETAILED",
                     Name=name,
                     Surface_Type=surface_type[:-1],
                     Zone_Name=zone.name,

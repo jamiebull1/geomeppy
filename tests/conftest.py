@@ -80,20 +80,23 @@ def new_idf():
 @pytest.fixture()
 def wwr_idf(new_idf):
     """A model with just two walls and a window."""
-    test_walls = [[0,0,0], [0,1,0], [0,1,1], [0,0,1]], [[0,0,0], [1,0,0], [1,0,1], [0,0,1]]
+    test_walls = (
+        [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+        [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]],
+    )
     for i, coords in enumerate(test_walls, 1):
         new_idf.newidfobject(
-            'FENESTRATIONSURFACE:DETAILED',
-            Name='window%s' % i,
-            Surface_Type='window',
-            Construction_Name='ExtWindow',
-            Building_Surface_Name='wall%s' % i,
+            "FENESTRATIONSURFACE:DETAILED",
+            Name="window%s" % i,
+            Surface_Type="window",
+            Construction_Name="ExtWindow",
+            Building_Surface_Name="wall%s" % i,
         )
         wall = new_idf.newidfobject(
-            'BUILDINGSURFACE:DETAILED',
-            Name='wall%s' % i,
-            Surface_Type='wall',
-            Outside_Boundary_Condition='Outdoors',
+            "BUILDINGSURFACE:DETAILED",
+            Name="wall%s" % i,
+            Surface_Type="wall",
+            Outside_Boundary_Condition="Outdoors",
         )
         wall.setcoords(coords)
     return new_idf
@@ -104,6 +107,7 @@ extracts_idf_txt = """
     Zone, z1 Thermal Zone, 0.0, 0.0, 0.0, 0.0, , 1, , , , , , Yes;
     Material, Spam, Rough, 0.1, 1, 1000, 1000, 0.9, 0.9, 0.9;
     """
+
 
 @pytest.fixture()
 def extracts_idf():

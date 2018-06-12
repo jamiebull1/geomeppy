@@ -14,51 +14,40 @@ with open("test-requirements.in") as f:
 
 def read_rst(f):
     try:
-        with open(os.path.join(THIS_DIR, f), 'r') as f_in:
+        with open(os.path.join(THIS_DIR, f), "r") as f_in:
             return f_in.read()
     except:
         return "GeomEppy"
 
+
 setup(
-    name='geomeppy',
-    packages=[
-        'geomeppy',
-        'geomeppy.geom',
-        'geomeppy.io',
-        'tests',
-    ],
-    version='0.4.10',
-    description='Geometry editing for E+ idf files',
-    long_description=read_rst('README.rst'),
-    author='Jamie Bull',
-    author_email='jamie.bull@oco-carbon.com',
-    url='https://github.com/jamiebull1/geomeppy',
-    download_url='https://github.com/jamiebull1/geomeppy/tarball/v0.4.10',
-    license='MIT License',
-    keywords=[
-        'EnergyPlus',
-        'geometry',
-        'building performance simulation',
-    ],
-    platforms='any',
+    name="geomeppy",
+    packages=["geomeppy", "geomeppy.geom", "geomeppy.io", "tests"],
+    version="0.4.10",
+    description="Geometry editing for E+ idf files",
+    long_description=read_rst("README.rst"),
+    author="Jamie Bull",
+    author_email="jamie.bull@oco-carbon.com",
+    url="https://github.com/jamiebull1/geomeppy",
+    download_url="https://github.com/jamiebull1/geomeppy/tarball/v0.4.10",
+    license="MIT License",
+    keywords=["EnergyPlus", "geometry", "building performance simulation"],
+    platforms="any",
     install_requires=install_requires,
     classifiers=[
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
-        'Development Status :: 3 - Alpha',
-        'Natural Language :: English',
-        'Environment :: Console',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Topic :: Scientific/Engineering',
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
+        "Development Status :: 3 - Alpha",
+        "Natural Language :: English",
+        "Environment :: Console",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Scientific/Engineering",
     ],
     extras_require={
-        ':python_version>="3.4"': [
-            'mypy==0.610',  # static type checking
-        ],
-        'testing': test_requires,
-    },
+        ':python_version=="3.6"': ["mypy==0.610", "black==18.6b2"],
+        "testing": test_requires,
+    },  # static type checking
     include_package_data=True,
 )
-
