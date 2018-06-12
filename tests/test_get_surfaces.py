@@ -2,8 +2,7 @@
 from geomeppy.idf import EpBunch
 
 
-class TestSurfaces():
-
+class TestSurfaces:
     def test_surfaces(self, wwr_idf):
         # type: () -> None
         idf = wwr_idf

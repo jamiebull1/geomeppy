@@ -8,7 +8,8 @@ from typing import Any, Iterator  # noqa
 from .vectors import Vector3D
 from ..utilities import almostequal
 
-if False: from .polygons import Polygon3D  # noqa
+if False:
+    from .polygons import Polygon3D  # noqa
 
 
 class Segment(object):
@@ -23,7 +24,7 @@ class Segment(object):
     def __repr__(self):
         # type: () -> str
         class_name = type(self).__name__
-        return '{}({}, {})'.format(class_name, self.p1, self.p2)
+        return "{}({}, {})".format(class_name, self.p1, self.p2)
 
     def __neg__(self):
         # type: () -> Segment
