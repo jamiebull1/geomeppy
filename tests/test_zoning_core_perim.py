@@ -24,7 +24,7 @@ def test_perim_depth():
     idf_file = IDF(StringIO(""))
 
     with pytest.raises(ValueError) as excinfo:
-    	idf_file.add_block(name='foortprint',
+    	idf_file.add_block(name='footprint',
                            coordinates=footprint,
                            height=3,
                            zoning='core/perim',
