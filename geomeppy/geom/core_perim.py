@@ -1,8 +1,6 @@
 """Core and perimeter zoning approach."""
 from itertools import product
 from geomeppy.geom.polygons import Polygon2D
-from shapely.geometry import Polygon
-
 
 def get_core(footprint, perim_depth=None):
     poly = Polygon2D(footprint)
