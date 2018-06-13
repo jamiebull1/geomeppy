@@ -10,15 +10,6 @@ def get_core(footprint, perim_depth=None):
     return core
 
 
-def get_core_area(footprint, perim_depth=None):
-    poly = Polygon2D(footprint)
-    core = poly.buffer(distance=-perim_depth)
-    core_coords = []
-    for pts in core:
-        core_coords.append(pts.as_tuple(dims=2))
-    return Polygon(core_coords).is_convex
-
-
 def get_perims(footprint, core):
     perims = []
     poly = Polygon2D(footprint)
@@ -42,8 +33,8 @@ def core_perim_zone_coordinates(footprint, perim_depth):
     core = get_core(footprint, perim_depth)
 
     zones_dict = {}
-    for idx, zone_perim in enumerate(zones_perim):
-        zone_name = "Perimeter_Zone_" + str(idx + 1)
+    for idx, zone_perim in enumerate(zones_perim, 1):
+        zone_name = "Perimeter_Zone_%i" % idx
         perim_zones_coords = []
         for pts in zone_perim:
             perim_zones_coords.append(pts.as_tuple(dims=2))
