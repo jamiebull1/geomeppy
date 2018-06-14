@@ -27,7 +27,7 @@ install:
   - pip install -e .[testing]
 
 before_script:
-  - if [[ $PYTHON == 3.6 ]]; then black -l 120 geomeppy tests docs setup.py --check; fi
+  - if [[ $PYTHON == 3.6 ]]; then black -l 88 geomeppy tests docs setup.py --check; fi
   - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy; fi
 
 script:

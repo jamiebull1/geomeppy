@@ -45,6 +45,9 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering",
     ],
-    extras_require={':python_version>="3.4"': ["mypy==0.610", "black"], "testing": test_requires},  # static type checking
+    extras_require={
+        ':python_version=="3.6"': ["mypy==0.610", "black==18.6b2"],
+        "testing": test_requires,
+    },  # static type checking
     include_package_data=True,
 )

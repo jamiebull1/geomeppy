@@ -96,8 +96,12 @@ def getidfplanes(surfaces):
     for s in surfaces:
         poly = Polygon3D(s.coords)
         rounded_distance = round(poly.distance, 8)
-        rounded_normal_vector = Vector3D(*[round(axis, 8) for axis in poly.normal_vector])
-        planes.setdefault(rounded_distance, {}).setdefault(rounded_normal_vector, []).append(s)
+        rounded_normal_vector = Vector3D(
+            *[round(axis, 8) for axis in poly.normal_vector]
+        )
+        planes.setdefault(rounded_distance, {}).setdefault(
+            rounded_normal_vector, []
+        ).append(s)
     return planes
 
 
@@ -139,8 +143,16 @@ def populate_adjacencies(adjacencies, s1, s2):
     intersection = poly1.intersect(poly2)
     if intersection:
         new_surfaces = intersect(poly1, poly2)
-        new_s1 = [s for s in new_surfaces if almostequal(s.normal_vector, poly1.normal_vector, 4)]
-        new_s2 = [s for s in new_surfaces if almostequal(s.normal_vector, poly2.normal_vector, 4)]
+        new_s1 = [
+            s
+            for s in new_surfaces
+            if almostequal(s.normal_vector, poly1.normal_vector, 4)
+        ]
+        new_s2 = [
+            s
+            for s in new_surfaces
+            if almostequal(s.normal_vector, poly2.normal_vector, 4)
+        ]
         adjacencies[(s1.key, s1.Name)] += new_s1
         adjacencies[(s2.key, s2.Name)] += new_s2
     return adjacencies

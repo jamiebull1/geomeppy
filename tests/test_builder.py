@@ -145,7 +145,6 @@ breaking_coords = [
 
 
 class TestAddBlock:
-
     def setup(self):
         # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)
@@ -174,7 +173,14 @@ class TestAddBlock:
             (85.8, 23.5),
             (87.25, 24.0),
         ]
-        idf.add_block(name, coordinates, height, num_stories, below_ground_stories, below_ground_storey_height)
+        idf.add_block(
+            name,
+            coordinates,
+            height,
+            num_stories,
+            below_ground_stories,
+            below_ground_storey_height,
+        )
         idf.intersect_match()
 
     def test_add_two_blocks(self):
@@ -190,32 +196,50 @@ class TestAddBlock:
         idf.set_wwr(0.25)
         idf.set_default_constructions()
         # Storey 0
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_1")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_1"
+        )
         assert wall.Construction_Name == "Project Partition"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_2")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_2"
+        )
         assert wall.Construction_Name == "Project Wall"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_1")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_1"
+        )
         assert wall.Construction_Name == "Project Partition"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_2")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_2"
+        )
         assert wall.Construction_Name == "Project Wall"
         # Storey 1
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_1")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_1"
+        )
         assert wall.Construction_Name == "Project Partition"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_2")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_2"
+        )
         assert wall.Construction_Name == "Project Wall"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_1")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_1"
+        )
         assert wall.Construction_Name == "Project Partition"
 
-        wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_2")
+        wall = idf.getobject(
+            "BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_2"
+        )
         assert wall.Construction_Name == "Project Wall"
 
         for window in idf.getsubsurfaces(surface_type="window"):
-            wall = idf.getobject("BUILDINGSURFACE:DETAILED", window.Building_Surface_Name)
+            wall = idf.getobject(
+                "BUILDINGSURFACE:DETAILED", window.Building_Surface_Name
+            )
             assert wall.Construction_Name == "Project Wall"
 
     def test_add_two_concentric_blocks(self):
@@ -261,7 +285,14 @@ def test_block():
         (524287.25, 181424.0),
     ]
 
-    block = Block(name, coordinates, height, num_stories, below_ground_stories, below_ground_storey_height)
+    block = Block(
+        name,
+        coordinates,
+        height,
+        num_stories,
+        below_ground_stories,
+        below_ground_storey_height,
+    )
     # number of surfaces
     assert len(block.surfaces["roofs"]) == block.num_stories
     assert all(r == [] for r in block.surfaces["roofs"][:-1])
@@ -269,7 +300,9 @@ def test_block():
     assert len(block.surfaces["ceilings"]) == block.num_stories
     assert len(block.surfaces["floors"]) == block.num_stories
     # heights
-    assert block.surfaces["floors"][0][0].vertices[0].z == (-below_ground_storey_height * below_ground_stories)
+    assert block.surfaces["floors"][0][0].vertices[0].z == (
+        -below_ground_storey_height * below_ground_stories
+    )
     assert block.surfaces["roofs"][-1][0].vertices[0].z == height
     # storey_nos
     assert block.stories[0]["storey_no"] == -below_ground_stories

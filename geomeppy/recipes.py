@@ -37,7 +37,9 @@ def set_default_constructions(idf):
         "Project Door",
     ]
     for construction in constructions:
-        idf.newidfobject("CONSTRUCTION", Name=construction, Outside_Layer="DefaultMaterial")
+        idf.newidfobject(
+            "CONSTRUCTION", Name=construction, Outside_Layer="DefaultMaterial"
+        )
     idf.newidfobject(
         "MATERIAL",
         Name="DefaultMaterial",
@@ -101,13 +103,21 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map=None):
     external_walls = [
         s
         for s in idf.idfobjects["BUILDINGSURFACE:DETAILED"]
-        if s.Surface_Type.lower() == "wall" and s.Outside_Boundary_Condition.lower() == "outdoors"
+        if s.Surface_Type.lower() == "wall"
+        and s.Outside_Boundary_Condition.lower() == "outdoors"
     ]
-    subsurfaces = [idf.idfobjects[key.upper()] for key in idf.idd_index["ref2names"]["SubSurfNames"]]
+    subsurfaces = [
+        idf.idfobjects[key.upper()]
+        for key in idf.idd_index["ref2names"]["SubSurfNames"]
+    ]
     base_wwr = wwr
     for wall in external_walls:
         # get any subsurfaces on the wall
-        wall_subsurfaces = [ss for ss in itertools.chain(*subsurfaces) if ss.Building_Surface_Name == wall.Name]
+        wall_subsurfaces = [
+            ss
+            for ss in itertools.chain(*subsurfaces)
+            if ss.Building_Surface_Name == wall.Name
+        ]
         if not all(_is_window(wss) for wss in wall_subsurfaces) and not force:
             raise ValueError(
                 'Not all subsurfaces on wall "{name}" are windows. '
@@ -115,10 +125,14 @@ def set_wwr(idf, wwr=0.2, construction=None, force=False, wwr_map=None):
             )
 
         if wall_subsurfaces and not construction:
-            constructions = list({wss.Construction_Name for wss in wall_subsurfaces if _is_window(wss)})
+            constructions = list(
+                {wss.Construction_Name for wss in wall_subsurfaces if _is_window(wss)}
+            )
             if len(constructions) > 1:
                 raise ValueError(
-                    'Not all subsurfaces on wall "{name}" have the same construction'.format(name=wall.Name)
+                    'Not all subsurfaces on wall "{name}" have the same construction'.format(
+                        name=wall.Name
+                    )
                 )
             construction = constructions[0]
         # remove all subsurfaces
@@ -195,8 +209,9 @@ def translate_to_origin(idf):
     translate(windows, (-min_x, -min_y))
 
 
-def translate(surfaces, vector):  # type: Idf_MSequence  # type: Union[Tuple[float, float], Vector2D, Vector3D]
-    # type: (...) -> None
+def translate(
+    surfaces, vector
+):  # type: (Idf_MSequence, Union[Tuple[float, float], Vector2D, Vector3D]) -> None
     """Translate all surfaces by a vector.
 
     :param surfaces: A list of EpBunch objects.
@@ -209,10 +224,8 @@ def translate(surfaces, vector):  # type: Idf_MSequence  # type: Union[Tuple[flo
         s.setcoords(new_coords)
 
 
-def translate_coords(
-    coords, vector  # type: Union[List[Tuple[float, float, float]], Polygon3D]  # type: Union[List[float], Vector3D]
-):
-    # type: (...) -> List[Union[Vector2D, Vector3D]]
+def translate_coords(coords, vector):
+    # type: (Union[List[Tuple[float, float, float]], Polygon3D], Union[List[float], Vector3D]) -> List[Union[Vector2D, Vector3D]]
     """Translate a set of coords by a direction vector.
 
     :param coords: A list of points.
