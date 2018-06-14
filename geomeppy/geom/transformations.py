@@ -22,7 +22,6 @@ from .vectors import Vector2D, Vector3D  # noqa
 
 
 class Transformation(object):
-
     def __init__(self, mat=None):
         # type: (Optional[np.ndarray]) -> None
         if mat is None:

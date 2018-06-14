@@ -17,8 +17,12 @@ expected_footprint = {
 def test_core_perim():
     perim_depth = 5
     assert core_perim_zone_coordinates(footprint, perim_depth)[0] == expected_footprint
-    assert get_core(footprint, perim_depth) == Polygon2D(expected_footprint["Core_Zone"])
-    for idx, zone in enumerate(get_perims(footprint, get_core(footprint, perim_depth)), 1):
+    assert get_core(footprint, perim_depth) == Polygon2D(
+        expected_footprint["Core_Zone"]
+    )
+    for idx, zone in enumerate(
+        get_perims(footprint, get_core(footprint, perim_depth)), 1
+    ):
         assert zone == Polygon2D(expected_footprint["Perimeter_Zone_%i" % idx])
 
 
@@ -27,6 +31,11 @@ def test_perim_depth():
 
     with pytest.raises(ValueError) as excinfo:
         idf_file.add_block(
-            name="footprint", coordinates=footprint, height=3, zoning="core/perim", num_stories=1, perim_depth=10
+            name="footprint",
+            coordinates=footprint,
+            height=3,
+            zoning="core/perim",
+            num_stories=1,
+            perim_depth=10,
         )
     assert str(excinfo.value) == "Perimeter depth is too great"

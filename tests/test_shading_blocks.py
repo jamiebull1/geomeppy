@@ -12,7 +12,6 @@ Version, 8.5;
 
 
 class TestAddShadingBlock:
-
     def setup(self):
         # type: () -> None
         iddfhandle = StringIO(iddcurrent.iddtxt)

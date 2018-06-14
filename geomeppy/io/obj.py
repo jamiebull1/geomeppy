@@ -44,6 +44,7 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class ObjWriter(object):
     """Container class holding the data needed to generate the .obj file."""
+
     faces = []  # type: List[int]
     vertices = []  # type: List[Vector3D]
     # v_set is used for fast testing if a vertex is in vertices
@@ -55,7 +56,9 @@ class ObjWriter(object):
 
     def prepare_surfaces(self, surfaces, subsurfaces):
         for i, surface in enumerate(surfaces):
-            face_subsurfaces = [ss for ss in subsurfaces if ss.Building_Surface_Name == surface.Name]
+            face_subsurfaces = [
+                ss for ss in subsurfaces if ss.Building_Surface_Name == surface.Name
+            ]
             if face_subsurfaces:
                 subsurface = face_subsurfaces[0]
                 self.build_surface_with_subsurface(surface, subsurface)
@@ -114,7 +117,9 @@ class ObjWriter(object):
         :param mtllib: The name of a .mtl file to be referenced from the .obj file.
         """
         with open(fname, "w") as f_out:
-            f_out.write("# exported using geomeppy\n# https://github.com/jamiebull1/geomeppy\n")
+            f_out.write(
+                "# exported using geomeppy\n# https://github.com/jamiebull1/geomeppy\n"
+            )
             f_out.write("\n# vertices\n")
             for v in self.vertices:
                 f_out.write("v %.6f %.6f %.6f\n" % (v[0], v[1], v[2]))

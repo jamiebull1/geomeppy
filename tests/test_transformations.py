@@ -9,7 +9,6 @@ from geomeppy.utilities import almostequal
 
 
 class TestTransformations:
-
     def test_translation_transformations(self):
         # type: () -> None
         tol = 12  # places
@@ -155,5 +154,7 @@ class TestTransformations:
         testVertices = Polygon3D([(27.69, 0, 0), (0, 0, 0), (5, 5, 0), (22.69, 5, 0)])
         t = Transformation()._align_face(testVertices)
         tempVertices = t._inverse() * testVertices
-        expectedVertices = Polygon3D([(0, 0, 0), (27.69, 0, 0), (22.69, 5, 0), (5, 5, 0)])
+        expectedVertices = Polygon3D(
+            [(0, 0, 0), (27.69, 0, 0), (22.69, 5, 0), (5, 5, 0)]
+        )
         assert almostequal(tempVertices, expectedVertices, tol)

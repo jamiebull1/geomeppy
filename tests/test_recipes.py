@@ -44,7 +44,6 @@ def base_idf():
 
 
 class TestTranslate:
-
     def test_translate(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
@@ -126,7 +125,6 @@ class TestTranslate:
 
 
 class TestMatchSurfaces:
-
     def test_set_wwr(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
@@ -137,12 +135,13 @@ class TestMatchSurfaces:
         windows = idf.idfobjects["FENESTRATIONSURFACE:DETAILED"]
         assert len(windows) == 8
         for window in windows:
-            wall = idf.getobject("BUILDINGSURFACE:DETAILED", window.Building_Surface_Name)
+            wall = idf.getobject(
+                "BUILDINGSURFACE:DETAILED", window.Building_Surface_Name
+            )
             assert almostequal(window.area, wall.area * wwr, 3)
 
 
 class TestViewGeometry:
-
     def test_get_surfaces(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
@@ -181,7 +180,10 @@ def new_idf():
 
 @pytest.fixture()
 def wwr_idf(new_idf):
-    test_walls = [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]], [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]]
+    test_walls = (
+        [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+        [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]],
+    )
     for i, coords in enumerate(test_walls, 1):
         new_idf.newidfobject(
             "FENESTRATIONSURFACE:DETAILED",
@@ -191,14 +193,16 @@ def wwr_idf(new_idf):
             Building_Surface_Name="wall%s" % i,
         )
         wall = new_idf.newidfobject(
-            "BUILDINGSURFACE:DETAILED", Name="wall%s" % i, Surface_Type="wall", Outside_Boundary_Condition="Outdoors"
+            "BUILDINGSURFACE:DETAILED",
+            Name="wall%s" % i,
+            Surface_Type="wall",
+            Outside_Boundary_Condition="Outdoors",
         )
         wall.setcoords(coords)
     return new_idf
 
 
 class TestWWR:
-
     def is_expected_wwr(self, idf, wwr):
         windows_area = sum(w.area for w in idf.getsubsurfaces("window"))
         walls_area = sum(w.area for w in idf.getsurfaces("wall"))
@@ -214,19 +218,25 @@ class TestWWR:
         idf = wwr_idf
         expected_wwr = 0.2
         idf.set_wwr(wwr=0.99, wwr_map={90.0: 0.1, 180: 0.3})
-        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
+        assert self.is_expected_wwr(
+            idf, expected_wwr
+        ), "Not all walls have the expected WWR set"
 
     def test_wwr_zero(self, wwr_idf):
         idf = wwr_idf
         idf.set_wwr(wwr=0, wwr_map={90.0: 0.1})
         expected_wwr = 0.05
-        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
+        assert self.is_expected_wwr(
+            idf, expected_wwr
+        ), "Not all walls have the expected WWR set"
 
     def test_wwr_none(self, wwr_idf):
         idf = wwr_idf
         idf.set_wwr(wwr=None, wwr_map={90.0: 0.3})
         expected_wwr = 0.15
-        assert self.is_expected_wwr(idf, expected_wwr), "Not all walls have the expected WWR set"
+        assert self.is_expected_wwr(
+            idf, expected_wwr
+        ), "Not all walls have the expected WWR set"
 
     def test_wwr_two_window_constructions(self, wwr_idf):
         idf = wwr_idf
@@ -240,7 +250,9 @@ class TestWWR:
         wwr = 0.2
         try:
             idf.set_wwr(wwr)
-            assert False, "Should have raised an error since windows with more than one construction are present"
+            assert (
+                False
+            ), "Should have raised an error since windows with more than one construction are present"
         except ValueError:
             pass
         idf.set_wwr(wwr, construction="ExtWindow")
@@ -248,11 +260,18 @@ class TestWWR:
 
     def test_wwr_mixed_subsurfaces(self, wwr_idf):
         idf = wwr_idf
-        idf.newidfobject("DOOR", Name="door1", Construction_Name="ExtDoor", Building_Surface_Name="wall1")
+        idf.newidfobject(
+            "DOOR",
+            Name="door1",
+            Construction_Name="ExtDoor",
+            Building_Surface_Name="wall1",
+        )
         wwr = 0.2
         try:
             idf.set_wwr(wwr)
-            assert False, "Should have raised an error since not all subsurfaces are windows"
+            assert (
+                False
+            ), "Should have raised an error since not all subsurfaces are windows"
         except ValueError:
             pass
         idf.set_wwr(wwr, force=True)

@@ -46,7 +46,9 @@ class Clipper2D(object):
         clipper = self._prepare_clipper(poly)
         if not clipper:
             return []
-        intersections = clipper.Execute(pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO)
+        intersections = clipper.Execute(
+            pc.CT_INTERSECTION, pc.PFT_NONZERO, pc.PFT_NONZERO
+        )
 
         return self._process(intersections)
 

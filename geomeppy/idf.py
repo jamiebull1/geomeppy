@@ -12,7 +12,14 @@ from .geom.polygons import bounding_box, Polygon2D  # noqa
 from .geom.vectors import Vector2D, Vector3D  # noqa
 from .io.obj import export_to_obj
 from .patches import PatchedIDF
-from .recipes import set_default_constructions, set_wwr, rotate, scale, translate, translate_to_origin
+from .recipes import (
+    set_default_constructions,
+    set_wwr,
+    rotate,
+    scale,
+    translate,
+    translate_to_origin,
+)
 from .view_geometry import view_idf
 from .geom.core_perim import core_perim_zone_coordinates
 
@@ -122,7 +129,9 @@ class IDF(PatchedIDF):
         """
         surfaces = self.idfobjects["BUILDINGSURFACE:DETAILED"]
         if surface_type:
-            surfaces = [s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
+            surfaces = [
+                s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
+            ]
         return surfaces
 
     def bounding_box(self):
@@ -155,7 +164,9 @@ class IDF(PatchedIDF):
         """
         surfaces = self.idfobjects["FENESTRATIONSURFACE:DETAILED"]
         if surface_type:
-            surfaces = [s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
+            surfaces = [
+                s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
+            ]
         return surfaces
 
     def getshadingsurfaces(self, surface_type=None):
@@ -167,7 +178,9 @@ class IDF(PatchedIDF):
         """
         surfaces = self.idfobjects["SHADING:ZONE:DETAILED"]
         if surface_type:
-            surfaces = [s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
+            surfaces = [
+                s for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
+            ]
         return surfaces
 
     def set_wwr(self, wwr=0.2, construction=None, force=False, wwr_map={}):
@@ -223,14 +236,27 @@ class IDF(PatchedIDF):
         block = Block(*args, **kwargs)
         block.zoning = kwargs.get("zoning", "by_storey")
         if block.zoning == "by_storey":
-            zones = [Zone("Block %s Storey %i" % (block.name, storey["storey_no"]), storey) for storey in block.stories]
+            zones = [
+                Zone("Block %s Storey %i" % (block.name, storey["storey_no"]), storey)
+                for storey in block.stories
+            ]
         elif block.zoning == "core/perim":
             zones = []
             try:
-                for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
-                    block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
+                for name, coords in core_perim_zone_coordinates(
+                    block.coordinates, block.perim_depth
+                )[0].iteritems():
+                    block = Block(
+                        name=name,
+                        coordinates=coords,
+                        height=block.height,
+                        num_stories=block.num_stories,
+                    )
                     zones += [
-                        Zone("Block %s Storey %i" % (block.name, storey["storey_no"]), storey)
+                        Zone(
+                            "Block %s Storey %i" % (block.name, storey["storey_no"]),
+                            storey,
+                        )
                         for storey in block.stories
                     ]
             except NotImplementedError:
@@ -257,7 +283,9 @@ class IDF(PatchedIDF):
         for i, wall in enumerate(block.walls[0], 1):
             if wall.area <= 0:
                 continue
-            s = self.newidfobject("SHADING:SITE:DETAILED", Name="%s_%s" % (block.name, i))
+            s = self.newidfobject(
+                "SHADING:SITE:DETAILED", Name="%s_%s" % (block.name, i)
+            )
             try:
                 s.setcoords(wall)
             except ZeroDivisionError:
@@ -271,7 +299,9 @@ class IDF(PatchedIDF):
 
         """
         try:
-            ggr = self.idfobjects["GLOBALGEOMETRYRULES"][0]  # type: Optional[Dict[str, Idf_MSequence]]
+            ggr = self.idfobjects["GLOBALGEOMETRYRULES"][
+                0
+            ]  # type: Optional[Dict[str, Idf_MSequence]]
         except IndexError:
             ggr = None
         # add zone object
@@ -283,8 +313,13 @@ class IDF(PatchedIDF):
             for i, surface_coords in enumerate(zone.__dict__[surface_type], 1):
                 if not surface_coords:
                     continue
-                name = "{name} {s_type} {num:04d}".format(name=zone.name, s_type=surface_type[:-1].title(), num=i)
+                name = "{name} {s_type} {num:04d}".format(
+                    name=zone.name, s_type=surface_type[:-1].title(), num=i
+                )
                 s = self.newidfobject(
-                    "BUILDINGSURFACE:DETAILED", Name=name, Surface_Type=surface_type[:-1], Zone_Name=zone.name
+                    "BUILDINGSURFACE:DETAILED",
+                    Name=name,
+                    Surface_Type=surface_type[:-1],
+                    Zone_Name=zone.name,
                 )
                 s.setcoords(surface_coords, ggr)
