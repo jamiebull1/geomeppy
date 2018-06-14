@@ -88,7 +88,9 @@ def idfreader1(
 
     """
     versiontuple = iddversiontuple(iddfile)
-    block, data, commdct, idd_index = readdatacommdct1(fname, iddfile=iddfile, commdct=commdct, block=block)
+    block, data, commdct, idd_index = readdatacommdct1(
+        fname, iddfile=iddfile, commdct=commdct, block=block
+    )
     if conv:
         convertallfields(data, commdct)
     # fill gaps in idd
@@ -164,8 +166,9 @@ def addthisbunch(
     return abunch
 
 
-def makebunches(data, commdct, theidf):  # type: Eplusdata  # type: List[List[Dict[str, Any]]]  # type: IDF
-    # type: (...) -> Dict[str, Idf_MSequence]
+def makebunches(
+    data, commdct, theidf
+):  # type: (Eplusdata, List[List[Dict[str, Any]]], IDF) -> Dict[str, Idf_MSequence]
     """Make bunches with data.
 
     :param data: Eplusdata object containing representions of IDF objects.
@@ -187,8 +190,9 @@ def makebunches(data, commdct, theidf):  # type: Eplusdata  # type: List[List[Di
     return bunchdt
 
 
-def obj2bunch(data, commdct, obj):  # type: Eplusdata  # type: List[List[Dict[str, Any]]]  # type: List[str]
-    # type: (...) -> EpBunch
+def obj2bunch(
+    data, commdct, obj
+):  # type: (Eplusdata, List[List[Dict[str, Any]]], List[str]) -> EpBunch
     """Make a new bunch object using the data object.
 
     :param data: Eplusdata object containing representions of IDF objects.
@@ -275,7 +279,10 @@ class PatchedIDF(BaseIDF):
         obj = newrawobject(self.model, self.idd_info, key)
         abunch = obj2bunch(self.model, self.idd_info, obj)
         if aname:
-            warnings.warn("The aname parameter should no longer be used (%s)." % aname, UserWarning)
+            warnings.warn(
+                "The aname parameter should no longer be used (%s)." % aname,
+                UserWarning,
+            )
             namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)  # type: Dict[str, Idf_MSequence]
         for k, v in kwargs.items():

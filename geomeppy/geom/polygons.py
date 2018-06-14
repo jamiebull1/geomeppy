@@ -58,8 +58,7 @@ class Polygon(Clipper2D, MutableSequence):
     def __setitem__(self, key, value):
         self.vertices[key] = value
 
-    def __add__(self, other):  # type: Polygon
-        # type: (...) -> Union[None, Polygon]
+    def __add__(self, other):  # type: (Polygon) -> Union[None, Polygon]
         if len(self) == len(other) and hasattr(other[0], "__len__"):
             # add together two equal polygons
             vertices = [v1 + v2 for v1, v2 in zip(self, other)]
@@ -116,14 +115,19 @@ class Polygon(Clipper2D, MutableSequence):
     def centroid(self):
         # type: () -> Vector2D
         """The centroid of a polygon."""
-        return self.vector_class(sum(self.xs) / len(self), sum(self.ys) / len(self), sum(self.zs) / len(self))
+        return self.vector_class(
+            sum(self.xs) / len(self), sum(self.ys) / len(self), sum(self.zs) / len(self)
+        )
 
     @property
     def edges(self):
         # type: () -> List[Segment]
         """A list of edges represented as Segment objects."""
         vertices = self.vertices
-        edges = [Segment(vertices[i], vertices[(i + 1) % len(self)]) for i in range(len(self))]
+        edges = [
+            Segment(vertices[i], vertices[(i + 1) % len(self)])
+            for i in range(len(self))
+        ]
         return edges
 
     def invert_orientation(self):
@@ -185,6 +189,7 @@ class Polygon(Clipper2D, MutableSequence):
 
 class Polygon2D(Polygon):
     """Two-dimensional polygon."""
+
     n_dims = 2
     vector_class = Vector2D
 
@@ -230,6 +235,7 @@ class Polygon2D(Polygon):
 
 class Polygon3D(Clipper3D, Polygon):
     """Three-dimensional polygon."""
+
     n_dims = 3
     vector_class = Vector3D
 
@@ -438,10 +444,12 @@ class Polygon3D(Clipper3D, Polygon):
                 on_exterior = links[0][1]
                 # join them up
                 exterior = Polygon3D(
-                    exterior[exterior.index(on_exterior) :] + exterior[: exterior.index(on_exterior) + 1]
+                    exterior[exterior.index(on_exterior) :]
+                    + exterior[: exterior.index(on_exterior) + 1]
                 )
                 interior = Polygon3D(
-                    interior[interior.index(on_interior) :] + interior[: interior.index(on_interior) + 1]
+                    interior[interior.index(on_interior) :]
+                    + interior[: interior.index(on_interior) + 1]
                 )
                 exterior = Polygon3D(exterior[:] + interior[:])
 
@@ -461,7 +469,9 @@ def break_polygons(poly, hole):
     """
     # take the two closest points on the surface perimeter
     links = list(product(poly, hole))
-    links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))  # fast distance check
+    links = sorted(
+        links, key=lambda x: x[0].relative_distance(x[1])
+    )  # fast distance check
 
     first_on_poly = links[0][0]
     last_on_poly = links[1][0]
@@ -508,8 +518,9 @@ def project(pt, proj_axis):
     return tuple(c for i, c in enumerate(pt) if i != proj_axis)
 
 
-def project_inv(pt, proj_axis, a, v):  # type: np.ndarray  # type: int  # type: np.float64  # type: Vector3D
-    # type: (...) -> Any
+def project_inv(
+    pt, proj_axis, a, v
+):  # type: (np.ndarray, int, np.float64, Vector3D) -> Any
     """Returns the vector w in the surface's plane such that project(w) equals x.
 
     See http://stackoverflow.com/a/39008641/1706564
@@ -544,8 +555,9 @@ def project_to_2D(vertices, proj_axis):
     return points
 
 
-def project_to_3D(vertices, proj_axis, a, v):  # type: np.ndarray  # type: int  # type: np.float64  # type: Vector3D
-    # type: (...) -> List[Tuple[np.float64, np.float64, np.float64]]
+def project_to_3D(
+    vertices, proj_axis, a, v
+):  # type: (np.ndarray, int, np.float64, Vector3D) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
 
     :param vertices: The two-dimensional vertices of the polygon.
@@ -559,9 +571,8 @@ def project_to_3D(vertices, proj_axis, a, v):  # type: np.ndarray  # type: int  
 
 
 def normalize_coords(
-    poly, outside_pt, ggr=None  # type: Polygon3D  # type: Vector3D  # type: Union[List, None, Idf_MSequence]
-):
-    # type: (...) -> Polygon3D
+    poly, outside_pt, ggr=None
+):  # type: (Polygon3D, Vector3D, Union[List, None, Idf_MSequence]) -> Polygon3D
     """Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).
 
     :param poly: Polygon with new coordinates, but not yet checked for compliance with GGR.
@@ -671,7 +682,10 @@ def is_hole(surface, possible_hole):
     """
     if surface.area < possible_hole.area:
         return False
-    collinear_edges = (edges[0]._is_collinear(edges[1]) for edges in product(surface.edges, possible_hole.edges))
+    collinear_edges = (
+        edges[0]._is_collinear(edges[1])
+        for edges in product(surface.edges, possible_hole.edges)
+    )
     return not any(collinear_edges)
 
 
@@ -682,7 +696,10 @@ def bounding_box(polygons):
     :return: A 2D polygon.
 
     """
-    top_left = (min(min(c[0] for c in f.coords) for f in polygons), max(max(c[1] for c in f.coords) for f in polygons))
+    top_left = (
+        min(min(c[0] for c in f.coords) for f in polygons),
+        max(max(c[1] for c in f.coords) for f in polygons),
+    )
     bottom_left = (
         min(min(c[0] for c in f.coords) for f in polygons),
         min(min(c[1] for c in f.coords) for f in polygons),
@@ -691,7 +708,10 @@ def bounding_box(polygons):
         max(max(c[0] for c in f.coords) for f in polygons),
         min(min(c[1] for c in f.coords) for f in polygons),
     )
-    top_right = (max(max(c[0] for c in f.coords) for f in polygons), max(max(c[1] for c in f.coords) for f in polygons))
+    top_right = (
+        max(max(c[0] for c in f.coords) for f in polygons),
+        max(max(c[1] for c in f.coords) for f in polygons),
+    )
     return Polygon2D([top_left, bottom_left, bottom_right, top_right])
 
 

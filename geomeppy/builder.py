@@ -27,7 +27,6 @@ class Zone(object):
 
 
 class Block(object):
-
     def __init__(
         self,
         name,  # type: str
@@ -83,8 +82,18 @@ class Block(object):
             floor_no = -self.num_below_ground_stories
         else:
             floor_no = 0
-        for floor, ceiling, wall, roof in zip(self.floors, self.ceilings, self.walls, self.roofs):
-            stories.append({"storey_no": floor_no, "floors": floor, "ceilings": ceiling, "walls": wall, "roofs": roof})
+        for floor, ceiling, wall, roof in zip(
+            self.floors, self.ceilings, self.walls, self.roofs
+        ):
+            stories.append(
+                {
+                    "storey_no": floor_no,
+                    "floors": floor,
+                    "ceilings": ceiling,
+                    "walls": wall,
+                    "roofs": roof,
+                }
+            )
             floor_no += 1
         return stories
 
@@ -168,7 +177,10 @@ class Block(object):
         :returns: Coordinates for all floors.
 
         """
-        floors = [[self.footprint.invert_orientation() + Vector3D(0, 0, fh)] for fh in self.floor_heights]
+        floors = [
+            [self.footprint.invert_orientation() + Vector3D(0, 0, fh)]
+            for fh in self.floor_heights
+        ]
         return floors
 
     @property
@@ -178,7 +190,9 @@ class Block(object):
         :returns: Coordinates for all ceilings.
 
         """
-        ceilings = [[self.footprint + Vector3D(0, 0, ch)] for ch in self.ceiling_heights[:-1]]
+        ceilings = [
+            [self.footprint + Vector3D(0, 0, ch)] for ch in self.ceiling_heights[:-1]
+        ]
 
         ceilings.append([])
         return ceilings
@@ -206,7 +220,12 @@ class Block(object):
         :returns: Coordinates for all surfaces.
 
         """
-        return {"walls": self.walls, "ceilings": self.ceilings, "roofs": self.roofs, "floors": self.floors}
+        return {
+            "walls": self.walls,
+            "ceilings": self.ceilings,
+            "roofs": self.roofs,
+            "floors": self.floors,
+        }
 
 
 def _make_wall(edge, floor_height, ceiling_height):
