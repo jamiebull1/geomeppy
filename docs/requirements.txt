@@ -43,7 +43,7 @@ jupyter-client==5.2.3     # via ipykernel, jupyter-console, notebook, qtconsole
 jupyter-console==5.2.0
 jupyter-core==4.4.0       # via jupyter-client, nbconvert, nbformat, notebook, qtconsole
 kiwisolver==1.0.1         # via matplotlib
-lxml==4.2.1               # via eppy
+lxml==4.2.2               # via eppy
 markupsafe==1.0           # via jinja2
 matplotlib==2.2.2
 mistune==0.8.3            # via nbconvert
