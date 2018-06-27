@@ -11,7 +11,7 @@ cycler==0.10.0            # via matplotlib
 decorator==4.3.0          # via eppy
 eppy==0.5.46
 kiwisolver==1.0.1         # via matplotlib
-lxml==4.2.1               # via eppy
+lxml==4.2.3               # via eppy
 matplotlib==2.2.2
 more-itertools==4.2.0     # via pytest
 munch==2.3.2              # via eppy
