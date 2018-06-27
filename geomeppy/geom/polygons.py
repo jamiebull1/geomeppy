@@ -9,6 +9,7 @@ from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
 from shapely import wkt
 from shapely.geometry.polygon import Polygon as SPoly
+from shapely.geometry.polygon import orient
 from six.moves import zip
 
 from .clippers import Clipper2D, Clipper3D
@@ -113,7 +114,7 @@ class Polygon(Clipper2D, MutableSequence):
 
         """
         s_poly = SPoly(self.vertices)
-        core = s_poly.buffer(distance=distance, join_style=join_style)
+        core = orient(s_poly.buffer(distance=distance, join_style=join_style), sign=1.0)
         return Polygon2D(core.boundary.coords)
 
     @property

@@ -241,7 +241,7 @@ class IDF(PatchedIDF):
         elif block.zoning == 'core/perim':
             zones = []
             try:
-                for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].iteritems():
+                for name, coords in core_perim_zone_coordinates(block.coordinates, block.perim_depth)[0].items():
                     block = Block(name=name, coordinates=coords, height=block.height, num_stories=block.num_stories)
                     zones += [Zone('Block %s Storey %i' % (block.name, storey['storey_no']),
                                    storey) for storey in block.stories]
