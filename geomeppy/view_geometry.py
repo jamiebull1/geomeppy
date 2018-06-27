@@ -29,7 +29,7 @@ def view_idf(fname=None, idf_txt=None, test=False):
         # this is as expected on the test server
         return
     if fname and idf_txt:
-        raise ValueError('Pass either fname or idf_txt, not both.')
+        raise ValueError("Pass either fname or idf_txt, not both.")
     # set the IDD for the version of EnergyPlus
     iddfhandle = StringIO(iddcurrent.iddtxt)
     if IDF.getiddname() is None:
@@ -42,16 +42,16 @@ def view_idf(fname=None, idf_txt=None, test=False):
         idf = IDF()
         idf.initreadtxt(idf_txt)
     # create the figure and add the surfaces
-    ax = plt.axes(projection='3d')
+    ax = plt.axes(projection="3d")
     collections = _get_collections(idf, opacity=0.5)
     for c in collections:
         ax.add_collection3d(c)
 
     # calculate and set the axis limits
     limits = _get_limits(idf=idf)
-    ax.set_xlim(limits['x'])
-    ax.set_ylim(limits['y'])
-    ax.set_zlim(limits['z'])
+    ax.set_xlim(limits["x"])
+    ax.set_ylim(limits["y"])
+    ax.set_zlim(limits["z"])
 
     if not test:
         plt.show()
@@ -64,7 +64,7 @@ def view_polygons(polygons):
     """
     # create the figure and add the surfaces
     plt.figure()
-    ax = plt.axes(projection='3d')
+    ax = plt.axes(projection="3d")
 
     collections = _make_collections(polygons, opacity=0.5)
 
@@ -73,9 +73,9 @@ def view_polygons(polygons):
 
     # calculate and set the axis limits
     limits = _get_limits(polygons=polygons)
-    ax.set_xlim(limits['x'])
-    ax.set_ylim(limits['y'])
-    ax.set_zlim(limits['z'])
+    ax.set_xlim(limits["x"])
+    ax.set_ylim(limits["y"])
+    ax.set_zlim(limits["z"])
 
     plt.show()
 
@@ -83,10 +83,7 @@ def view_polygons(polygons):
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
-    surface_types = [
-        'BUILDINGSURFACE:DETAILED',
-        'FENESTRATIONSURFACE:DETAILED',
-    ]
+    surface_types = ["BUILDINGSURFACE:DETAILED", "FENESTRATIONSURFACE:DETAILED"]
     surfaces = []
     for surface_type in surface_types:
         surfaces.extend(idf.idfobjects[surface_type])
@@ -96,9 +93,7 @@ def _get_surfaces(idf):
 
 def _get_shading(idf):
     """Get the shading surfaces from the IDF."""
-    shading_types = [
-        'SHADING:ZONE:DETAILED',
-    ]
+    shading_types = ["SHADING:ZONE:DETAILED"]
     shading = []
     for shading_type in shading_types:
         shading.extend(idf.idfobjects[shading_type])
@@ -110,30 +105,30 @@ def _get_collections(idf, opacity=1):
     """Set up 3D collections for each surface type."""
     surfaces = _get_surfaces(idf)
     # set up the collections
-    walls = _get_collection('wall', surfaces, opacity, facecolor='lightyellow')
-    floors = _get_collection('floor', surfaces, opacity, facecolor='dimgray')
-    roofs = _get_collection('roof', surfaces, opacity, facecolor='firebrick')
-    windows = _get_collection('window', surfaces, opacity, facecolor='cornflowerblue')
+    walls = _get_collection("wall", surfaces, opacity, facecolor="lightyellow")
+    floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
+    roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
+    windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
 
     shading_surfaces = _get_shading(idf)
-    shading = Poly3DCollection([getcoords(s) for s in shading_surfaces],
-                               alpha=opacity,
-                               facecolor='darkolivegreen',
-                               edgecolors='black'
-                               )
+    shading = Poly3DCollection(
+        [getcoords(s) for s in shading_surfaces],
+        alpha=opacity,
+        facecolor="darkolivegreen",
+        edgecolors="black",
+    )
 
     return walls, roofs, floors, windows, shading
 
 
-def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors='black'):
+def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
     """Make collections from a list of EnergyPlus surfaces."""
-    coords = [getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()]
+    coords = [
+        getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
+    ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
-        trimmed_coords,
-        alpha=opacity,
-        facecolor=facecolor,
-        edgecolors=edgecolors
+        trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors
     )
     return collection
 
@@ -142,11 +137,14 @@ def _make_collections(polygons, opacity=1):
     """Make collections from a dict of polygons."""
     collection = []
     for color in polygons:
-        collection.append(Poly3DCollection(
-            [p.points_matrix for p in polygons[color]],
-            alpha=opacity,
-            facecolor=color,
-            edgecolors='black'))
+        collection.append(
+            Poly3DCollection(
+                [p.points_matrix for p in polygons[color]],
+                alpha=opacity,
+                facecolor=color,
+                edgecolors="black",
+            )
+        )
     return collection
 
 
@@ -164,13 +162,13 @@ def _get_limits(idf=None, polygons=None):
         y = [pt[1] for s in surfaces for pt in getcoords(s)]
         z = [pt[2] for s in surfaces for pt in getcoords(s)]
 
-    max_delta = max((max(x) - min(x)),
-                    (max(y) - min(y)),
-                    (max(z) - min(z)))
+    max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
 
-    return {'x': (min(x), min(x) + max_delta),
-            'y': (min(y), min(y) + max_delta),
-            'z': (min(z), min(y) + max_delta)}
+    return {
+        "x": (min(x), min(x) + max_delta),
+        "y": (min(y), min(y) + max_delta),
+        "z": (min(z), min(y) + max_delta),
+    }
 
 
 def main(fname=None, polygons=None):

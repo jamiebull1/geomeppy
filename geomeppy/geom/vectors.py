@@ -3,12 +3,13 @@
 These are used to represent points in 2D and 3D, as well as directions for translations.
 """
 
-from typing import Any, Iterable, Iterator, List, Sized, Tuple, Union  # noqa
+from typing import Any, Iterable, Iterator, List, Optional, Sized, Tuple, Union  # noqa
 
 import numpy as np
 from six.moves import zip
 
-if False: from .polygons import Polygon3D  # noqa
+if False:
+    from .polygons import Polygon3D  # noqa
 
 
 class Vector2D(Sized, Iterable):
@@ -28,7 +29,7 @@ class Vector2D(Sized, Iterable):
     def __repr__(self):
         # type: () -> str
         class_name = type(self).__name__
-        return '{}({!r}, {!r})'.format(class_name, *self.args)
+        return "{}({!r}, {!r})".format(class_name, *self.args)
 
     def __eq__(self, other):
         for a, b in zip(self, other):
@@ -79,13 +80,13 @@ class Vector2D(Sized, Iterable):
         return length
 
     def closest(self, poly):
-        # type: (Polygon3D) -> Union[Vector2D, Vector3D]
+        # type: (Polygon3D) -> Optional[Any]
         """Find the closest vector in a polygon.
 
         :param poly: Polygon or Polygon3D
 
         """
-        min_d = float('inf')
+        min_d = float("inf")
         closest_pt = None
         for pt2 in poly:
             direction = self - pt2
@@ -130,7 +131,7 @@ class Vector2D(Sized, Iterable):
         elif dims == 2:
             return np.array([float(self.x), float(self.y)])
         else:
-            raise ValueError('%s-dimensional vectors are not supported.' % dims)
+            raise ValueError("%s-dimensional vectors are not supported." % dims)
 
     def as_tuple(self, dims=3):
         # type: (Union[Vector2D, Vector3D, int]) -> Union[Tuple[float, float], Tuple[float, float, float]]
@@ -152,7 +153,7 @@ class Vector2D(Sized, Iterable):
         elif dims == 2:
             return float(self.x), float(self.y)
         else:
-            raise ValueError('%s-dimensional vectors are not supported.' % dims)
+            raise ValueError("%s-dimensional vectors are not supported." % dims)
 
     def relative_distance(self, v2):
         # type: (Vector3D) -> float
@@ -171,11 +172,12 @@ class Vector2D(Sized, Iterable):
 class Vector3D(Vector2D):
     """Three dimensional point."""
 
-    def __init__(self,
-                 x,  # type: Union[float, np.float64]
-                 y,  # type: Union[float, np.float64]
-                 z=0,  # type: Union[float, np.float64]
-                 ):
+    def __init__(
+        self,
+        x,  # type: Union[float, np.float64]
+        y,  # type: Union[float, np.float64]
+        z=0,  # type: Union[float, np.float64]
+    ):
         # type: (...) -> None
         super(Vector3D, self).__init__(x, y, z)
         self.z = float(z)
@@ -184,7 +186,7 @@ class Vector3D(Vector2D):
     def __repr__(self):
         # type: () -> str
         class_name = type(self).__name__
-        return '{}({!r}, {!r}, {!r})'.format(class_name, *self.args)
+        return "{}({!r}, {!r}, {!r})".format(class_name, *self.args)
 
     def __hash__(self):
         # type: () -> int

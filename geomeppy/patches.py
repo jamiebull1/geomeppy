@@ -27,16 +27,19 @@ from eppy.modeleditor import IDDNotSetError, namebunch, newrawobject
 from .geom.polygons import Polygon3D  # noqa
 from .geom.surfaces import set_coords
 from .geom.vectors import Vector3D  # noqa
-if False: from .idf import IDF  # noqa
+
+if False:
+    from .idf import IDF  # noqa
 
 
 class EpBunch(BaseBunch):
     """Monkeypatched EpBunch to add the setcoords function."""
 
-    def setcoords(self,
-                  poly,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
-                  ggr=None  # type: Optional[Idf_MSequence]
-                  ):
+    def setcoords(
+        self,
+        poly,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
+        ggr=None,  # type: Optional[Union[List, None, Idf_MSequence]]
+    ):
         # type: (...) -> None
         """Set the coordinates of a surface.
 
@@ -52,21 +55,23 @@ class EpBunch(BaseBunch):
             "FENESTRATIONSURFACE:DETAILED",
             "SHADING:SITE:DETAILED",
             "SHADING:BUILDING:DETAILED",
-            "SHADING:ZONE:DETAILED", ]
+            "SHADING:ZONE:DETAILED",
+        ]
         if self.key.upper() in surfaces:
             set_coords(self, poly, ggr)
         else:
             raise AttributeError
 
 
-def idfreader1(fname,  # type: str
-               iddfile,  # type: str
-               theidf,  # type: IDF
-               conv=True,  # type: Optional[bool]
-               commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
-               block=None  # type: Optional[List]
-               ):
-    # type: (...) -> Tuple[Dict[str, Idf_MSequence], List, Eplusdata, List[List[Dict[str, Any]]], Dict, Tuple[int]]
+def idfreader1(
+    fname,  # type: str
+    iddfile,  # type: str
+    theidf,  # type: IDF
+    conv=True,  # type: Optional[bool]
+    commdct=None,  # type: List[List[Dict[str, Any]]]
+    block=None,  # type: Optional[List]
+):
+    # type: (...) -> Tuple[Dict[str, Any], Optional[List[Any]], Any, List[List[Dict[str, Any]]], Any, Any]
     """Read idf file and return bunches.
 
     :param fname: Name of the IDF file to read.
@@ -84,32 +89,29 @@ def idfreader1(fname,  # type: str
     """
     versiontuple = iddversiontuple(iddfile)
     block, data, commdct, idd_index = readdatacommdct1(
-        fname,
-        iddfile=iddfile,
-        commdct=commdct,
-        block=block)
+        fname, iddfile=iddfile, commdct=commdct, block=block
+    )
     if conv:
         convertallfields(data, commdct)
     # fill gaps in idd
     if versiontuple < (8,):
-        skiplist = ["TABLE:MULTIVARIABLELOOKUP"]
+        skiplist = ["TABLE:MULTIVARIABLELOOKUP"]  # type: Optional[List[str]]
     else:
         skiplist = None
-    nofirstfields = iddgaps.missingkeys_standard(
-        commdct, data.dtls,
-        skiplist=skiplist)
+    nofirstfields = iddgaps.missingkeys_standard(commdct, data.dtls, skiplist=skiplist)
     iddgaps.missingkeys_nonstandard(block, commdct, data.dtls, nofirstfields)
     bunchdt = makebunches(data, commdct, theidf)
 
     return bunchdt, block, data, commdct, idd_index, versiontuple
 
 
-def readdatacommdct1(idfname,   # type: str
-                     iddfile='Energy+.idd',   # type: str
-                     commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
-                     block=None  # type: Optional[List]
-                     ):
-    # type: (...) -> Tuple[List, Eplusdata, List[List[Dict[str, Any]]], Dict]
+def readdatacommdct1(
+    idfname,  # type: str
+    iddfile="Energy+.idd",  # type: str
+    commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
+    block=None,  # type: Optional[List]
+):
+    # type: (...) -> Tuple[Optional[List[Any]], Any, List[List[Dict[str, Any]]], Any]
     """Read the idf file.
 
     This is patched so that the IDD index is not lost when reading a new IDF without reloading the modeleditor module.
@@ -125,24 +127,25 @@ def readdatacommdct1(idfname,   # type: str
 
     """
     if not commdct:
-        block, commlst, commdct, idd_index = parse_idd.extractidddata(iddfile)
+        block, commlst, updated_commdct, idd_index = parse_idd.extractidddata(iddfile)
         theidd = eplusdata.Idd(block, 2)
     else:
         theidd = eplusdata.Idd(block, 2)
         name2refs = iddindex.makename2refdct(commdct)
         ref2namesdct = iddindex.makeref2namesdct(name2refs)
         idd_index = dict(name2refs=name2refs, ref2names=ref2namesdct)
-        commdct = iddindex.ref2names2commdct(ref2namesdct, commdct)
+        updated_commdct = iddindex.ref2names2commdct(ref2namesdct, commdct)
     data = eplusdata.Eplusdata(theidd, idfname)
-    return block, data, commdct, idd_index
+    return block, data, updated_commdct, idd_index
 
 
-def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
-                 data,  # type: Eplusdata
-                 commdct,  # type: Optional[List[List[Dict[str, Any]]]]
-                 thisbunch,  # type: EpBunch
-                 _idf  # type: IDF
-                 ):
+def addthisbunch(
+    bunchdt,  # type: Dict[str, Idf_MSequence]
+    data,  # type: Eplusdata
+    commdct,  # type: List[List[Dict[str, Any]]]
+    thisbunch,  # type: EpBunch
+    _idf,  # type: IDF
+):
     # type: (...) -> EpBunch
     """Add an object to the IDF. Monkeypatched to return the object.
 
@@ -163,11 +166,9 @@ def addthisbunch(bunchdt,  # type: Dict[str, Idf_MSequence]
     return abunch
 
 
-def makebunches(data,  # type: Eplusdata
-                commdct,  # type: Optional[List[List[Dict[str, Any]]]]
-                theidf  # type: IDF
-                ):
-    # type: (...) -> Dict[str, Idf_MSequence]
+def makebunches(
+    data, commdct, theidf
+):  # type: (Eplusdata, List[List[Dict[str, Any]]], IDF) -> Dict[str, Idf_MSequence]
     """Make bunches with data.
 
     :param data: Eplusdata object containing representions of IDF objects.
@@ -189,11 +190,9 @@ def makebunches(data,  # type: Eplusdata
     return bunchdt
 
 
-def obj2bunch(data,  # type: Eplusdata
-              commdct,  # type: Optional[List[List[Dict[str, Any]]]]
-              obj  # type: List[str]
-              ):
-    # type: (...) -> EpBunch
+def obj2bunch(
+    data, commdct, obj
+):  # type: (Eplusdata, List[List[Dict[str, Any]]], List[str]) -> EpBunch
     """Make a new bunch object using the data object.
 
     :param data: Eplusdata object containing representions of IDF objects.
@@ -209,10 +208,11 @@ def obj2bunch(data,  # type: Eplusdata
     return abunch
 
 
-def makeabunch(commdct,  # type: List[List[Dict[str, Any]]]
-               obj,  # type: Union[List[Union[float, str]], List[str]]
-               obj_i  # type: int
-               ):
+def makeabunch(
+    commdct,  # type: List[List[Dict[str, Any]]]
+    obj,  # type: Union[List[Union[float, str]], List[str]]
+    obj_i,  # type: int
+):
     # type: (...) -> EpBunch
     """Make a bunch from the object.
 
@@ -223,8 +223,8 @@ def makeabunch(commdct,  # type: List[List[Dict[str, Any]]]
 
     """
     objidd = commdct[obj_i]
-    objfields = [comm.get('field') for comm in commdct[obj_i]]
-    objfields[0] = ['key']
+    objfields = [comm.get("field") for comm in commdct[obj_i]]  # type: List
+    objfields[0] = ["key"]
     objfields = [field[0] for field in objfields]
     obj_fields = [bunchhelpers.makefieldname(field) for field in objfields]
     bobj = EpBunch(obj, obj_fields, objidd)
@@ -250,19 +250,14 @@ class PatchedIDF(BaseIDF):
         - idd_index : dict
         """
         if self.getiddname() is None:
-            errortxt = (
-                "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)")
+            errortxt = "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)"
             raise IDDNotSetError(errortxt)
         self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = idfreader1(
-            self.idfname,
-            self.iddname,
-            self,
-            commdct=self.idd_info,
-            block=self.block,
+            self.idfname, self.iddname, self, commdct=self.idd_info, block=self.block
         )
         self.__class__.setidd(idd_info, idd_index, block, versiontuple)
 
-    def newidfobject(self, key, aname='', **kwargs):
+    def newidfobject(self, key, aname="", **kwargs):
         # type: (str, str, **Any) -> EpBunch
         """Add a new idfobject to the model.
 
@@ -285,7 +280,9 @@ class PatchedIDF(BaseIDF):
         abunch = obj2bunch(self.model, self.idd_info, obj)
         if aname:
             warnings.warn(
-                "The aname parameter should no longer be used (%s)." % aname, UserWarning)
+                "The aname parameter should no longer be used (%s)." % aname,
+                UserWarning,
+            )
             namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)  # type: Dict[str, Idf_MSequence]
         for k, v in kwargs.items():
