@@ -15,17 +15,9 @@ from geomeppy.utilities import almostequal
 
 
 class TestSetCoords:
-    def setup(self):
+    def test_set_coords(self, base_idf):
         # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_set_coords(self):
-        # type: () -> None
-        idf = self.idf
+        idf = base_idf
         ggr = idf.idfobjects["GLOBALGEOMETRYRULES"]
         wall = idf.idfobjects["BUILDINGSURFACE:DETAILED"][0]
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
@@ -254,15 +246,7 @@ class TestSimpleTestPolygons:
 class TestMatchSurfaces:
     def test_match_idf_surfaces(self, base_idf):
         # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_match_idf_surfaces(self):
-        # type: () -> None
-        idf = self.idf
+        idf = base_idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
         inside_wall = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_WALL_0002_1")
