@@ -18,7 +18,7 @@ bleach==2.1.3             # via nbconvert
 certifi==2018.4.16        # via requests
 chardet==3.0.4            # via requests
 click-plugins==1.0.3      # via fiona
-click==6.7                # via click-plugins, cligj
+click==7.0                # via click-plugins, cligj
 cligj==0.4.0              # via fiona
 cycler==0.10.0            # via matplotlib
 cython==0.28.4
@@ -26,7 +26,7 @@ decorator==4.2.1          # via eppy, ipython, traitlets
 docutils==0.14            # via sphinx
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6
-eppy==0.5.46
+eppy==0.5.47
 fiona==1.7.12
 funcsigs==1.0.2
 html5lib==1.0.1           # via bleach
@@ -34,7 +34,7 @@ idna==2.6                 # via requests
 imagesize==1.0.0          # via sphinx
 ipykernel==4.8.2          # via ipywidgets, jupyter-console, notebook, qtconsole
 ipython-genutils==0.2.0   # via nbformat, notebook, qtconsole, traitlets
-ipython==6.4.0            # via ipykernel, ipywidgets, jupyter-console
+ipython==6.5.0            # via ipykernel, ipywidgets, jupyter-console
 ipywidgets==7.2.1
 jedi==0.12.1              # via ipython
 jinja2==2.10              # via nbconvert, notebook, sphinx
