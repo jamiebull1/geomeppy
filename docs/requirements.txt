@@ -91,7 +91,7 @@ subprocess32==3.5.2
 terminado==0.8.1          # via notebook
 testpath==0.3.1           # via nbconvert
 tinynumpy==1.2.1          # via eppy
-tornado==5.0.2            # via ipykernel, jupyter-client, notebook, terminado
+tornado==5.1            # via ipykernel, jupyter-client, notebook, terminado
 tqdm==4.23.4              # via twine
 traitlets==4.3.2          # via ipykernel, ipython, ipywidgets, jupyter-client, jupyter-core, nbconvert, nbformat, notebook, qtconsole
 transforms3d==0.3.1
