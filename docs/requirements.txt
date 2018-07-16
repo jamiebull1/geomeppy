@@ -85,7 +85,7 @@ simplegeneric==0.8.1      # via ipython
 singledispatch==3.4.0.3
 six==1.11.0               # via bleach, cycler, eppy, fiona, html5lib, matplotlib, more-itertools, munch, packaging, pathlib2, prompt-toolkit, pytest, python-dateutil, singledispatch, sphinx, traitlets
 snowballstemmer==1.2.1    # via sphinx
-sphinx==1.7.5
+sphinx==1.7.6
 sphinxcontrib-websupport==1.1.0  # via sphinx
 subprocess32==3.5.2
 terminado==0.8.1          # via notebook
