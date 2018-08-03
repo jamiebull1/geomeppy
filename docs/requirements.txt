@@ -21,7 +21,7 @@ click-plugins==1.0.3      # via fiona
 click==6.7                # via click-plugins, cligj
 cligj==0.4.0              # via fiona
 cycler==0.10.0            # via matplotlib
-cython==0.28.4
+cython==0.28.5
 decorator==4.2.1          # via eppy, ipython, traitlets
 docutils==0.14            # via sphinx
 entrypoints==0.2.3        # via nbconvert
