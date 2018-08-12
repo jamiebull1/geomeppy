@@ -7,7 +7,7 @@
 #
 atomicwrites==1.1.5       # via pytest
 attrs==18.1.0             # via pytest
-beautifulsoup4==4.6.0     # via eppy
+beautifulsoup4==4.6.2     # via eppy
 cycler==0.10.0            # via matplotlib
 decorator==4.3.0          # via eppy
 eppy==0.5.46
