@@ -15,7 +15,7 @@ backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
 beautifulsoup4==4.6.0     # via eppy
 bleach==2.1.3             # via nbconvert
-certifi==2018.4.16        # via requests
+certifi==2018.8.13        # via requests
 chardet==3.0.4            # via requests
 click-plugins==1.0.3      # via fiona
 click==6.7                # via click-plugins, cligj
