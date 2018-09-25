@@ -75,7 +75,7 @@ pytest==3.6.3             # via eppy
 python-dateutil==2.7.3    # via jupyter-client, matplotlib
 pytz==2018.5              # via babel, matplotlib
 pyzmq==17.0.0             # via jupyter-client, notebook
-qtconsole==4.3.1
+qtconsole==4.4.1
 requests-toolbelt==0.8.0  # via twine
 requests==2.18.4          # via requests-toolbelt, sphinx, twine
 scandir==1.7
