@@ -80,7 +80,7 @@ requests-toolbelt==0.8.0  # via twine
 requests==2.18.4          # via requests-toolbelt, sphinx, twine
 scandir==1.7
 send2trash==1.5.0         # via notebook
-shapely==1.6.4.post1
+shapely==1.6.4.post2
 simplegeneric==0.8.1      # via ipython
 singledispatch==3.4.0.3
 six==1.11.0               # via bleach, cycler, eppy, fiona, html5lib, matplotlib, more-itertools, munch, packaging, pathlib2, prompt-toolkit, pytest, python-dateutil, singledispatch, sphinx, traitlets
