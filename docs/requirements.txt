@@ -58,7 +58,7 @@ pandocfilters==1.4.2      # via nbconvert
 parso==0.3.0              # via jedi
 pathlib2==2.3.2
 pexpect==4.6.0            # via ipython
-pickleshare==0.7.4        # via ipython
+pickleshare==0.7.5        # via ipython
 pkginfo==1.4.2            # via twine
 pluggy==0.6.0             # via pytest
 prompt-toolkit==1.0.15    # via ipython, jupyter-console
