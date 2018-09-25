@@ -13,7 +13,7 @@ decorator==4.3.0          # via eppy
 eppy==0.5.47
 kiwisolver==1.0.1         # via matplotlib
 lxml==4.2.3               # via eppy
-matplotlib==2.2.2
+matplotlib==3.0.0
 more-itertools==4.2.0     # via pytest
 munch==2.3.2              # via eppy
 numpy==1.14.5             # via matplotlib
