@@ -64,7 +64,7 @@ pluggy==0.6.0             # via pytest
 prompt-toolkit==1.0.15    # via ipython, jupyter-console
 ptyprocess==0.6.0         # via pexpect, terminado
 py==1.5.3                 # via pytest
-pyclipper==1.1.0
+pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
 pygments==2.2.0           # via ipython, jupyter-console, nbconvert, qtconsole, sphinx
 pylru==1.1.0
