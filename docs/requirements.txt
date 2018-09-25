@@ -49,7 +49,7 @@ matplotlib==2.2.2
 mistune==0.8.3            # via nbconvert
 more-itertools==4.2.0     # via pytest
 munch==2.3.2              # via eppy, fiona
-nbconvert==5.3.1          # via notebook
+nbconvert==5.4.0          # via notebook
 nbformat==4.4.0           # via ipywidgets, nbconvert, notebook
 notebook==5.5.0           # via widgetsnbextension
 numpy==1.14.4             # via matplotlib
