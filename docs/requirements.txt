@@ -26,7 +26,7 @@ decorator==4.2.1          # via eppy, ipython, traitlets
 docutils==0.14            # via sphinx
 entrypoints==0.2.3        # via nbconvert
 enum34==1.1.6
-eppy==0.5.46
+eppy==0.5.47
 fiona==1.7.12
 funcsigs==1.0.2
 html5lib==1.0.1           # via bleach
