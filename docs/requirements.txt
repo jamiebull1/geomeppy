@@ -53,7 +53,7 @@ nbconvert==5.3.1          # via notebook
 nbformat==4.4.0           # via ipywidgets, nbconvert, notebook
 notebook==5.5.0           # via widgetsnbextension
 numpy==1.14.4             # via matplotlib
-packaging==17.1           # via sphinx
+packaging==18.0           # via sphinx
 pandocfilters==1.4.2      # via nbconvert
 parso==0.3.0              # via jedi
 pathlib2==2.3.2
