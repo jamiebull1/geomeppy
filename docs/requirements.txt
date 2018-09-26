@@ -99,4 +99,4 @@ twine==1.11.0
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
-widgetsnbextension==3.2.1  # via ipywidgets
+widgetsnbextension==3.4.2  # via ipywidgets
