@@ -32,7 +32,7 @@ funcsigs==1.0.2
 html5lib==1.0.1           # via bleach
 idna==2.6                 # via requests
 imagesize==1.0.0          # via sphinx
-ipykernel==4.8.2          # via ipywidgets, jupyter-console, notebook, qtconsole
+ipykernel==5.0.0          # via ipywidgets, jupyter-console, notebook, qtconsole
 ipython-genutils==0.2.0   # via nbformat, notebook, qtconsole, traitlets
 ipython==6.5.0            # via ipykernel, ipywidgets, jupyter-console
 ipywidgets==7.2.1
