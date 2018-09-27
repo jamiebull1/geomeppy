@@ -54,7 +54,7 @@ class Vector2D(Sized, Iterable):
         return len(self.args)
 
     def __getitem__(self, key):
-        # type: (Union[int, slice]) -> Union[Tuple[float, float, float], float]
+        # type: (Union[int, slice]) -> Union[Any, List[Any]]
         return self.args[key]
 
     def __setitem__(self, key, value):
