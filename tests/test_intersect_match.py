@@ -15,17 +15,10 @@ from geomeppy.utilities import almostequal
 
 
 class TestSetCoords:
-    def setup(self):
-        # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
 
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_set_coords(self):
-        # type: () -> None
-        idf = self.idf
+    def test_set_coords(self, base_idf):
+        # type: (IDF) -> None
+        idf = base_idf
         ggr = idf.idfobjects["GLOBALGEOMETRYRULES"]
         wall = idf.idfobjects["BUILDINGSURFACE:DETAILED"][0]
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
@@ -252,17 +245,10 @@ class TestSimpleTestPolygons:
 
 
 class TestMatchSurfaces:
+
     def test_match_idf_surfaces(self, base_idf):
-        # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_match_idf_surfaces(self):
-        # type: () -> None
-        idf = self.idf
+        # type: (IDF) -> None
+        idf = base_idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
         inside_wall = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_WALL_0002_1")
@@ -280,7 +266,7 @@ class TestMatchSurfaces:
 
 class TestAdjacencies:
     def test_get_adjacencies(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         surfaces = base_idf.getsurfaces()
         adjacencies = get_adjacencies(surfaces)
         assert (u"BuildingSurface:Detailed", u"z1_WALL_0002") in adjacencies
@@ -372,7 +358,7 @@ def test_is_hole():
 
 class TestIntersectMatchRing:
     def test_intersect_idf_surfaces(self, ring_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = ring_idf
         starting = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
         intersect_idf_surfaces(idf)
@@ -392,13 +378,13 @@ class TestIntersectMatchRing:
 
 class TestIntersectMatch:
     def test_getsurfaces(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surfaces = idf.getsurfaces()
         assert len(surfaces) == 12
 
     def test_intersect_idf_surfaces(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         starting = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
         intersect_idf_surfaces(idf)
