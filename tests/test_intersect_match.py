@@ -244,7 +244,6 @@ class TestSimpleTestPolygons:
 
 
 class TestMatchSurfaces:
-
     def test_match_idf_surfaces(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
