@@ -15,7 +15,6 @@ from geomeppy.utilities import almostequal
 
 
 class TestSetCoords:
-
     def test_set_coords(self, base_idf):
         # type: (IDF) -> None
         idf = base_idf
