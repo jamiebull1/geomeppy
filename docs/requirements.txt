@@ -89,7 +89,7 @@ sphinx==1.7.5
 sphinxcontrib-websupport==1.1.0  # via sphinx
 subprocess32==3.5.2
 terminado==0.8.1          # via notebook
-testpath==0.3.1           # via nbconvert
+testpath==0.4           # via nbconvert
 tinynumpy==1.2.1          # via eppy
 tornado==5.0.2            # via ipykernel, jupyter-client, notebook, terminado
 tqdm==4.23.4              # via twine
