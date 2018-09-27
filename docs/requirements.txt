@@ -34,7 +34,7 @@ idna==2.6                 # via requests
 imagesize==1.0.0          # via sphinx
 ipykernel==4.8.2          # via ipywidgets, jupyter-console, notebook, qtconsole
 ipython-genutils==0.2.0   # via nbformat, notebook, qtconsole, traitlets
-ipython==6.5.0            # via ipykernel, ipywidgets, jupyter-console
+ipython==7.0.0            # via ipykernel, ipywidgets, jupyter-console
 ipywidgets==7.2.1
 jedi==0.12.1              # via ipython
 jinja2==2.10              # via nbconvert, notebook, sphinx
