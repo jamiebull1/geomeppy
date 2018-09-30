@@ -61,7 +61,7 @@ pexpect==4.6.0            # via ipython
 pickleshare==0.7.4        # via ipython
 pkginfo==1.4.2            # via twine
 pluggy==0.6.0             # via pytest
-prompt-toolkit==1.0.15    # via ipython, jupyter-console
+prompt-toolkit==2.0.5    # via ipython, jupyter-console
 ptyprocess==0.6.0         # via pexpect, terminado
 py==1.5.3                 # via pytest
 pyclipper==1.1.0
