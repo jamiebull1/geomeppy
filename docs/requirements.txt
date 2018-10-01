@@ -77,7 +77,7 @@ pytz==2018.5              # via babel, matplotlib
 pyzmq==17.1.2             # via jupyter-client, notebook
 qtconsole==4.4.1
 requests-toolbelt==0.8.0  # via twine
-requests==2.18.4          # via requests-toolbelt, sphinx, twine
+requests==2.19.1          # via requests-toolbelt, sphinx, twine
 scandir==1.7
 send2trash==1.5.0         # via notebook
 shapely==1.6.4.post1
