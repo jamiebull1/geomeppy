@@ -35,7 +35,7 @@ imagesize==1.1.0          # via sphinx
 ipykernel==5.0.0          # via ipywidgets, jupyter-console, notebook, qtconsole
 ipython-genutils==0.2.0   # via nbformat, notebook, qtconsole, traitlets
 ipython==7.0.1            # via ipykernel, ipywidgets, jupyter-console
-ipywidgets==7.2.1
+ipywidgets==7.4.2
 jedi==0.12.1              # via ipython
 jinja2==2.10              # via nbconvert, notebook, sphinx
 jsonschema==2.6.0         # via nbformat
