@@ -95,7 +95,7 @@ tornado==5.1.1            # via ipykernel, jupyter-client, notebook, terminado
 tqdm==4.25.0              # via twine
 traitlets==4.3.2          # via ipykernel, ipython, ipywidgets, jupyter-client, jupyter-core, nbconvert, nbformat, notebook, qtconsole
 transforms3d==0.3.1
-twine==1.11.0
+twine==1.12.1
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webencodings==0.5.1       # via html5lib
