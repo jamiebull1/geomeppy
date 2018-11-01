@@ -55,7 +55,7 @@ notebook==5.7.0           # via widgetsnbextension
 numpy==1.15.3             # via matplotlib
 packaging==18.0           # via sphinx
 pandocfilters==1.4.2      # via nbconvert
-parso==0.3.0              # via jedi
+parso==0.3.1              # via jedi
 pathlib2==2.3.2
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.5        # via ipython
