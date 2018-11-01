@@ -14,7 +14,7 @@ backports-abc==0.5
 backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
 beautifulsoup4==4.6.3     # via eppy
-bleach==2.1.4             # via nbconvert
+bleach==3.0.2             # via nbconvert
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 click-plugins==1.0.3      # via fiona
