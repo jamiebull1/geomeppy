@@ -87,7 +87,7 @@ six==1.11.0               # via bleach, cycler, eppy, fiona, html5lib, matplotli
 snowballstemmer==1.2.1    # via sphinx
 sphinx==1.8.1
 sphinxcontrib-websupport==1.1.0  # via sphinx
-subprocess32==3.5.2
+subprocess32==3.5.3
 terminado==0.8.1          # via notebook
 testpath==0.4.1           # via nbconvert
 tinynumpy==1.2.1          # via eppy
