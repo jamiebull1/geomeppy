@@ -17,7 +17,7 @@ beautifulsoup4==4.6.3     # via eppy
 bleach==3.0.2             # via nbconvert
 certifi==2018.10.15        # via requests
 chardet==3.0.4            # via requests
-click-plugins==1.0.3      # via fiona
+click-plugins==1.0.4      # via fiona
 click==7.0                # via click-plugins, cligj
 cligj==0.5.0              # via fiona
 cycler==0.10.0            # via matplotlib
