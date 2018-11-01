@@ -24,7 +24,7 @@ pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
 pyparsing==2.3.0          # via matplotlib, pydot3k
 pypoly2tri==0.0.3
-pytest==3.8.1             # via eppy
+pytest==3.9.3             # via eppy
 python-dateutil==2.7.3    # via matplotlib
 shapely==1.6.4.post2
 six==1.11.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
