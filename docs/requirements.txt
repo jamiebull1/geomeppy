@@ -72,7 +72,7 @@ pyparsing==2.3.0          # via matplotlib, packaging, pydot3k
 pypoly2tri==0.0.3
 pyproj==1.9.5.1
 pytest==3.9.3             # via eppy
-python-dateutil==2.7.3    # via jupyter-client, matplotlib
+python-dateutil==2.7.5    # via jupyter-client, matplotlib
 pytz==2018.5              # via babel, matplotlib
 pyzmq==17.1.2             # via jupyter-client, notebook
 qtconsole==4.4.1
