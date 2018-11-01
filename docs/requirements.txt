@@ -6,7 +6,7 @@
 #
 alabaster==0.7.12         # via sphinx
 appnope==0.1.0            # via ipython
-atomicwrites==1.2.0       # via pytest
+atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via pytest
 babel==2.6.0              # via sphinx
 backcall==0.1.0           # via ipython
