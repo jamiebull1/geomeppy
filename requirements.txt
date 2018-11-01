@@ -11,7 +11,7 @@ colorama==0.4.0           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.3.0          # via eppy
 eppy==0.5.48
-future==0.16.0            # via eppy
+future==0.17.1            # via eppy
 kiwisolver==1.0.1         # via matplotlib
 lxml==4.2.5               # via eppy
 matplotlib==3.0.1
