@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file ./docs/requirements.txt ./docs/requirements.in
 #
-alabaster==0.7.11         # via sphinx
+alabaster==0.7.12         # via sphinx
 appnope==0.1.0            # via ipython
 atomicwrites==1.2.0       # via pytest
 attrs==18.2.0             # via pytest
