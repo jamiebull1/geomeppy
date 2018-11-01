@@ -40,7 +40,7 @@ jedi==0.13.1              # via ipython
 jinja2==2.10              # via nbconvert, notebook, sphinx
 jsonschema==2.6.0         # via nbformat
 jupyter-client==5.2.3     # via ipykernel, jupyter-console, notebook, qtconsole
-jupyter-console==5.2.0
+jupyter-console==6.0.0
 jupyter-core==4.4.0       # via jupyter-client, nbconvert, nbformat, notebook, qtconsole
 kiwisolver==1.0.1         # via matplotlib
 lxml==4.2.4               # via eppy
