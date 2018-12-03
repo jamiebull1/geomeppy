@@ -7,25 +7,25 @@
 atomicwrites==1.2.1       # via pytest
 attrs==18.2.0             # via pytest
 beautifulsoup4==4.6.3     # via eppy
-colorama==0.3.9           # via pytest
+colorama==0.4.1           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.3.0          # via eppy
 eppy==0.5.48
-future==0.16.0            # via eppy
+future==0.17.1            # via eppy
 kiwisolver==1.0.1         # via matplotlib
 lxml==4.2.5               # via eppy
-matplotlib==3.0.0
+matplotlib==3.0.2
 more-itertools==4.3.0     # via pytest
 munch==2.3.2              # via eppy
-numpy==1.15.2             # via matplotlib
-pluggy==0.7.1             # via pytest
-py==1.6.0                 # via pytest
+numpy==1.15.4             # via matplotlib
+pluggy==0.8.0             # via pytest
+py==1.7.0                 # via pytest
 pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
-pyparsing==2.2.2          # via matplotlib, pydot3k
+pyparsing==2.3.0          # via matplotlib, pydot3k
 pypoly2tri==0.0.3
-pytest==3.8.1             # via eppy
-python-dateutil==2.7.3    # via matplotlib
+pytest==4.0.1             # via eppy
+python-dateutil==2.7.5    # via matplotlib
 shapely==1.6.4.post2
 six==1.11.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
 tinynumpy==1.2.1          # via eppy
