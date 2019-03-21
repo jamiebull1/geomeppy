@@ -73,3 +73,5 @@ fabric.properties
 
 # MyPy
 .mypy_cache
+
+venv
