@@ -33,7 +33,6 @@ def set_default_constructions(idf):
         "Project Floor",
         "Project Flat Roof",
         "Project Ceiling",
-        "Project External Window",
         "Project Door",
     ]
     for construction in constructions:
@@ -48,6 +47,17 @@ def set_default_constructions(idf):
         Conductivity=0.1,
         Density=1000,
         Specific_Heat=1000,
+    )
+
+    idf.newidfobject(
+        "CONSTRUCTION", Name="Project External Window", Outside_Layer="DefaultGlazing"
+    )
+    idf.newidfobject(
+        "WINDOWMATERIAL:SIMPLEGLAZINGSYSTEM",
+        Name="DefaultGlazing",
+        UFactor=2.7,
+        Solar_Heat_Gain_Coefficient=0.763,
+        Visible_Transmittance=0.8,
     )
 
     for surface in idf.getsurfaces():
@@ -86,7 +96,7 @@ def set_default_construction(surface):
 
 
 def set_wwr(
-    idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
+        idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
 ):
     # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
     """Set the window to wall ratio on all external walls.
@@ -235,7 +245,7 @@ def translate_to_origin(idf):
 
 
 def translate(
-    surfaces, vector
+        surfaces, vector
 ):  # type: (Idf_MSequence, Union[Tuple[float, float], Vector2D, Vector3D]) -> None
     """Translate all surfaces by a vector.
 
