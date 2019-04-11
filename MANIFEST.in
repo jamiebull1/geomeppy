@@ -1,1 +1,3 @@
 include geomeppy/io/default.mtl
+include geomeppy/requirements.in
+include geomeppy/test-requirements.in
