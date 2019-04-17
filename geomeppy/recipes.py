@@ -96,7 +96,7 @@ def set_default_construction(surface):
 
 
 def set_wwr(
-        idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
+    idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
 ):
     # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
     """Set the window to wall ratio on all external walls.
@@ -245,7 +245,7 @@ def translate_to_origin(idf):
 
 
 def translate(
-        surfaces, vector
+    surfaces, vector
 ):  # type: (Idf_MSequence, Union[Tuple[float, float], Vector2D, Vector3D]) -> None
     """Translate all surfaces by a vector.
 
