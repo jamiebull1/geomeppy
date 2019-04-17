@@ -46,7 +46,7 @@ setup(
         "Topic :: Scientific/Engineering",
     ],
     extras_require={
-        ':python_version=="3.6"': ["mypy==0.630", "black==18.9b0"],
+        ':python_version=="3.6"': ["mypy==0.630", "black==19.3b0"],
         "testing": test_requires,
     },  # static type checking
     include_package_data=True,
