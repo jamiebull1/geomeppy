@@ -269,7 +269,7 @@ class IDF(PatchedIDF):
             try:
                 for name, coords in core_perim_zone_coordinates(
                     block.coordinates, block.perim_depth
-                )[0].items():
+                )[0].iteritems():
                     block = Block(
                         name=name,
                         coordinates=coords,

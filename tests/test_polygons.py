@@ -177,7 +177,7 @@ def test_reflect():
     """
     Test that a polygon with inverted orientation is seen as coplanar with the
     original polygon, but not seen as equal.
-    
+
     """
     poly3d = Polygon3D([(0, 0, 0), (0, 1, 1), (1, 1, 1), (1, 0, 0)])
     poly3d_inv = poly3d.invert_orientation()
@@ -227,10 +227,10 @@ def test_rotate():
 def test_union_2D_polys_single():
     # type: () -> None
     """Simplest test for union_2D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the expected union shape is not returned.
-    
+
     """
     # surface is already a flat plane with z == 0
     s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
@@ -251,10 +251,10 @@ def test_union_2D_polys_single():
 def test_intersect_2D_polys_single():
     # type: () -> None
     """Simplest test for intersect_2D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the expected overlapping shape is not returned.
-    
+
     """
     # surface is already a flat plane with z == 0
     s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
@@ -273,10 +273,10 @@ def test_intersect_2D_polys_single():
 def test_difference_2D_polys_single():
     # type: () -> None
     """Simplest test for difference_2D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the two original polygons do not have the intersection removed.
-    
+
     """
     s1 = Polygon2D([(0, 2), (2, 2), (2, 0), (0, 0)])  # clockwise
     s2 = Polygon2D([(1, 3), (3, 3), (3, 1), (1, 1)])  # clockwise
@@ -294,10 +294,10 @@ def test_difference_2D_polys_single():
 def test_union_3D_polys_single():
     # type: () -> None
     """Simplest test for union_3D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the expected union shape is not returned.
-    
+
     """
     # surface is already a flat plane with z == 0
     s1 = Polygon3D([(0, 2, 0), (2, 2, 0), (2, 0, 0), (0, 0, 0)])  # clockwise
@@ -329,10 +329,10 @@ def test_union_3D_polys_single():
 def test_intersect_3D_polys_single():
     # type: () -> None
     """Simplest test for intersect_3D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the expected overlapping shape is not returned.
-    
+
     """
     # surface is already a flat plane with z == 0
     s1 = Polygon3D([(0, 2, 0), (2, 2, 0), (2, 0, 0), (0, 0, 0)])  # clockwise
@@ -346,10 +346,10 @@ def test_intersect_3D_polys_single():
 def test_difference_3D_polys_single():
     # type: () -> None
     """Simplest test for difference_3D_polys
-    
+
     This has two squares in the horizontal plane which overlap in one place.
     Fails if the two original polygons do not have the intersection removed.
-    
+
     """
     # surface is already a flat plane with z == 0
     s1 = Polygon3D([(0, 2, 0), (2, 2, 0), (2, 0, 0), (0, 0, 0)])  # clockwise
@@ -409,7 +409,7 @@ def test_difference_no_difference():
 def test_intersect_3D_polys_multi():
     # type: () -> None
     """Test for intersect_3D_polys with two overlapping regions
-    
+
     This has two shapes in the horizontal plane which overlap in two places.
     Fails if the overlapping shapes are not returned as a new polygons.
 
@@ -470,7 +470,7 @@ def test_intersect_3D_polys_multi():
 def test_difference_3D_polys_multi():
     # type: () -> None
     """Test for difference_3D_polys with two overlapping regions
-    
+
     This has two shapes in the horizontal plane which overlap in two places.
     Fails if the overlapping shapes are not returned as a new polygons.
 
@@ -572,7 +572,9 @@ def test_surface_normal():
     )
     assert list(poly.normal_vector) == [0.0, 0.0, -1.0]  # for a horizontal surface
 
-    poly = Polygon3D([[1., 1.1, 0.5], [1., 1.1, 0.], [1., 2.1, 0.], [1., 2.1, 0.5]])
+    poly = Polygon3D(
+        [[1.0, 1.1, 0.5], [1.0, 1.1, 0.0], [1.0, 2.1, 0.0], [1.0, 2.1, 0.5]]
+    )
     assert list(poly.normal_vector) == [1.0, 0.0, 0.0]  # for a horizontal surface
 
 

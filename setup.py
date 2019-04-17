@@ -23,13 +23,13 @@ def read_rst(f):
 setup(
     name="geomeppy",
     packages=["geomeppy", "geomeppy.geom", "geomeppy.io", "tests"],
-    version="0.4.12",
+    version="0.7.3",
     description="Geometry editing for E+ idf files",
     long_description=read_rst("README.rst"),
     author="Jamie Bull",
     author_email="jamie.bull@oco-carbon.com",
     url="https://github.com/jamiebull1/geomeppy",
-    download_url="https://github.com/jamiebull1/geomeppy/tarball/v0.4.12",
+    download_url="https://github.com/jamiebull1/geomeppy/tarball/v0.7.3",
     license="MIT License",
     keywords=["EnergyPlus", "geometry", "building performance simulation"],
     platforms="any",
@@ -46,7 +46,7 @@ setup(
         "Topic :: Scientific/Engineering",
     ],
     extras_require={
-        ':python_version=="3.6"': ["mypy==0.610", "black==18.6b2"],
+        ':python_version=="3.6"': ["mypy==0.630", "black==18.9b0"],
         "testing": test_requires,
     },  # static type checking
     include_package_data=True,

@@ -15,17 +15,9 @@ from geomeppy.utilities import almostequal
 
 
 class TestSetCoords:
-    def setup(self):
-        # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_set_coords(self):
-        # type: () -> None
-        idf = self.idf
+    def test_set_coords(self, base_idf):
+        # type: (IDF) -> None
+        idf = base_idf
         ggr = idf.idfobjects["GLOBALGEOMETRYRULES"]
         wall = idf.idfobjects["BUILDINGSURFACE:DETAILED"][0]
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
@@ -51,9 +43,9 @@ class TestSimpleTestPolygons:
         # type: () -> None
         """
         The intersect function should just return the two polygons.
-         ___  
+         ___
         | 1 |
-        |_2_| 
+        |_2_|
 
         """
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
@@ -69,13 +61,13 @@ class TestSimpleTestPolygons:
         # type: () -> None
         """
         The intersect function should return four surfaces.
-         __ ___ __ 
-        | 1| 1 |  |  
-        |__|_2_|_2| 
+         __ ___ __
+        | 1| 1 |  |
+        |__|_2_|_2|
 
-         __ ___ __ 
-        | 1| 3 |  |  
-        |__|_4_|_2| 
+         __ ___ __
+        | 1| 3 |  |
+        |__|_4_|_2|
 
         """
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (2, 0, 0), (2, 1, 0)])
@@ -94,18 +86,18 @@ class TestSimpleTestPolygons:
     def test_simple_hole(self):
         # type: () -> None
         """
-         _________ 
-        | 1 ___   |  
+         _________
+        | 1 ___   |
         |  | 2 |  |
-        |  |___|  | 
+        |  |___|  |
         |_________|
-        
-         ________ 
-        |\ ___   |  
+
+         ________
+        |\ ___   |
         |1| 2 | 4|
-        | |_3_|  | 
+        | |_3_|  |
         |/_______|
-        
+
         """
         poly1 = Polygon3D([(0, 4, 0), (0, 0, 0), (4, 0, 0), (4, 4, 0)])
         poly2 = Polygon3D([(2, 2, 0), (2, 1, 0), (1, 1, 0), (1, 2, 0)])
@@ -138,13 +130,13 @@ class TestSimpleTestPolygons:
         # type: () -> None
         """
          __ ___ __ __
-        | 1| 1 | 3| 3|  
-        |__|_2_|_2|__| 
+        | 1| 1 | 3| 3|
+        |__|_2_|_2|__|
 
          __ ___ __ __
-        | 1| 2 | 4| 6|  
-        |__|_3_|_5|__| 
-        
+        | 1| 2 | 4| 6|
+        |__|_3_|_5|__|
+
         """
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (2, 0, 0), (2, 1, 0)])
         poly2 = Polygon3D([(3, 1, 0), (3, 0, 0), (1, 0, 0), (1, 1, 0)])
@@ -170,17 +162,17 @@ class TestSimpleTestPolygons:
         # type: () -> None
         """
          __________
-        |__1_______| 
+        |__1_______|
         | 1 | 2 |1 |
         |_2_|   |2_|
         |__________|
-        
+
          __________
-        |__1________| 
+        |__1________|
         | 2 | 4 | 5 |
         |_3_|   |_6_|
         |___________|
-        
+
         """
         poly1 = Polygon3D([(0, 2, 0), (0, 0, 0), (3, 0, 0), (3, 2, 0)])
         poly2 = Polygon3D(
@@ -235,7 +227,7 @@ class TestSimpleTestPolygons:
         | 2 |
         |_3_|
         |_4_|
-         
+
         """
         poly1 = Polygon3D([(0, 0, 1), (0, 0, 0), (2, 0, 0), (2, 0, 1)])
         poly2 = Polygon3D([(3, 0, 1), (3, 0, 0), (1, 0, 0), (1, 0, 1)])
@@ -253,16 +245,8 @@ class TestSimpleTestPolygons:
 
 class TestMatchSurfaces:
     def test_match_idf_surfaces(self, base_idf):
-        # type: () -> None
-        iddfhandle = StringIO(iddcurrent.iddtxt)
-        if IDF.getiddname() == None:
-            IDF.setiddname(iddfhandle)
-
-        self.idf = IDF(StringIO(idf_txt))
-
-    def test_match_idf_surfaces(self):
-        # type: () -> None
-        idf = self.idf
+        # type: (IDF) -> None
+        idf = base_idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
         inside_wall = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_WALL_0002_1")
@@ -280,7 +264,7 @@ class TestMatchSurfaces:
 
 class TestAdjacencies:
     def test_get_adjacencies(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         surfaces = base_idf.getsurfaces()
         adjacencies = get_adjacencies(surfaces)
         assert (u"BuildingSurface:Detailed", u"z1_WALL_0002") in adjacencies
@@ -306,7 +290,7 @@ def test_real_intersect():
     """
     Test that we can make a previously failing test pass by moving to the
     origin first.
-    
+
     """
     poly1 = Polygon3D(
         [
@@ -372,7 +356,7 @@ def test_is_hole():
 
 class TestIntersectMatchRing:
     def test_intersect_idf_surfaces(self, ring_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = ring_idf
         starting = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
         intersect_idf_surfaces(idf)
@@ -392,13 +376,13 @@ class TestIntersectMatchRing:
 
 class TestIntersectMatch:
     def test_getsurfaces(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         surfaces = idf.getsurfaces()
         assert len(surfaces) == 12
 
     def test_intersect_idf_surfaces(self, base_idf):
-        # type: () -> None
+        # type: (IDF) -> None
         idf = base_idf
         starting = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
         intersect_idf_surfaces(idf)
