@@ -79,24 +79,21 @@ def view_polygons(polygons):
 
     plt.show()
 
-	
+
 def _get_geometry_rules(idf):
     """Get the geometry rules from the IDF
     """
     rule_types = ["GLOBALGEOMETRYRULES"]
-    rule = []
-    for rule_type in rule_types:
-        rule.extend(idf.idfobjects[rule_type])
+    rule = [idf.idfobjects[rule_type] for rule_type in rule_types]
 
     return rule
+
 
 def _get_zones(idf):
     """Get the zones from the IDF
     """
     zone_types = ["ZONE"]
-    zones = []
-    for zone_type in zone_types:
-        zones.extend(idf.idfobjects[zone_type])
+    zone = [idf.idfobjects[zone_type] for zone_type in zone_types]
 
     return zones
 
@@ -134,7 +131,9 @@ def _get_collections(idf, opacity=1):
     walls = _get_collection("wall", surfaces, opacity, zones, facecolor="lightyellow")
     floors = _get_collection("floor", surfaces, opacity, zones, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, zones, facecolor="firebrick")
-    windows = _get_collection("window", surfaces, opacity, zones, facecolor="cornflowerblue")
+    windows = _get_collection(
+        "window", surfaces, opacity, zones, facecolor="cornflowerblue"
+    )
 
     shading_surfaces = _get_shading(idf)
     shading = Poly3DCollection(
@@ -147,13 +146,15 @@ def _get_collections(idf, opacity=1):
     return walls, roofs, floors, windows, shading
 
 
-def _get_collection(surface_type, surfaces, opacity, zones, facecolor, edgecolors="black"):
+def _get_collection(
+    surface_type, surfaces, opacity, zones, facecolor, edgecolors="black"
+):
     """Make collections from a list of EnergyPlus surfaces."""
     origin = {}
-    
+
     # if coordinate system is relative,
     # get the zone origin coordinates for each surface
-    if len(zones) >= 1:
+    if zones:
         coords = []
         for s in surfaces:
             if s.Surface_Type.lower() != "window":
@@ -169,11 +170,15 @@ def _get_collection(surface_type, surfaces, opacity, zones, facecolor, edgecolor
                 if s.Surface_Type.lower() == "window":
                     origin[s.Name]
                 for crd_set in getcoords(s):
-                    adj_coords.append(tuple([crd + org for crd, org in zip(crd_set, origin[s.Name])]))
+                    adj_coords.append(
+                        tuple([crd + org for crd, org in zip(crd_set, origin[s.Name])])
+                    )
                 coords.append(adj_coords)
     else:
         coords = [
-            getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
+            getcoords(s)
+            for s in surfaces
+            if s.Surface_Type.lower() == surface_type.lower()
         ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
