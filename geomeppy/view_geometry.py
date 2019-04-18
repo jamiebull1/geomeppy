@@ -93,7 +93,7 @@ def _get_zones(idf):
     """Get the zones from the IDF
     """
     zone_types = ["ZONE"]
-    zone = [idf.idfobjects[zone_type] for zone_type in zone_types]
+    zones = [idf.idfobjects[zone_type] for zone_type in zone_types]
 
     return zones
 
