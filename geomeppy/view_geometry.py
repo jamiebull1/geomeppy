@@ -156,29 +156,38 @@ def _get_collection(
     # get the zone origin coordinates for each surface
     if zones:
         coords = []
-        for s in surfaces:
-            if s.Surface_Type.lower() != "window":
-                zname = s.Zone_Name
+        for surface in surfaces:
+            if surface.Surface_Type.lower() != "window":
+                zname = surface.Zone_Name
                 for zone in zones:
                     if zone.Name == zname:
-                        origin[s.Name] = (zone.X_Origin, zone.Y_Origin, zone.Z_Origin)
-        for s in surfaces:
-            if s.Surface_Type.lower() == "window":
-                origin[s.Name] = origin[s.Building_Surface_Name]
-            if s.Surface_Type.lower() == surface_type.lower():
+                        origin[surface.Name] = (
+                            zone.X_Origin,
+                            zone.Y_Origin,
+                            zone.Z_Origin,
+                        )
+        for surface in surfaces:
+            if surface.Surface_Type.lower() == "window":
+                origin[surface.Name] = origin[surface.Building_Surface_Name]
+            if surface.Surface_Type.lower() == surface_type.lower():
                 adj_coords = []
-                if s.Surface_Type.lower() == "window":
-                    origin[s.Name]
-                for crd_set in getcoords(s):
+                if surface.Surface_Type.lower() == "window":
+                    origin[surface.Name]
+                for crd_set in getcoords(surface):
                     adj_coords.append(
-                        tuple([crd + org for crd, org in zip(crd_set, origin[s.Name])])
+                        tuple(
+                            [
+                                crd + org
+                                for crd, org in zip(crd_set, origin[surface.Name])
+                            ]
+                        )
                     )
                 coords.append(adj_coords)
     else:
         coords = [
-            getcoords(s)
-            for s in surfaces
-            if s.Surface_Type.lower() == surface_type.lower()
+            getcoords(surface)
+            for surface in surfaces
+            if surface.Surface_Type.lower() == surface_type.lower()
         ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
