@@ -84,7 +84,7 @@ def _get_geometry_rules(idf):
     """Get the geometry rules from the IDF
     """
     rule_types = ["GLOBALGEOMETRYRULES"]
-    rule = [idf.idfobjects[rule_type] for rule_type in rule_types]
+    rule = [idf.idfobjects[rule_type][0] for rule_type in rule_types]
 
     return rule
 
@@ -93,7 +93,7 @@ def _get_zones(idf):
     """Get the zones from the IDF
     """
     zone_types = ["ZONE"]
-    zones = [idf.idfobjects[zone_type] for zone_type in zone_types]
+    zones = [idf.idfobjects[zone_type] for zone_type in zone_types][0]
 
     return zones
 
@@ -159,7 +159,8 @@ def _get_collection(
         for surface in surfaces:
             if surface.Surface_Type.lower() != "window":
                 zname = surface.Zone_Name
-                for zone in zones:
+                for i in range(len(zones)):
+                    zone = zones[i]
                     if zone.Name == zname:
                         origin[surface.Name] = (
                             zone.X_Origin,
