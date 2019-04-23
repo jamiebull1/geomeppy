@@ -36,6 +36,37 @@ def base_idf():
     return IDF(StringIO(base_idf_txt))
 
 
+relative_idf_txt = """
+    Version, 8.5;
+    Building, Building 1;
+    GlobalGeometryRules, UpperLeftCorner, Counterclokcwise, Relative;
+    Zone, Thermal Zone: Space 101, , 6, 0, 0;
+    Zone, Thermal Zone: Space 102, , 16.25, 0, 0;
+    BuildingSurface:Detailed, Surface 1, Floor, , Thermal Zone: Space 101, Ground, , NoSun, NoWind, , , 0, 6, 0, 0, 0, 0, -6, 0, 0, -6, 6, 0;
+    BuildingSurface:Detailed, Surface 2, Wall, , Thermal Zone: Space 101, Outdoors, , SunExposed, WindExposed, , , -6, 0, 3, -6, 0, 0, 0, 0, 0, 0, 0, 3;
+    BuildingSurface:Detailed, Surface 3, Wall, , Thermal Zone: Space 101, Outdoors, , SunExposed, WindExposed, , , -6, 6, 3, -6, 6, 0, -6, 0, 0, -6, 0, 3;
+    BuildingSurface:Detailed, Surface 4, Wall, , Thermal Zone: Space 101, Outdoors, , SunExposed, WindExposed, , , 0, 6, 3, 0, 6, 0, -6, 6, 0, -6, 6, 3;
+    BuildingSurface:Detailed, Surface 5, Wall, , Thermal Zone: Space 101, Outdoors, , SunExposed, WindExposed, , , 0, 0, 3, 0, 0, 0, 0, 6, 0, 0, 6, 3;
+    BuildingSurface:Detailed, Surface 6, Roof, , Thermal Zone: Space 101, Outdoors, , SunExposed, WindExposed, , , 0, 0, 3, 0, 6, 3, -6, 6, 3, -6, 0, 3;
+    BuildingSurface:Detailed, Surface 7, Floor, , Thermal Zone: Space 102, Ground, , NoSun, NoWind, , , 0, 6, 0, 0, 0, 0, -6, 0, 0, -6, 6, 0;
+    BuildingSurface:Detailed, Surface 8, Wall, , Thermal Zone: Space 102, Outdoors, , SunExposed, WindExposed, , , -6, 0, 3, -6, 0, 0, 0, 0, 0, 0, 0, 3;
+    BuildingSurface:Detailed, Surface 9, Wall, , Thermal Zone: Space 102, Outdoors, , SunExposed, WindExposed, , , 0, 6, 3, 0, 6, 0, -6, 6, 0, -6, 6, 3;
+    BuildingSurface:Detailed, Surface 10, Wall, , Thermal Zone: Space 102, Outdoors, , SunExposed, WindExposed, , , 0, 0, 3, 0, 0, 0, 0, 6, 0, 0, 6, 3;
+    BuildingSurface:Detailed, Surface 11, Wall, , Thermal Zone: Space 102, Outdoors, , SunExposed, WindExposed, , , -6, 6, 3, -6, 6, 0, -6, 0, 0, -6, 0, 3;
+    BuildingSurface:Detailed, Surface 12, Roof, , Thermal Zone: Space 102, Outdoors, , SunExposed, WindExposed, , , 0, 0, 3, 0, 6, 3, -6, 6, 3, -6, 0, 3;
+    """
+
+
+@pytest.fixture()
+def relative_idf():
+    """A two-zone model with zone origin relative coordinates."""
+    iddfhandle = StringIO(iddcurrent.iddtxt)
+    if IDF.getiddname() == None:
+        IDF.setiddname(iddfhandle)
+
+    return IDF(StringIO(relative_idf_txt))
+
+
 ring_idf_txt = """
     Version, 8.5;
     Building, Building 1, , , , , , , ;
