@@ -10,7 +10,7 @@ beautifulsoup4==4.7.1     # via eppy
 colorama==0.4.1           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.3.2          # via eppy
-eppy==0.5.48
+eppy==0.5.51
 future==0.17.1            # via eppy
 kiwisolver==1.0.1         # via matplotlib
 lxml==4.3.0               # via eppy
@@ -24,7 +24,6 @@ pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
 pyparsing==2.3.1          # via matplotlib, pydot3k
 pypoly2tri==0.0.3
-pytest==4.2.0             # via eppy
 python-dateutil==2.7.5    # via matplotlib
 shapely==1.6.4.post2
 six==1.12.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
