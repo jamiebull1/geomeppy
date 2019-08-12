@@ -48,7 +48,7 @@ def view_idf(fname=None, idf_txt=None, test=False):
         ax.add_collection3d(c)
 
     # calculate and set the axis limits
-    limits = _get_limits(idf=idf)
+    limits = _get_limits(collections=collections)
     ax.set_xlim(limits["x"])
     ax.set_ylim(limits["y"])
     ax.set_zlim(limits["z"])
@@ -80,6 +80,24 @@ def view_polygons(polygons):
     plt.show()
 
 
+def _get_geometry_rules(idf):
+    """Get the geometry rules from the IDF
+    """
+    rule_types = ["GLOBALGEOMETRYRULES"]
+    rule = [idf.idfobjects[rule_type][0] for rule_type in rule_types]
+
+    return rule
+
+
+def _get_zones(idf):
+    """Get the zones from the IDF
+    """
+    zone_types = ["ZONE"]
+    zones = [idf.idfobjects[zone_type] for zone_type in zone_types][0]
+
+    return zones
+
+
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
@@ -104,11 +122,18 @@ def _get_shading(idf):
 def _get_collections(idf, opacity=1):
     """Set up 3D collections for each surface type."""
     surfaces = _get_surfaces(idf)
+    if _get_geometry_rules(idf)[0].Coordinate_System.lower() == "relative":
+        zones = _get_zones(idf)
+    else:
+        zones = []
+
     # set up the collections
-    walls = _get_collection("wall", surfaces, opacity, facecolor="lightyellow")
-    floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
-    roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
-    windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
+    walls = _get_collection("wall", surfaces, opacity, zones, facecolor="lightyellow")
+    floors = _get_collection("floor", surfaces, opacity, zones, facecolor="dimgray")
+    roofs = _get_collection("roof", surfaces, opacity, zones, facecolor="firebrick")
+    windows = _get_collection(
+        "window", surfaces, opacity, zones, facecolor="cornflowerblue"
+    )
 
     shading_surfaces = _get_shading(idf)
     shading = Poly3DCollection(
@@ -121,11 +146,50 @@ def _get_collections(idf, opacity=1):
     return walls, roofs, floors, windows, shading
 
 
-def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
+def _get_collection(
+    surface_type, surfaces, opacity, zones, facecolor, edgecolors="black"
+):
     """Make collections from a list of EnergyPlus surfaces."""
-    coords = [
-        getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
-    ]
+    origin = {}
+
+    # if coordinate system is relative,
+    # get the zone origin coordinates for each surface
+    if zones:
+        coords = []
+        for surface in surfaces:
+            if surface.Surface_Type.lower() != "window":
+                zname = surface.Zone_Name
+                for i in range(len(zones)):
+                    zone = zones[i]
+                    if zone.Name == zname:
+                        origin[surface.Name] = (
+                            zone.X_Origin,
+                            zone.Y_Origin,
+                            zone.Z_Origin,
+                        )
+        for surface in surfaces:
+            if surface.Surface_Type.lower() == "window":
+                origin[surface.Name] = origin[surface.Building_Surface_Name]
+            if surface.Surface_Type.lower() == surface_type.lower():
+                adj_coords = []
+                if surface.Surface_Type.lower() == "window":
+                    origin[surface.Name]
+                for crd_set in getcoords(surface):
+                    adj_coords.append(
+                        tuple(
+                            [
+                                crd + org
+                                for crd, org in zip(crd_set, origin[surface.Name])
+                            ]
+                        )
+                    )
+                coords.append(adj_coords)
+    else:
+        coords = [
+            getcoords(surface)
+            for surface in surfaces
+            if surface.Surface_Type.lower() == surface_type.lower()
+        ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
         trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors
@@ -148,7 +212,7 @@ def _make_collections(polygons, opacity=1):
     return collection
 
 
-def _get_limits(idf=None, polygons=None):
+def _get_limits(idf=None, polygons=None, collections=None):
     """Get limits for the x, y and z axes so the plot is fitted to the axes."""
     if polygons:
         x = [pt[0] for color in polygons for p in polygons[color] for pt in p]
@@ -161,6 +225,19 @@ def _get_limits(idf=None, polygons=None):
         x = [pt[0] for s in surfaces for pt in getcoords(s)]
         y = [pt[1] for s in surfaces for pt in getcoords(s)]
         z = [pt[2] for s in surfaces for pt in getcoords(s)]
+
+    elif collections:
+
+        x = []
+        y = []
+        z = []
+
+        for c in collections:
+            xdata, ydata, zdata, _ = c._vec
+            for x_i, y_i, z_i in zip(xdata, ydata, zdata):
+                x.append(x_i)
+                y.append(y_i)
+                z.append(z_i)
 
     max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
 
