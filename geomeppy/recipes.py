@@ -236,12 +236,14 @@ def translate_to_origin(idf):
     """
     surfaces = idf.getsurfaces()
     subsurfaces = idf.getsubsurfaces()
+    shading_surfaces = idf.getshadingsurfaces()
 
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
     translate(subsurfaces, (-min_x, -min_y))
+    translate(shading_surfaces, (-min_x, -min_y))
 
 
 def translate(
