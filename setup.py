@@ -4,13 +4,13 @@ from setuptools import setup
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-with open("requirements.in") as f:
+with open(os.path.join(THIS_DIR, "requirements.in")) as f:
     install_requires = [line for line in f if line and line[0] not in "#-"]
 
-with open("test-requirements.in") as f:
+with open(os.path.join(THIS_DIR, "test-requirements.in")) as f:
     test_requires = [line for line in f if line and line[0] not in "#-"]
 
-with open("README.md") as f:
+with open(os.path.join(THIS_DIR, "README.md")) as f:
     long_description = f.read()
 
 setup(
