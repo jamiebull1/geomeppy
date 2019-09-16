@@ -71,6 +71,10 @@ fabric.properties
 *__pycache__
 *.egg-info
 
+# build files
+build
+dist
+
 # MyPy
 .mypy_cache
 
