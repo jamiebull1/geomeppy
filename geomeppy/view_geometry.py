@@ -93,7 +93,7 @@ def _get_surfaces(idf):
 
 def _get_shading(idf):
     """Get the shading surfaces from the IDF."""
-    shading_types = ["SHADING:ZONE:DETAILED"]
+    shading_types = ["SHADING:ZONE:DETAILED", "SHADING:SITE:DETAILED"]
     shading = []
     for shading_type in shading_types:
         shading.extend(idf.idfobjects[shading_type])
