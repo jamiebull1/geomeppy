@@ -2,7 +2,6 @@ import os
 
 from setuptools import setup
 
-
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 with open("requirements.in") as f:
@@ -11,21 +10,16 @@ with open("requirements.in") as f:
 with open("test-requirements.in") as f:
     test_requires = [line for line in f if line and line[0] not in "#-"]
 
-
-def read_rst(f):
-    try:
-        with open(os.path.join(THIS_DIR, f), "r") as f_in:
-            return f_in.read()
-    except:
-        return "GeomEppy"
-
+with open("README.md") as f:
+    long_description = f.read()
 
 setup(
     name="geomeppy",
     packages=["geomeppy", "geomeppy.geom", "geomeppy.io", "tests"],
     version="0.9.1",
     description="Geometry editing for E+ idf files",
-    long_description=read_rst("README.rst"),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Jamie Bull",
     author_email="jamie.bull@oco-carbon.com",
     url="https://github.com/jamiebull1/geomeppy",
