@@ -1,3 +1,4 @@
 include geomeppy/io/default.mtl
 include requirements.in
 include test-requirements.in
+include README.md
