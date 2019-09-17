@@ -1,6 +1,19 @@
+import os
+import shutil
+
+import pytest
+
 from geomeppy import IDF
 
 
+@pytest.fixture
+def tmp_dir():
+    os.mkdir("tests/tutorial")
+    yield
+    shutil.rmtree("tests/tutorial")
+
+
+@pytest.mark.usefixtures("tmp_dir")
 def test_tutorial():
     IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
     idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
@@ -11,5 +24,5 @@ def test_tutorial():
     idf.set_default_constructions()
     idf.intersect_match()
     idf.set_wwr(0.6, construction="Project External Window")
-    idf.to_obj("boring_hut.obj")
-    idf.run()
+    idf.to_obj("tests/tutorial/boring_hut.obj")
+    idf.run(output_directory="tests/tutorial")

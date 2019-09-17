@@ -64,15 +64,15 @@ Next we want to create our basic model, so we'll open a Python interpreter.
 
 From now on, we're working in the Python interpreter, indicated by the ``>>>`` prompt.
 
-Be aware that this tutorial is written for the Mac and for EnergyPlus 8.8.0.
+Be aware that this tutorial is written for the Mac and for EnergyPlus 9.1.0.
 
 If you are on Windows or Linux machine or have a different version of EnergyPlus installed, you'll need to replace the path to the EnergyPlus installation folder with the appropriate path.
 
-For example, on Windows, this is usually ``C:/EnergyPlusV8-8-0``, and on Linux, ``/usr/local/EnergyPlus-8-8-0``.
+For example, on Windows, this is usually ``C:/EnergyPlusV9-1-0``, and on Linux, ``/usr/local/EnergyPlus-9-1-0``.
 
     >>> from geomeppy import IDF
-    >>> IDF.setiddname('/Applications/EnergyPlus-8-8-0/Energy+.idd')
-    >>> idf = IDF('/Applications/EnergyPlus-8-8-0/ExampleFiles/Minimal.idf')
+    >>> IDF.setiddname('/Applications/EnergyPlus-9-1-0/Energy+.idd')
+    >>> idf = IDF('/Applications/EnergyPlus-9-1-0/ExampleFiles/Minimal.idf')
 
 Now we have imported an EnergyPlus IDF file which contains the bare minimum required to be able to run successfully. We need to add a weather file to our IDF object first though.
 
@@ -113,10 +113,12 @@ You should see an output something like the following:
 
 .. code::
 
+    C:\EnergyPlusV9-1-0\energyplus.exe --idd C:/EnergyPlusV9-1-0/Energy+.idd --output-directory C:\Users\jamie\geomeppy --weather C:\EnergyPlusV9-1-0\WeatherData\USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw C:\Users\jamie\geomeppy\in.idf
+    
     EnergyPlus Starting
-    EnergyPlus, Version 8.8.0-7c3bbe4830, YMD=2018.01.22 21:34
-    Processing Data Dictionary
-    Processing Input File
+    EnergyPlus, Version 9.1.0-08d2e308bb, YMD=2019.09.17 10:11
+    Adjusting Air System Sizing
+    Adjusting Standard 62.1 Ventilation Sizing
     Initializing Simulation
     Reporting Surfaces
     Beginning Primary Simulation
@@ -136,17 +138,10 @@ You should see an output something like the following:
     Warming up {5}
     Warming up {6}
     Starting Simulation at 07/21 for DENVER_STAPLETON ANN CLG .4% CONDNS DB=>MWB
-    Initializing New Environment Parameters
-    Warming up {1}
-    Warming up {2}
-    Warming up {3}
-    Warming up {4}
-    Warming up {5}
-    Warming up {6}
-    Starting Simulation at 07/21 for DENVER_STAPLETON ANN CLG .4% CONDNS DB=>MWB
     Writing tabular output file results using HTML format.
     Writing final SQL reports
-    EnergyPlus Run Time=00hr 00min  0.26sec
+    EnergyPlus Run Time=00hr 00min  0.53sec
+    EnergyPlus Completed Successfully.
 
 This indicates that EnergyPlus has run successfully.
 
