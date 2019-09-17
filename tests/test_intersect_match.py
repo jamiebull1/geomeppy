@@ -1,15 +1,18 @@
 """Tests for intersecting and matching."""
+import itertools
+
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
+from geomeppy.geom.surfaces import minimal_set
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import (
     get_adjacencies,
     intersect_idf_surfaces,
     match_idf_surfaces,
 )
-from geomeppy.geom.polygons import intersect, is_hole, Polygon3D, unique
+from geomeppy.geom.polygons import intersect, is_hole, Polygon3D
 from geomeppy.recipes import translate_coords
 from geomeppy.utilities import almostequal
 
@@ -22,20 +25,6 @@ class TestSetCoords:
         wall = idf.idfobjects["BUILDINGSURFACE:DETAILED"][0]
         poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
         wall.setcoords(poly1, ggr)
-
-
-def test_unique():
-    # type: () -> None
-    poly1 = Polygon3D([(0, 1, 0), (0, 0, 0), (1, 0, 0), (1, 1, 0)])
-    poly2 = Polygon3D([(1, 1, 0), (1, 0, 0), (0, 0, 0), (0, 1, 0)])
-    poly3 = Polygon3D([(0, 1, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
-    assert poly1 != poly2
-    assert poly2 == poly3
-    polys = [poly1, poly2, poly3]
-    unique_polys = unique(polys)
-    assert len(unique_polys) == 2
-    for poly in polys:
-        assert poly in unique_polys
 
 
 class TestSimpleTestPolygons:
@@ -152,9 +141,8 @@ class TestSimpleTestPolygons:
 
         result = intersect(*adjacencies[0])
         result.extend(intersect(*adjacencies[1]))
-        result = unique(result)
 
-        assert len(result) == len(expected)
+        assert len(minimal_set(result)) == len(minimal_set(expected))
         for poly in expected:
             assert poly in result
 
@@ -467,35 +455,9 @@ def test_real_scale():
     wall = idf.getobject("BUILDINGSURFACE:DETAILED", "Block large Storey 1 Wall 0003_2")
     assert wall.Outside_Boundary_Condition != "outdoors"
 
-    # look for two walls which are being incorrectly duplicated
-    wall_1 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block small Storey 0 Wall 0001_1"
-    )
-    wall_2 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block small Storey 0 Wall 0001_4"
-    )
-
-    if wall_1 and wall_2:
-        assert not almostequal(wall_1.coords, wall_2.coords)
-
-    # look for two walls which are being incorrectly duplicated
-    wall_1 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block large Storey 1 Wall 0005_3"
-    )
-    wall_2 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block large Storey 1 Wall 0005_2"
-    )
-
-    if wall_1 and wall_2:
-        assert not almostequal(wall_1.coords, wall_2.coords)
-
-    # look for two walls which are being incorrectly duplicated
-    wall_1 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block large Storey 1 Wall 0004_3"
-    )
-    wall_2 = idf.getobject(
-        "BUILDINGSURFACE:DETAILED", "Block large Storey 1 Wall 0004_1"
-    )
-
-    if wall_1 and wall_2:
-        assert not almostequal(wall_1.coords, wall_2.coords)
+    walls = idf.getsurfaces("wall")
+    # look for walls which are being incorrectly duplicated
+    for s1, s2 in itertools.combinations(walls, 2):
+        assert not almostequal(s1.coords, s2.coords), "Dupes: '{}' and '{}'".format(
+            s1.Name, s2.Name
+        )

@@ -7,15 +7,20 @@ import warnings
 from eppy.bunch_subclass import EpBunch  # noqa
 from eppy.idf_msequence import Idf_MSequence  # noqa
 from numpy import float64  # noqa
+from shapely.geometry import Polygon
+from shapely.ops import polygonize
+from shapely.ops import unary_union
 
-from .polygons import intersect, Polygon3D, unique
+from geomeppy.geom.polygons import Polygon2D
+from .polygons import intersect, Polygon3D
 from .vectors import Vector2D, Vector3D  # noqa
 from ..utilities import almostequal
 
 
 def set_coords(
     surface,  # type: EpBunch
-    coords,  # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
+    coords,
+    # type: Union[List[Vector3D], List[Tuple[float, float, float]], Polygon3D]
     ggr,  # type: Union[List, None, Idf_MSequence]
 ):
     # type: (...) -> None
@@ -25,7 +30,9 @@ def set_coords(
     :param coords: The new coordinates as lists of [x,y,z] lists.
     :param ggr: Global geometry rules.
     """
-    poly = Polygon3D(coords)
+    coords = list(coords)
+    deduped = [c for i, c in enumerate(coords) if c != coords[(i + 1) % len(coords)]]
+    poly = Polygon3D(deduped)
     poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
     if len(coords) > 120:
@@ -58,13 +65,18 @@ def set_matched_surfaces(surface, matched):
             s.Wind_Exposure = "NoWind"
         surface.Outside_Boundary_Condition_Object = matched.Name
         matched.Outside_Boundary_Condition_Object = surface.Name
-    elif (
-        str(surface.key).upper() == "BUILDINGSURFACE:DETAILED"
-        and str(matched.key).upper() != "BUILDINGSURFACE:DETAILED"
-    ):
+    elif str(surface.key).upper() == "BUILDINGSURFACE:DETAILED" and str(
+        matched.key
+    ).upper() in ({"SHADING:SITE:DETAILED", "SHADING:ZONE:DETAILED"}):
         surface.Outside_Boundary_Condition = "adiabatic"
         surface.Sun_Exposure = "NoSun"
         surface.Wind_Exposure = "NoWind"
+    elif str(matched.key).upper() == "BUILDINGSURFACE:DETAILED" and str(
+        surface.key
+    ).upper() in ({"SHADING:SITE:DETAILED", "SHADING:ZONE:DETAILED"}):
+        matched.Outside_Boundary_Condition = "adiabatic"
+        matched.Sun_Exposure = "NoSun"
+        matched.Wind_Exposure = "NoWind"
 
 
 def set_unmatched_surface(surface, vector):
@@ -105,12 +117,13 @@ def getidfplanes(surfaces):
     :param surfaces: List of all the surfaces.
     :returns: Mapping to look up IDF surfaces.
     """
+    round_factor = 8
     planes = {}  # type: Dict[float64, Dict[Union[Vector2D, Vector3D], List[EpBunch]]]
     for s in surfaces:
         poly = Polygon3D(s.coords)
-        rounded_distance = round(poly.distance, 8)
+        rounded_distance = round(poly.distance, round_factor)
         rounded_normal_vector = Vector3D(
-            *[round(axis, 8) for axis in poly.normal_vector]
+            *[round(axis, round_factor) for axis in poly.normal_vector]
         )
         planes.setdefault(rounded_distance, {}).setdefault(
             rounded_normal_vector, []
@@ -129,11 +142,27 @@ def get_adjacencies(surfaces):
     # find all adjacent surfaces
     for s1, s2 in combinations(surfaces, 2):
         adjacencies = populate_adjacencies(adjacencies, s1, s2)
-    # make sure we have only unique surfaces
-    for surface in adjacencies:
-        adjacencies[surface] = unique(adjacencies[surface])
-
+    for adjacency, polys in adjacencies.items():
+        adjacencies[adjacency] = minimal_set(polys)
     return adjacencies
+
+
+def minimal_set(polys):
+    """Remove overlaps from a set of polygons.
+
+    :param polys: List of polygons.
+    :returns: List of polygons with no overlaps.
+    """
+    normal = polys[0].normal_vector
+    as_2d = [p.project_to_2D() for p in polys]
+    as_shapely = [Polygon(p) for p in as_2d]
+    lines = [p.boundary for p in as_shapely]
+    borders = unary_union(lines)
+    shapes = [Polygon2D(p.boundary.coords) for p in polygonize(borders)]
+    as_3d = [p.project_to_3D(polys[0]) for p in shapes]
+    if not almostequal(as_3d[0].normal_vector, normal):
+        as_3d = [p.invert_orientation() for p in as_3d]
+    return [p for p in as_3d if p.area > 0]
 
 
 def populate_adjacencies(adjacencies, s1, s2):

@@ -641,31 +641,7 @@ def intersect(poly1, poly2):
     else:
         polys.extend(poly1.difference(poly2))
         polys.extend(poly2.difference(poly1))
-    polys = unique(polys)
     return polys
-
-
-def unique(polys):
-    # type: (List[Polygon]) -> List[Polygon]
-    """Make a unique set of polygons.
-
-    :param polys: A list of polygons.
-    :returns: A unique list of polygons.
-
-    """
-    flattened = []
-    for item in polys:
-        if isinstance(item, Polygon):
-            flattened.append(item)
-        elif isinstance(item, list):
-            flattened.extend(item)
-
-    results = []  # type: List[Polygon]
-    for poly in flattened:
-        if not any(poly == result for result in results):
-            results.append(poly)
-
-    return results
 
 
 def is_hole(surface, possible_hole):
