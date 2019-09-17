@@ -48,12 +48,23 @@ def set_matched_surfaces(surface, matched):
     :param surface: The first surface.
     :param matched: The second surface.
     """
-    for s in [surface, matched]:
-        s.Outside_Boundary_Condition = "surface"
-        s.Sun_Exposure = "NoSun"
-        s.Wind_Exposure = "NoWind"
-    surface.Outside_Boundary_Condition_Object = matched.Name
-    matched.Outside_Boundary_Condition_Object = surface.Name
+    if (
+        str(surface.key).upper() == "BUILDINGSURFACE:DETAILED"
+        and str(matched.key).upper() == "BUILDINGSURFACE:DETAILED"
+    ):
+        for s in [surface, matched]:
+            s.Outside_Boundary_Condition = "surface"
+            s.Sun_Exposure = "NoSun"
+            s.Wind_Exposure = "NoWind"
+        surface.Outside_Boundary_Condition_Object = matched.Name
+        matched.Outside_Boundary_Condition_Object = surface.Name
+    elif (
+        str(surface.key).upper() == "BUILDINGSURFACE:DETAILED"
+        and str(matched.key).upper() != "BUILDINGSURFACE:DETAILED"
+    ):
+        surface.Outside_Boundary_Condition = "adiabatic"
+        surface.Sun_Exposure = "NoSun"
+        surface.Wind_Exposure = "NoWind"
 
 
 def set_unmatched_surface(surface, vector):
@@ -63,6 +74,8 @@ def set_unmatched_surface(surface, vector):
     :param surface: The surface.
     :param vector: The surface normal vector.
     """
+    if not hasattr(surface, "View_Factor_to_Ground"):
+        return
     surface.View_Factor_to_Ground = "autocalculate"
     poly = Polygon3D(surface.coords)
     if min(poly.zs) < 0 or all(z == 0 for z in poly.zs):

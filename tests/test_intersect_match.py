@@ -249,17 +249,29 @@ class TestMatchSurfaces:
         idf = base_idf
         intersect_idf_surfaces(idf)
         match_idf_surfaces(idf)
-        inside_wall = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_WALL_0002_1")
-        assert inside_wall.Outside_Boundary_Condition == "surface"
-        assert inside_wall.Outside_Boundary_Condition_Object == "z2_WALL_0004_1"
+        inside_walls = [
+            obj
+            for obj in idf.idfobjects["BUILDINGSURFACE:DETAILED"]
+            if obj.Outside_Boundary_Condition == "surface"
+        ]
+        assert inside_walls
+        for w in inside_walls:
+            assert w.Outside_Boundary_Condition_Object != ""
 
-        outside_wall = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_WALL_0002_2")
-        assert outside_wall.Outside_Boundary_Condition == "outdoors"
-        assert outside_wall.Outside_Boundary_Condition_Object == ""
+        outside_walls = [
+            obj
+            for obj in idf.idfobjects["BUILDINGSURFACE:DETAILED"]
+            if obj.Outside_Boundary_Condition == "outdoors"
+        ]
+        assert outside_walls
+        for w in outside_walls:
+            assert w.Outside_Boundary_Condition_Object == ""
 
-        ground = idf.getobject("BUILDINGSURFACE:DETAILED", "z1_FLOOR")
-        assert ground.Outside_Boundary_Condition == "ground"
-        assert ground.Outside_Boundary_Condition_Object == ""
+        floors = idf.getsurfaces("floor")
+        assert floors
+        for f in floors:
+            assert f.Outside_Boundary_Condition == "ground"
+            assert f.Outside_Boundary_Condition_Object == ""
 
 
 class TestAdjacencies:

@@ -24,7 +24,7 @@ def intersect_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = idf.getsurfaces()
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
     try:
         ggr = idf.idfobjects["GLOBALGEOMETRYRULES"][0]
     except IndexError:
@@ -48,7 +48,7 @@ def match_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = idf.getsurfaces()
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
     planes = getidfplanes(surfaces)
     for distance in planes:
         for vector in planes[distance]:
@@ -61,6 +61,7 @@ def match_idf_surfaces(idf):
             else:
                 # check which are matches
                 for s in surfaces:
+                    matched = False
                     for m in matches:
                         matched = False
                         poly1 = Polygon3D(s.coords)
