@@ -3,7 +3,6 @@ from typing import Optional  # noqa
 
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
-from eppy.modeleditor import IDF
 from six import StringIO
 from six.moves.tkinter import TclError
 
@@ -23,6 +22,8 @@ def view_idf(fname=None, idf_txt=None, test=False):
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
+    from geomeppy import IDF
+
     try:
         plt.figure()
     except TclError:
@@ -83,11 +84,7 @@ def view_polygons(polygons):
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
-    surface_types = ["BUILDINGSURFACE:DETAILED", "FENESTRATIONSURFACE:DETAILED"]
-    surfaces = []
-    for surface_type in surface_types:
-        surfaces.extend(idf.idfobjects[surface_type])
-
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
     return surfaces
 
 
@@ -109,23 +106,22 @@ def _get_collections(idf, opacity=1):
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
-
-    shading_surfaces = _get_shading(idf)
-    shading = Poly3DCollection(
-        [getcoords(s) for s in shading_surfaces],
-        alpha=opacity,
-        facecolor="darkolivegreen",
-        edgecolors="black",
-    )
+    shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
 
     return walls, roofs, floors, windows, shading
 
 
 def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
     """Make collections from a list of EnergyPlus surfaces."""
-    coords = [
-        getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
-    ]
+    if surface_type == "shading":
+        coords = [getcoords(s) for s in surfaces if not hasattr(s, "Surface_Type")]
+    else:
+        coords = [
+            getcoords(s)
+            for s in surfaces
+            if hasattr(s, "Surface_Type")
+            and s.Surface_Type.lower() == surface_type.lower()
+        ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
         trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors
