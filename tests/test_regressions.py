@@ -1,8 +1,8 @@
+"""Tests for issue previously raised and fixed, so we can be alerted if they start failing again."""
 import pytest
 
 from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.surfaces import set_coords
-from geomeppy.view_geometry import view_polygons
 
 
 @pytest.fixture
@@ -193,19 +193,11 @@ def test_shadow_matching(new_idf, shadow_matching):
         for w in new_idf.getsurfaces("wall")
         if w.Outside_Boundary_Condition == "adiabatic"
     ]
-    # walls = [
-    #     Polygon3D(w.coords)
-    #     for w in new_idf.getsurfaces("wall")
-    #     if w.Outside_Boundary_Condition != "adiabatic"
-    # ]
-    # shadows = [Polygon3D(s.coords) for s in new_idf.getshadingsurfaces()]
-    # view_polygons({"red": adiabatic, "blue": walls})
-    # view_polygons({"olive": shadows})
     expected_adiabatic = 7
     assert len(adiabatic) == expected_adiabatic
 
 
-def _test_shadow_intersecting(new_idf, shadow_matching):
+def test_shadow_intersecting(new_idf, shadow_matching):
     """Test with a full model."""
     for block in shadow_matching["shadows"]:
         new_idf.add_shading_block(**block)
@@ -214,5 +206,4 @@ def _test_shadow_intersecting(new_idf, shadow_matching):
     new_idf.translate_to_origin()
     new_idf.intersect()
     shadows = [Polygon3D(s.coords) for s in new_idf.getshadingsurfaces()]
-    assert len(shadows) == 17
-    view_polygons({"olive": shadows})
+    assert len(shadows) == 23
