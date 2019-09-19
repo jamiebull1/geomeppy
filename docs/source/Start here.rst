@@ -1,8 +1,12 @@
-..  _start_here:
+.. _start_here:
+
 Start here
 ==========
 .. toctree::
    :maxdepth: 2
+
+Introduction
+------------
 
 This tutorial is intended as a walk-through for complete beginners to `geomeppy`.
 
@@ -150,4 +154,4 @@ It's not very exciting, since we haven't added any heating or cooling systems, o
 
 But in the next tutorial, we'll add a heating system, while also learning about some of the other features of `geomeppy`.
 
-Coming soon...
+:ref:`next_steps`

@@ -202,7 +202,7 @@ class IDF(PatchedIDF):
         return list(surfaces)
 
     def set_wwr(
-        self, wwr=0.2, construction="Project External Window", force=False, wwr_map={}, orientation=None
+        self, wwr=0.2, construction=None, force=False, wwr_map={}, orientation=None
     ):
         # type: (Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
         """Add strip windows to all external walls.

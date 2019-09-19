@@ -96,7 +96,7 @@ def set_default_construction(surface):
 
 
 def set_wwr(
-    idf, wwr=0.2, construction="Project External Window", force=False, wwr_map=None, orientation=None
+    idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
 ):
     # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
     """Set the window to wall ratio on all external walls.
@@ -165,7 +165,7 @@ def set_wwr(
             "FENESTRATIONSURFACE:DETAILED",
             Name="%s window" % wall.Name,
             Surface_Type="Window",
-            Construction_Name=construction,
+            Construction_Name=construction or "",
             Building_Surface_Name=wall.Name,
             View_Factor_to_Ground="autocalculate",  # from the surface angle
         )
