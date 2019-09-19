@@ -63,6 +63,9 @@ Rotate the IDF 90 degrees counterclockwise around the centre of its bounding box
 
     IDF.rotate(90)
 
+Scale
+-----
+
 Scale the IDF to double its size (default is on the xy axes):
 
 ::
@@ -144,8 +147,6 @@ Generate a model which can be viewed in external programs:
 
 You can view the exported model `here <https://3dviewer.net/>`_. Just drag the .obj file
 and .mtl file into the browser window.
-
-|OBJ viewer|
 
 Get all surfaces
 ----------------

@@ -1,10 +1,9 @@
-..  _start_here:
 Start here
 ==========
 .. toctree::
    :maxdepth: 2
 
-This tutorial is intended as a walk-through for complete beginners to `geomeppy`.
+This tutorial continues on from the :ref:`_start_here` guide to `geomeppy`.
 
 At the end of the tutorial, you will have created and run an EnergyPlus model without once
 having to manually edit an `.idf` file, without creating geometry in SketchUp, and without any other
