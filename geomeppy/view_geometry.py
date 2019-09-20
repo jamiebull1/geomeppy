@@ -84,7 +84,7 @@ def view_polygons(polygons):
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
-    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces() + idf.getsubsurfaces()
     return surfaces
 
 
