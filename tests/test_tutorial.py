@@ -36,15 +36,14 @@ def test_tutorial_2():
     idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"
     idf.add_block(
-        name='Two storey',
+        name="Two storey",
         coordinates=[(10, 0), (10, 5), (0, 5), (0, 0)],
         height=6,
-        num_stories=2
+        num_stories=2,
     )
     idf.add_block(
-        name='One storey',
-        coordinates=[(10, 5), (10, 10), (0, 10), (0, 5)],
-        height=3)
+        name="One storey", coordinates=[(10, 5), (10, 10), (0, 10), (0, 5)], height=3
+    )
     idf.intersect_match()
     idf.set_default_constructions()
     idf.set_wwr(0.25, construction="Project External Window")
@@ -60,15 +59,14 @@ def test_tutorial_3():
     idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"
     idf.add_block(
-        name='Two storey',
+        name="Two storey",
         coordinates=[(10, 0), (10, 5), (0, 5), (0, 0)],
         height=6,
-        num_stories=2
+        num_stories=2,
     )
     idf.add_block(
-        name='One storey',
-        coordinates=[(10, 5), (10, 10), (0, 10), (0, 5)],
-        height=3)
+        name="One storey", coordinates=[(10, 5), (10, 10), (0, 10), (0, 5)], height=3
+    )
     idf.intersect_match()
     idf.set_wwr(0.25, construction="Project External Window")
     idf.set_default_constructions()

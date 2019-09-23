@@ -225,7 +225,7 @@ class IDF(PatchedIDF):
     def view_model(self, test=False):
         # type: (Optional[bool]) -> None
         """Show a zoomable, rotatable representation of the IDF."""
-        view_idf(idf_txt=self.idfstr(), test=test)
+        view_idf(idf=self, test=test)
 
     def to_obj(self, fname=None, mtllib=None):
         # type: (Optional[str], Optional[str]) -> None

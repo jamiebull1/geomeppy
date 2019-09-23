@@ -15,7 +15,7 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None, test=False):
+def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     # type: (Optional[str], Optional[str], Optional[bool]) -> None
     """Display an IDF for inspection.
 
@@ -29,19 +29,20 @@ def view_idf(fname=None, idf_txt=None, test=False):
     except TclError:
         # this is as expected on the test server
         return
-    if fname and idf_txt:
-        raise ValueError("Pass either fname or idf_txt, not both.")
-    # set the IDD for the version of EnergyPlus
-    iddfhandle = StringIO(iddcurrent.iddtxt)
-    if IDF.getiddname() is None:
-        IDF.setiddname(iddfhandle)
+    if len([arg for arg in [fname, idf_txt, idf] if arg]) > 1:
+        raise ValueError("Pass only one of fname, idf_txt or idf.")
+    if not idf:
+        # set the IDD for the version of EnergyPlus
+        iddfhandle = StringIO(iddcurrent.iddtxt)
+        if IDF.getiddname() is None:
+            IDF.setiddname(iddfhandle)
 
-    if fname:
-        # import the IDF
-        idf = IDF(fname)
-    elif idf_txt:
-        idf = IDF()
-        idf.initreadtxt(idf_txt)
+        if fname:
+            # import the IDF
+            idf = IDF(fname)
+        elif idf_txt:
+            idf = IDF()
+            idf.initreadtxt(idf_txt)
     # create the figure and add the surfaces
     ax = plt.axes(projection="3d")
     collections = _get_collections(idf, opacity=0.5)
