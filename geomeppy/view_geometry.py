@@ -157,14 +157,17 @@ def _get_limits(idf=None, polygons=None):
         x = [pt[0] for s in surfaces for pt in getcoords(s)]
         y = [pt[1] for s in surfaces for pt in getcoords(s)]
         z = [pt[2] for s in surfaces for pt in getcoords(s)]
+    if all([x, y, z]):
+        max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
+        limits = {
+            "x": (min(x), min(x) + max_delta),
+            "y": (min(y), min(y) + max_delta),
+            "z": (min(z), min(y) + max_delta),
+        }
+    else:
+        limits = {"x": (0, 0), "y": (0, 0), "z": (0, 0)}
 
-    max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
-
-    return {
-        "x": (min(x), min(x) + max_delta),
-        "y": (min(y), min(y) + max_delta),
-        "z": (min(z), min(y) + max_delta),
-    }
+    return limits
 
 
 def main(fname=None, polygons=None):
