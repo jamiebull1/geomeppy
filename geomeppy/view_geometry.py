@@ -1,6 +1,8 @@
 """Tool for visualising geometry."""
-from typing import Optional  # noqa
+from typing import Optional, TYPE_CHECKING  # noqa
 
+if TYPE_CHECKING:
+    from geomeppy import IDF
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
@@ -16,7 +18,7 @@ except (ImportError, RuntimeError):
 
 
 def view_idf(fname=None, idf_txt=None, test=False, idf=None):
-    # type: (Optional[str], Optional[str], Optional[bool]) -> None
+    # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
     """Display an IDF for inspection.
 
     :param fname: Path to the IDF.
