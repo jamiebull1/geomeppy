@@ -59,7 +59,7 @@ def main(increment):
         print(subprocess.check_output(["git", "add", "geomeppy/__init__.py"]))
         print(subprocess.check_output(["git", "add", "setup.py"]))
         print(subprocess.check_output(["git", "add", "docs/source/conf.py"]))
-        print(subprocess.check_output(["git", "add", "README.rst"]))
+        print(subprocess.check_output(["git", "add", "README.md"]))
         print(
             subprocess.check_output(["git", "commit", "-m", "release/%s" % new_version])
         )
