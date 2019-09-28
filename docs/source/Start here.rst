@@ -81,7 +81,7 @@ For example, on Windows, this is usually ``C:/EnergyPlusV9-1-0``, and on Linux, 
 
 Now we have imported an EnergyPlus IDF file which contains the bare minimum required to be able to run successfully. We need to add a weather file to our IDF object first though.
 
-    >>> idf.epw = 'USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw'
+    >>> idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
 
 Now we have assigned an EPW format weather file to the IDF. This will tell EnergyPlus about the weather conditions to simulate.
 
@@ -149,6 +149,10 @@ You should see an output something like the following:
     EnergyPlus Completed Successfully.
 
 This indicates that EnergyPlus has run successfully.
+
+Summary
+-------
+In this tutorial you learned how to install geomeppy, create some simple geometry, visualise it using both the built in `idf.view_model` method, and also by producing files for use in external viewers using the `idf.to_obj` method, and finally run the IDF in EnergyPlus.
 
 It's not very exciting, since we haven't added any heating or cooling systems, or output variables. Geomeppy is a geometry package after all!
 

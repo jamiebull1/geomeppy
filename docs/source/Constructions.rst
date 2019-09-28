@@ -16,7 +16,7 @@ We'll use the same building as in the previous tutorial.
     >>> from geomeppy import IDF
     >>> IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd")
     >>> idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
-    >>> idf.epw = "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"
+    >>> idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     >>> idf.add_block(
           name='Two storey',
           coordinates=[(10,0),(10,5),(0,5),(0,0)],
