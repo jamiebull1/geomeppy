@@ -181,7 +181,7 @@ def _has_correct_orientation(wall, orientation_degrees):
     :return: True if the wall is within 45 degrees of the orientation passed, or no orientation passed.
              False if the wall is not within 45 of the orientation passed.
     """
-    if not orientation_degrees:
+    if orientation_degrees is None:
         return True
     if abs(wall.azimuth - orientation_degrees) < 45:
         return True
