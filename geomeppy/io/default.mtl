@@ -27,9 +27,9 @@ d 0.5
 illum 2
 Ns 147.033
 
-newmtl shade
+newmtl shading
 Ka  0.1986  0.0000  0.0000
 Kd  0.5922  0.0166  0.0000
 Ks  0.5974  0.2084  0.2084
-illum 2
+illum 1
 Ns 100.2237

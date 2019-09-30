@@ -68,8 +68,8 @@ class ObjWriter(object):
     def build_simple_surface(self, surface):
         poly = Polygon3D(surface.coords)
         poly2d = poly.project_to_2D()
-        if poly2d.is_convex:
-            # no need to triangulate the surface
+        if len(poly) == 3:
+            # no need to triangulate the surface for triangles
             self.add_face(surface.coords, surface.Surface_Type)
             return
         coords = [p2t.shapes.Point(x, y) for x, y in poly2d.vertices]
@@ -97,7 +97,7 @@ class ObjWriter(object):
 
     def prepare_shadingsurfaces(self, shading_surfaces):
         for s in shading_surfaces:
-            self.add_face(s.coords, "shade")
+            self.add_face(s.coords, "shading")
 
     def add_face(self, coords, mtl, test=True):
         face = []
@@ -109,6 +109,7 @@ class ObjWriter(object):
             else:
                 face.append(self.vertices.index(v) + 1)
         self.faces.append({"face": face, "mtl": mtl})
+        self.faces.append({"face": reversed(face), "mtl": mtl})
 
     def write(self, fname, mtllib):
         """Write the .obj file.
@@ -126,9 +127,15 @@ class ObjWriter(object):
             f_out.write("\n# materials library\n")
             f_out.write("mtllib %s\n" % os.path.basename(mtllib))
             f_out.write("\n# faces\n")
+            f_out.write("\nvn 0 0 1\n")
+            mtl = None
             for f in self.faces:
-                f_out.write("usemtl %s\n" % f["mtl"].lower())
-                f_out.write("f %s//\n" % "// ".join((str(i) for i in f["face"])))
+                if f["mtl"].lower() != mtl:
+                    f_out.write("usemtl %s\n" % f["mtl"].lower())
+                    mtl = f["mtl"].lower()
+                f_out.write(
+                    "f %s\n" % " ".join("%s//%s" % (str(i), str(1)) for i in f["face"])
+                )
 
 
 def export_to_obj(idf, fname=None, mtllib=None):
