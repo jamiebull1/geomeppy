@@ -77,7 +77,12 @@ def test_tutorial_2():
     for north, south in zip(north_wwr, south_wwr):
         idf.set_wwr(north, construction="Project External Window", orientation="north")
         idf.set_wwr(south, construction="Project External Window", orientation="south")
-        idf.run(output_prefix=f"{north}_{south}_", output_directory="tests/tutorial", expandobjects=True, verbose="q")
+        idf.run(
+            output_prefix=f"{north}_{south}_",
+            output_directory="tests/tutorial",
+            expandobjects=True,
+            verbose="q",
+        )
     results = []
     for north, south in zip(north_wwr, south_wwr):
         eso = ESO(f"tests/tutorial/{north}_{south}_out.eso")
