@@ -33,7 +33,7 @@ class Polygon(Clipper2D, MutableSequence):
     def normal_vector(self):
         pass
 
-    def __init__(self, vertices):
+    def __init__(self, vertices: object) -> object:
         # type: (Any) -> None
         super(Polygon, self).__init__()
         self.vertices = [self.vector_class(*v) for v in vertices]

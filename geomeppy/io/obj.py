@@ -83,14 +83,19 @@ class ObjWriter(object):
         return
 
     def build_surface_with_subsurface(self, surface, subsurface):
+        """Work around the perimeter of the outer surface, triangulating the surface."""
         outer_poly = Polygon3D(surface.coords)
         inner_poly = Polygon3D(subsurface.coords)
         for edge in outer_poly.edges:
             links = product(edge, inner_poly)
-            links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
             pt1, pt2 = edge
-            t1 = [pt1, links[0][1], pt2]
-            t2 = [pt2, t1[1], links[1][1]]
+            links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
+            t1 = [*links[0], pt2 if pt1 in links[0] else pt1]
+            links = sorted(
+                [l for l in links[1:] if links[0][0] not in l and links[0][1] not in l],
+                key=lambda x: x[0].relative_distance(x[1]),
+            )
+            t2 = (*links[0], [pt for pt in t1 if pt in inner_poly][0])
             self.add_face(t1, surface.Surface_Type)
             self.add_face(t2, surface.Surface_Type)
         self.add_face(subsurface.coords, subsurface.Surface_Type, test=False)
