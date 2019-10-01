@@ -19,7 +19,7 @@ matplotlib==3.1.1
 more-itertools==7.2.0     # via pytest, zipp
 munch==2.3.2              # via eppy
 numpy==1.17.2             # via matplotlib
-packaging==19.1           # via pytest
+packaging==19.2           # via pytest
 pluggy==0.13.0            # via pytest
 py==1.8.0                 # via pytest
 pyclipper==1.1.0.post1
