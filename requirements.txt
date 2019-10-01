@@ -9,7 +9,7 @@ attrs==19.2.0             # via packaging, pytest
 beautifulsoup4==4.8.0     # via eppy
 colorama==0.4.1           # via pytest
 cycler==0.10.0            # via matplotlib
-decorator==4.3.2          # via eppy
+decorator==4.4.0          # via eppy
 eppy==0.5.51
 future==0.17.1            # via eppy
 importlib-metadata==0.23  # via pluggy, pytest
