@@ -90,12 +90,12 @@ class ObjWriter(object):
             links = product(edge, inner_poly)
             pt1, pt2 = edge
             links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
-            t1 = [*links[0], pt2 if pt1 in links[0] else pt1]
+            t1 = [links[0][0], links[0][1], pt2 if pt1 in links[0] else pt1]
             links = sorted(
                 [l for l in links[1:] if links[0][0] not in l and links[0][1] not in l],
                 key=lambda x: x[0].relative_distance(x[1]),
             )
-            t2 = (*links[0], [pt for pt in t1 if pt in inner_poly][0])
+            t2 = (links[0][0], links[0][1], [pt for pt in t1 if pt in inner_poly][0])
             self.add_face(t1, surface.Surface_Type)
             self.add_face(t2, surface.Surface_Type)
         self.add_face(subsurface.coords, subsurface.Surface_Type, test=False)
