@@ -17,7 +17,7 @@ kiwisolver==1.1.0         # via matplotlib
 lxml==4.4.1               # via eppy
 matplotlib==3.1.1
 more-itertools==7.2.0     # via pytest, zipp
-munch==2.3.2              # via eppy
+munch==2.5.0              # via eppy
 numpy==1.16.1             # via matplotlib
 packaging==19.1           # via pytest
 pluggy==0.13.0            # via pytest
