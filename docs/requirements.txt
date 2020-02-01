@@ -14,7 +14,7 @@ eppy==0.5.52
 future==0.18.2            # via eppy
 kiwisolver==1.1.0         # via matplotlib
 lxml==4.5.0               # via eppy
-matplotlib==3.0.0
+matplotlib==3.1.2
 more-itertools==4.3.0     # via pytest
 munch==2.3.2              # via eppy
 numpy==1.15.2             # via matplotlib
