@@ -21,7 +21,7 @@ munch==2.5.0              # via eppy
 numpy==1.18.1             # via matplotlib
 packaging==19.1           # via pytest
 pluggy==0.13.1            # via pytest
-py==1.7.0                 # via pytest
+py==1.8.1                 # via pytest
 pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
 pyparsing==2.3.1          # via matplotlib, packaging, pydot3k
