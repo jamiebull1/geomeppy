@@ -18,7 +18,7 @@ matplotlib==3.2.1
 more-itertools==8.2.0     # via pytest
 munch==2.5.0              # via eppy
 numpy==1.18.2             # via matplotlib
-pluggy==0.7.1             # via pytest
+pluggy==0.13.1             # via pytest
 py==1.6.0                 # via pytest
 pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
