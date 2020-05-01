@@ -10,7 +10,7 @@ beautifulsoup4==4.9.0     # via eppy
 colorama==0.4.3           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.4.2          # via eppy
-eppy==0.5.51
+eppy==0.5.52
 future==0.17.1            # via eppy
 importlib-metadata==0.23  # via pluggy, pytest
 kiwisolver==1.0.1         # via matplotlib
