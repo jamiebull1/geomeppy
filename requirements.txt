@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=./requirements.txt ./requirements.in
 #
-atomicwrites==1.3.0       # via pytest
+atomicwrites==1.4.0       # via pytest
 attrs==18.2.0             # via packaging, pytest
 beautifulsoup4==4.7.1     # via eppy
 colorama==0.4.1           # via pytest
