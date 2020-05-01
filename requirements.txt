@@ -7,7 +7,7 @@
 atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via packaging, pytest
 beautifulsoup4==4.9.0     # via eppy
-colorama==0.4.1           # via pytest
+colorama==0.4.3           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.3.2          # via eppy
 eppy==0.5.51
