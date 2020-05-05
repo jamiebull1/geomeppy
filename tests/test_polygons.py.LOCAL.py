@@ -572,9 +572,7 @@ def test_surface_normal():
     )
     assert list(poly.normal_vector) == [0.0, 0.0, -1.0]  # for a horizontal surface
 
-    poly = Polygon3D(
-        [[1.0, 1.1, 0.5], [1.0, 1.1, 0.0], [1.0, 2.1, 0.0], [1.0, 2.1, 0.5]]
-    )
+    poly = Polygon3D([[1., 1.1, 0.5], [1., 1.1, 0.], [1., 2.1, 0.], [1., 2.1, 0.5]])
     assert list(poly.normal_vector) == [1.0, 0.0, 0.0]  # for a horizontal surface
 
 

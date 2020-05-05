@@ -1,15 +1,11 @@
-language: cpp
-
-os:
-  - linux
-
+language: python
 sudo: required
-dist: trusty
+dist: xenial
+os: linux
 
-env:
-  - PYTHON=2.7
-  - PYTHON=3.5
-  - PYTHON=3.6
+python:
+  - 2.7
+  - 3.7
 
 before_install:
   # miniconda
@@ -20,15 +16,15 @@ before_install:
   - conda update --yes conda
 
   # create miniconda env
-  - conda create --yes -n geomeppy python=$PYTHON
+  - conda create --yes -n geomeppy python=$TRAVIS_PYTHON_VERSION
   - source activate geomeppy
 
 install:
   - pip install -e .[testing]
 
 before_script:
-  - if [[ $PYTHON == 3.6 ]]; then black -l 88 geomeppy tests docs setup.py release.py --check; fi
-  - if [[ $PYTHON == 3.6 ]]; then mypy --ignore-missing-imports geomeppy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then black -l 88 geomeppy tests docs setup.py release.py --check; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then mypy --ignore-missing-imports geomeppy; fi
 
 script:
   # run all tests in tests and check coverage of the geomeppy dir
@@ -36,7 +32,7 @@ script:
 
 after_success:
   # coverage reporting on CodeCov
-  - if [[ $PYTHON == 3.6 ]]; then codecov; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then codecov; fi
 
 deploy:
   provider: pypi
@@ -45,4 +41,4 @@ deploy:
     secure: "INjtDQJQ/C26wFn0I62Et805PPnI4B/9WgHMsIRh1U7zXPrYt2N7+VcpbsgJRmxxObfeZstgfNalX9MadpTslVnEPtDIiYEyFgrJGrGSuOWTumAAiqo8mWkcP8F9Gpk69ZErF2pOZ7LzrwA0gqpCzwfYzwPO3skVFAmmQyRecs+JniMQXRpO6NlUGEp9HoPII0MqKkw9j0g8zAwsz3auw34eBlYnJFstVk56KdOiYAsIvfeQ/pbc3MHLm8c6Tjeqe29YV903qiqb0UQcw0k9AzMdz1USOQ7+j0rUxQFr6wyLL7/q6kjWYHIzwQhUB0MdMRKXS7s6AXxeJqbUTT0CVIVSKcyoRDip5nwDDNqmtnGbg+Jp1qZWNPVYe5dKW55h4qYC/7Pn1kohUvxfJIZbYb26HPsE1xi/c6nVRmVosJPZ8mCRAVXhq9BY16827mLnpamJkdCyyJVYRZvU5WLa0zZqypqP4pjLUyzKDUBwr8tcTHcia7wGy4eUOMFQLT1I7bWJbLAlY+RHjIeZJ/60OvhYx9PVWDnPbuG0QiomejBlPzMkkjUhXhMwWNHyq0FdsQEhrPmzlNbXctBBtGhzr7c+p2xaKYwf36OUp3jaPLwwqZ4NEG5vAmWVB95yQugtTNCainzN4y1V+0o7tf8q68C4fG4/LoXizjlWoEb+/p4="
   on:
     branch: master
-    condition: $PYTHON == 3.6
+    condition: $TRAVIS_PYTHON_VERSION == 3.7

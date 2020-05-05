@@ -111,7 +111,7 @@ class TestViewGeometry:
         # type: (IDF) -> None
         idf = base_idf
         surfaces = _get_surfaces(idf)
-        assert len(surfaces) == 12
+        assert len(surfaces) == 13
 
     def test_get_shading(self, base_idf):
         # type: (IDF) -> None

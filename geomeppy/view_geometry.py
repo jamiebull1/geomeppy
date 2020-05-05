@@ -1,9 +1,10 @@
 """Tool for visualising geometry."""
-from typing import Optional  # noqa
+from typing import Optional, TYPE_CHECKING  # noqa
 
+if TYPE_CHECKING:
+    from geomeppy import IDF
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
-from eppy.modeleditor import IDF
 from six import StringIO
 from six.moves.tkinter import TclError
 
@@ -16,31 +17,34 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None, test=False):
-    # type: (Optional[str], Optional[str], Optional[bool]) -> None
+def view_idf(fname=None, idf_txt=None, test=False, idf=None):
+    # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
     """Display an IDF for inspection.
 
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
+    from geomeppy import IDF
+
     try:
         plt.figure()
     except TclError:
         # this is as expected on the test server
         return
-    if fname and idf_txt:
-        raise ValueError("Pass either fname or idf_txt, not both.")
-    # set the IDD for the version of EnergyPlus
-    iddfhandle = StringIO(iddcurrent.iddtxt)
-    if IDF.getiddname() is None:
-        IDF.setiddname(iddfhandle)
+    if len([arg for arg in [fname, idf_txt, idf] if arg]) > 1:
+        raise ValueError("Pass only one of fname, idf_txt or idf.")
+    if not idf:
+        # set the IDD for the version of EnergyPlus
+        iddfhandle = StringIO(iddcurrent.iddtxt)
+        if IDF.getiddname() is None:
+            IDF.setiddname(iddfhandle)
 
-    if fname:
-        # import the IDF
-        idf = IDF(fname)
-    elif idf_txt:
-        idf = IDF()
-        idf.initreadtxt(idf_txt)
+        if fname:
+            # import the IDF
+            idf = IDF(fname)
+        elif idf_txt:
+            idf = IDF()
+            idf.initreadtxt(idf_txt)
     # create the figure and add the surfaces
     ax = plt.axes(projection="3d")
     collections = _get_collections(idf, opacity=0.5)
@@ -83,17 +87,13 @@ def view_polygons(polygons):
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
-    surface_types = ["BUILDINGSURFACE:DETAILED", "FENESTRATIONSURFACE:DETAILED"]
-    surfaces = []
-    for surface_type in surface_types:
-        surfaces.extend(idf.idfobjects[surface_type])
-
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces() + idf.getsubsurfaces()
     return surfaces
 
 
 def _get_shading(idf):
     """Get the shading surfaces from the IDF."""
-    shading_types = ["SHADING:ZONE:DETAILED"]
+    shading_types = ["SHADING:ZONE:DETAILED", "SHADING:SITE:DETAILED"]
     shading = []
     for shading_type in shading_types:
         shading.extend(idf.idfobjects[shading_type])
@@ -109,23 +109,22 @@ def _get_collections(idf, opacity=1):
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
-
-    shading_surfaces = _get_shading(idf)
-    shading = Poly3DCollection(
-        [getcoords(s) for s in shading_surfaces],
-        alpha=opacity,
-        facecolor="darkolivegreen",
-        edgecolors="black",
-    )
+    shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
 
     return walls, roofs, floors, windows, shading
 
 
 def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
     """Make collections from a list of EnergyPlus surfaces."""
-    coords = [
-        getcoords(s) for s in surfaces if s.Surface_Type.lower() == surface_type.lower()
-    ]
+    if surface_type == "shading":
+        coords = [getcoords(s) for s in surfaces if not hasattr(s, "Surface_Type")]
+    else:
+        coords = [
+            getcoords(s)
+            for s in surfaces
+            if hasattr(s, "Surface_Type")
+            and s.Surface_Type.lower() == surface_type.lower()
+        ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
         trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors
@@ -161,14 +160,17 @@ def _get_limits(idf=None, polygons=None):
         x = [pt[0] for s in surfaces for pt in getcoords(s)]
         y = [pt[1] for s in surfaces for pt in getcoords(s)]
         z = [pt[2] for s in surfaces for pt in getcoords(s)]
+    if all([x, y, z]):
+        max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
+        limits = {
+            "x": (min(x), min(x) + max_delta),
+            "y": (min(y), min(y) + max_delta),
+            "z": (min(z), min(y) + max_delta),
+        }
+    else:
+        limits = {"x": (0, 0), "y": (0, 0), "z": (0, 0)}
 
-    max_delta = max((max(x) - min(x)), (max(y) - min(y)), (max(z) - min(z)))
-
-    return {
-        "x": (min(x), min(x) + max_delta),
-        "y": (min(y), min(y) + max_delta),
-        "z": (min(z), min(y) + max_delta),
-    }
+    return limits
 
 
 def main(fname=None, polygons=None):

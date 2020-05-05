@@ -97,7 +97,6 @@ class Transformation(object):
         min_x = min(aligned_vertices.xs)
         min_y = min(aligned_vertices.ys)
         min_z = min(aligned_vertices.zs)
-        assert aligned_vertices.is_horizontal
 
         direction = Vector3D(min_x, min_y, min_z)
         translate = self._translation(direction)

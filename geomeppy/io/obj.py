@@ -68,8 +68,8 @@ class ObjWriter(object):
     def build_simple_surface(self, surface):
         poly = Polygon3D(surface.coords)
         poly2d = poly.project_to_2D()
-        if poly2d.is_convex:
-            # no need to triangulate the surface
+        if len(poly) == 3:
+            # no need to triangulate the surface for triangles
             self.add_face(surface.coords, surface.Surface_Type)
             return
         coords = [p2t.shapes.Point(x, y) for x, y in poly2d.vertices]
@@ -83,21 +83,26 @@ class ObjWriter(object):
         return
 
     def build_surface_with_subsurface(self, surface, subsurface):
+        """Work around the perimeter of the outer surface, triangulating the surface."""
         outer_poly = Polygon3D(surface.coords)
         inner_poly = Polygon3D(subsurface.coords)
         for edge in outer_poly.edges:
             links = product(edge, inner_poly)
-            links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
             pt1, pt2 = edge
-            t1 = [pt1, links[0][1], pt2]
-            t2 = [pt2, t1[1], links[1][1]]
+            links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
+            t1 = [links[0][0], links[0][1], pt2 if pt1 in links[0] else pt1]
+            links = sorted(
+                [l for l in links[1:] if links[0][0] not in l and links[0][1] not in l],
+                key=lambda x: x[0].relative_distance(x[1]),
+            )
+            t2 = (links[0][0], links[0][1], [pt for pt in t1 if pt in inner_poly][0])
             self.add_face(t1, surface.Surface_Type)
             self.add_face(t2, surface.Surface_Type)
         self.add_face(subsurface.coords, subsurface.Surface_Type, test=False)
 
     def prepare_shadingsurfaces(self, shading_surfaces):
         for s in shading_surfaces:
-            self.add_face(s.coords, "shade")
+            self.add_face(s.coords, "shading")
 
     def add_face(self, coords, mtl, test=True):
         face = []
@@ -109,6 +114,7 @@ class ObjWriter(object):
             else:
                 face.append(self.vertices.index(v) + 1)
         self.faces.append({"face": face, "mtl": mtl})
+        self.faces.append({"face": reversed(face), "mtl": mtl})
 
     def write(self, fname, mtllib):
         """Write the .obj file.
@@ -126,9 +132,15 @@ class ObjWriter(object):
             f_out.write("\n# materials library\n")
             f_out.write("mtllib %s\n" % os.path.basename(mtllib))
             f_out.write("\n# faces\n")
+            f_out.write("\nvn 0 0 1\n")
+            mtl = None
             for f in self.faces:
-                f_out.write("usemtl %s\n" % f["mtl"].lower())
-                f_out.write("f %s//\n" % "// ".join((str(i) for i in f["face"])))
+                if f["mtl"].lower() != mtl:
+                    f_out.write("usemtl %s\n" % f["mtl"].lower())
+                    mtl = f["mtl"].lower()
+                f_out.write(
+                    "f %s\n" % " ".join("%s//%s" % (str(i), str(1)) for i in f["face"])
+                )
 
 
 def export_to_obj(idf, fname=None, mtllib=None):

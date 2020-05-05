@@ -33,7 +33,6 @@ def set_default_constructions(idf):
         "Project Floor",
         "Project Flat Roof",
         "Project Ceiling",
-        "Project External Window",
         "Project Door",
     ]
     for construction in constructions:
@@ -48,6 +47,17 @@ def set_default_constructions(idf):
         Conductivity=0.1,
         Density=1000,
         Specific_Heat=1000,
+    )
+
+    idf.newidfobject(
+        "CONSTRUCTION", Name="Project External Window", Outside_Layer="DefaultGlazing"
+    )
+    idf.newidfobject(
+        "WINDOWMATERIAL:SIMPLEGLAZINGSYSTEM",
+        Name="DefaultGlazing",
+        UFactor=2.7,
+        Solar_Heat_Gain_Coefficient=0.763,
+        Visible_Transmittance=0.8,
     )
 
     for surface in idf.getsurfaces():
@@ -155,7 +165,7 @@ def set_wwr(
             "FENESTRATIONSURFACE:DETAILED",
             Name="%s window" % wall.Name,
             Surface_Type="Window",
-            Construction_Name=construction,
+            Construction_Name=construction or "",
             Building_Surface_Name=wall.Name,
             View_Factor_to_Ground="autocalculate",  # from the surface angle
         )
@@ -171,7 +181,7 @@ def _has_correct_orientation(wall, orientation_degrees):
     :return: True if the wall is within 45 degrees of the orientation passed, or no orientation passed.
              False if the wall is not within 45 of the orientation passed.
     """
-    if not orientation_degrees:
+    if orientation_degrees is None:
         return True
     if abs(wall.azimuth - orientation_degrees) < 45:
         return True
@@ -226,12 +236,14 @@ def translate_to_origin(idf):
     """
     surfaces = idf.getsurfaces()
     subsurfaces = idf.getsubsurfaces()
+    shading_surfaces = idf.getshadingsurfaces()
 
     min_x = min(min(Polygon3D(s.coords).xs) for s in surfaces)
     min_y = min(min(Polygon3D(s.coords).ys) for s in surfaces)
 
     translate(surfaces, (-min_x, -min_y))
     translate(subsurfaces, (-min_x, -min_y))
+    translate(shading_surfaces, (-min_x, -min_y))
 
 
 def translate(

@@ -1,10 +1,7 @@
 """Intersect and match all surfaces in an IDF.
 """
-from typing import List, Optional, Union  # noqa
+from itertools import product
 
-from eppy.idf_msequence import Idf_MSequence  # noqa
-
-from geomeppy.geom.polygons import Polygon3D
 from geomeppy.geom.surfaces import (
     get_adjacencies,
     getidfplanes,
@@ -24,7 +21,7 @@ def intersect_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = idf.getsurfaces()
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
     try:
         ggr = idf.idfobjects["GLOBALGEOMETRYRULES"][0]
     except IndexError:
@@ -48,28 +45,23 @@ def match_idf_surfaces(idf):
 
     :param idf: The IDF.
     """
-    surfaces = idf.getsurfaces()
+    surfaces = idf.getsurfaces() + idf.getshadingsurfaces()
     planes = getidfplanes(surfaces)
+    matched = {}
     for distance in planes:
         for vector in planes[distance]:
             surfaces = planes[distance][vector]
+            for surface in surfaces:
+                set_unmatched_surface(surface, vector)
             matches = planes.get(-distance, {}).get(-vector, [])
-            if not matches:
-                # default set all the surfaces boundary conditions
-                for s in surfaces:
-                    set_unmatched_surface(s, vector)
-            else:
-                # check which are matches
-                for s in surfaces:
-                    for m in matches:
-                        matched = False
-                        poly1 = Polygon3D(s.coords)
-                        poly2 = Polygon3D(m.coords)
-                        if almostequal(poly1, poly2.invert_orientation()):
-                            matched = True
-                            set_matched_surfaces(s, m)
-                            break
-                    if not matched:
-                        # unmatched surfaces
-                        set_unmatched_surface(s, vector)
-                        set_unmatched_surface(m, vector)
+            for s, m in product(surfaces, matches):
+                if almostequal(s.coords, reversed(m.coords)):
+                    matched[sorted_tuple(m, s)] = (m, s)
+
+    for key in matched:
+        set_matched_surfaces(*matched[key])
+
+
+def sorted_tuple(m, s):
+    """Used as a key for the matches."""
+    return tuple(sorted(((s.key, s.Name), (m.key, m.Name))))

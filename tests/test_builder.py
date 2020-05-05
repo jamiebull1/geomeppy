@@ -176,49 +176,24 @@ class TestAddBlock:
         block2 = [(3, 1), (7, 1), (7, 5), (3, 5)]
         idf.add_block("left", block1, height, num_stories)
         idf.add_block("right", block2, height, num_stories)
-        idf.intersect_match()
+        idf.intersect()
+        idf.match()
         idf.set_wwr(0.25)
         idf.set_default_constructions()
-        # Storey 0
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_1"
-        )
-        assert wall.Construction_Name == "Project Partition"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block left Storey 0 Wall 0002_2"
-        )
-        assert wall.Construction_Name == "Project Wall"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_1"
-        )
-        assert wall.Construction_Name == "Project Partition"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block right Storey 0 Wall 0004_2"
-        )
-        assert wall.Construction_Name == "Project Wall"
-        # Storey 1
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_1"
-        )
-        assert wall.Construction_Name == "Project Partition"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block left Storey 1 Wall 0002_2"
-        )
-        assert wall.Construction_Name == "Project Wall"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_1"
-        )
-        assert wall.Construction_Name == "Project Partition"
-
-        wall = idf.getobject(
-            "BUILDINGSURFACE:DETAILED", "Block right Storey 1 Wall 0004_2"
-        )
-        assert wall.Construction_Name == "Project Wall"
+        partitions = [
+            w
+            for w in idf.getsurfaces("wall")
+            if w.Outside_Boundary_Condition == "surface"
+        ]
+        outside_walls = [
+            w
+            for w in idf.getsurfaces("wall")
+            if w.Outside_Boundary_Condition == "outdoors"
+        ]
+        assert len(partitions) == 4
+        assert len(outside_walls) == 16
+        assert all([w.Construction_Name == "Project Partition" for w in partitions])
+        assert all([w.Construction_Name == "Project Wall" for w in outside_walls])
 
         for window in idf.getsubsurfaces(surface_type="window"):
             wall = idf.getobject(
