@@ -208,7 +208,7 @@ This method requires some explanation. The parameters required are:
     zoning : str, optional
         The rules to use in creating zones. Currently two options are available:
         - `by_storey`: sets each storey in the block as a Zone.
-        - `core/perim`: creates a core and perimeter Zones for each storey (see perim_depth).
+        - `core/perim`: creates core and perimeter Zones for each storey (see perim_depth).
     perim_depth : float, optional
         Depth of the perimeter zones if the core/perim zoning pattern is requested. Default : 3.0.
 	
