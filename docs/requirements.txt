@@ -4,30 +4,30 @@
 #
 #    pip-compile --output-file=./docs/requirements.txt ./docs/requirements.in
 #
-atomicwrites==1.2.0       # via pytest
-attrs==18.2.0             # via pytest
-beautifulsoup4==4.6.3     # via eppy
-colorama==0.4.1           # via pytest
+atomicwrites==1.4.0       # via pytest
+attrs==19.3.0             # via pytest
+beautifulsoup4==4.9.0     # via eppy
+colorama==0.4.3           # via pytest
 cycler==0.10.0            # via matplotlib
-decorator==4.2.1          # via eppy
-eppy==0.5.47
-future==0.17.1            # via eppy
-kiwisolver==1.0.1         # via matplotlib
-lxml==4.2.4               # via eppy
-matplotlib==3.0.0
-more-itertools==4.3.0     # via pytest
-munch==2.3.2              # via eppy
-numpy==1.15.2             # via matplotlib
-pluggy==0.7.1             # via pytest
-py==1.6.0                 # via pytest
+decorator==4.4.2          # via eppy
+eppy==0.5.52
+future==0.18.2            # via eppy
+kiwisolver==1.2.0         # via matplotlib
+lxml==4.5.0               # via eppy
+matplotlib==3.2.1
+more-itertools==8.2.0     # via pytest
+munch==2.5.0              # via eppy
+numpy==1.18.3             # via matplotlib
+pluggy==0.13.1             # via pytest
+py==1.8.1                 # via pytest
 pyclipper==1.1.0.post1
 pydot3k==1.0.17           # via eppy
-pyparsing==2.2.2          # via matplotlib, pydot3k
+pyparsing==2.4.7          # via matplotlib, pydot3k
 pypoly2tri==0.0.3
-pytest==3.8.1             # via eppy
-python-dateutil==2.7.3    # via matplotlib
-shapely==1.6.4.post2
-six==1.11.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
+pytest==5.4.1             # via eppy
+python-dateutil==2.8.1    # via matplotlib
+shapely==1.7.0
+six==1.14.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
 tinynumpy==1.2.1          # via eppy
 transforms3d==0.3.1
 
