@@ -252,7 +252,14 @@ class PatchedIDF(BaseIDF):
         if self.getiddname() is None:
             errortxt = "IDD file needed to read the idf file. Set it using IDF.setiddname(iddfile)"
             raise IDDNotSetError(errortxt)
-        self.idfobjects, block, self.model, idd_info, idd_index, versiontuple = idfreader1(
+        (
+            self.idfobjects,
+            block,
+            self.model,
+            idd_info,
+            idd_index,
+            versiontuple,
+        ) = idfreader1(
             self.idfname, self.iddname, self, commdct=self.idd_info, block=self.block
         )
         self.__class__.setidd(idd_info, idd_index, block, versiontuple)
