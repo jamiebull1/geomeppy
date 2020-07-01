@@ -12,7 +12,7 @@ cycler==0.10.0            # via matplotlib
 decorator==4.4.2          # via eppy
 eppy==0.5.52
 future==0.18.2            # via eppy
-importlib-metadata==1.6.0  # via pluggy, pytest
+importlib-metadata==1.7.0  # via pluggy, pytest
 kiwisolver==1.2.0         # via matplotlib
 lxml==4.5.1               # via eppy
 matplotlib==3.2.2
