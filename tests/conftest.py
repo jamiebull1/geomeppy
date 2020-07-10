@@ -5,6 +5,7 @@ import matplotlib
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
+import os
 
 from geomeppy.idf import IDF
 
@@ -72,6 +73,16 @@ def ring_idf():
 
     return IDF(StringIO(ring_idf_txt))
 
+@pytest.fixture()
+def stack_idf():
+    """A two-zone model with an inner ring."""
+    iddfhandle = StringIO(iddcurrent.iddtxt)
+    if IDF.getiddname() == None:
+        IDF.setiddname(iddfhandle)
+    path_to_current_file = os.path.realpath(__file__)
+    current_directory = os.path.split(path_to_current_file)[0]
+    path_to_file = os.path.join(current_directory, "test_data/stack_geom.idf")
+    return IDF(path_to_file)
 
 @pytest.fixture()
 def new_idf():

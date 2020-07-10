@@ -5,6 +5,7 @@ import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
+
 from geomeppy.geom.surfaces import minimal_set
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import (
@@ -398,6 +399,20 @@ class TestIntersectMatch:
         ]:
             obj = idf.getobject("BUILDINGSURFACE:DETAILED", name)
             assert obj
+
+    def test_match_idf_surfaces(self,stack_idf):
+        idf=stack_idf
+        starting = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
+        idf.intersect_match()
+        ending = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
+        assert starting == 12
+        assert ending == 14
+        #check outside boundary condition of roof
+        adjascent_cnt=0
+        for obj in idf.idfobjects["BUILDINGSURFACE:DETAILED"]:
+            if obj.Outside_Boundary_Condition == "surface":
+                adjascent_cnt+=1
+        assert adjascent_cnt==2
 
 
 @pytest.mark.xfail("sys.version_info.major == 3 and sys.version_info.minor == 5")

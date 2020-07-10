@@ -56,6 +56,7 @@ def match_idf_surfaces(idf):
             matches = planes.get(-distance, {}).get(-vector, [])
             for s, m in product(surfaces, matches):
                 if almostequal(sorted(s.coords),sorted(m.coords)):
+                #if almostequal(s.coords, reversed(m.coords)):
                     matched[sorted_tuple(m, s)] = (m, s)
 
     for key in matched:
