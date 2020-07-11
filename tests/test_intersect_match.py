@@ -5,6 +5,7 @@ import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
+
 from geomeppy.geom.surfaces import minimal_set
 from geomeppy.idf import IDF
 from geomeppy.geom.intersect_match import (
@@ -398,6 +399,35 @@ class TestIntersectMatch:
         ]:
             obj = idf.getobject("BUILDINGSURFACE:DETAILED", name)
             assert obj
+
+    def test_match_idf_surfaces(self):
+        # type: () -> None
+        """Test intersect_match for stacked geometry
+        """
+        iddfhandle = StringIO(iddcurrent.iddtxt)
+        if IDF.getiddname() == None:
+            IDF.setiddname(iddfhandle)
+
+        idf = IDF(StringIO("Version, 8.9;"))
+        lower_poly = [[21, 5], [21, 14], [31, 14], [31, 5]]
+        upper_poly = [[26, 5], [26, 14], [36, 14], [36, 5]]
+        idf.add_block("upper", upper_poly, 10)
+        idf.translate((0, 0, 10))
+        idf.add_block("lower", lower_poly, 10)
+        expected_surface_count = 12
+        assert len(idf.idfobjects["BUILDINGSURFACE:DETAILED"]) == expected_surface_count
+        idf.intersect_match()
+        new_expected_surface_count = 14
+        assert (
+            len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
+            == new_expected_surface_count
+        )
+        # check outside boundary condition of roof
+        adjacency_count = 0
+        for obj in idf.idfobjects["BUILDINGSURFACE:DETAILED"]:
+            if obj.Outside_Boundary_Condition == "surface":
+                adjacency_count += 1
+        assert adjacency_count == 2
 
 
 @pytest.mark.xfail("sys.version_info.major == 3 and sys.version_info.minor == 5")

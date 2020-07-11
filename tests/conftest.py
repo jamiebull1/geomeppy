@@ -5,6 +5,7 @@ import matplotlib
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
+import os
 
 from geomeppy.idf import IDF
 
