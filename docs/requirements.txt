@@ -13,18 +13,18 @@ decorator==4.4.2          # via eppy
 eppy==0.5.52
 future==0.18.2            # via eppy
 kiwisolver==1.2.0         # via matplotlib
-lxml==4.5.1               # via eppy
-matplotlib==3.2.2
+lxml==4.5.2               # via eppy
+matplotlib==3.3.0
 more-itertools==8.4.0     # via pytest
 munch==2.5.0              # via eppy
-numpy==1.19.0             # via matplotlib
+numpy==1.19.1             # via matplotlib
 pluggy==0.13.1             # via pytest
 py==1.9.0                 # via pytest
 pyclipper==1.2.0
 pydot3k==1.0.17           # via eppy
 pyparsing==2.4.7          # via matplotlib, pydot3k
 pypoly2tri==0.0.3
-pytest==5.4.3             # via eppy
+pytest==6.0.1             # via eppy
 python-dateutil==2.8.1    # via matplotlib
 shapely==1.7.0
 six==1.15.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
