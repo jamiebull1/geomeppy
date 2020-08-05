@@ -215,11 +215,12 @@ def window_vertices_given_wall(wall, wwr):
     average_y = sum([y for _x, y, _z in vertices]) / len(vertices)
     average_z = sum([z for _x, _y, z in vertices]) / len(vertices)
     # move windows in 0.5% from the edges so they can be drawn in SketchUp
+    wwr_factor = np.sqrt(wwr) 
     window_points = [
         [
-            ((x - average_x) * 0.999) + average_x,
-            ((y - average_y) * 0.999) + average_y,
-            ((z - average_z) * wwr) + average_z,
+            x*wwr_factor*0.999 + average_x*(1-wwr_factor),
+            y*wwr_factor*0.999 + average_y*(1-wwr_factor),
+            z*wwr_factor*0.999 + average_z*(1-wwr_factor),
         ]
         for x, y, z in vertices
     ]
