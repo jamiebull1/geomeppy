@@ -4,7 +4,7 @@ These are generally exposed and methods on the IDF object, e.g. `set_default_con
 can be called on an existing `IDF` object like ``myidf.set_default_constructions()``.
 
 """
-from typing import List, Optional, Tuple, Union  # noqa
+from typing import Iterable, List, Optional, Tuple, Union  # noqa
 import warnings
 
 from eppy.idf_msequence import Idf_MSequence  # noqa
@@ -14,9 +14,8 @@ from .geom.polygons import Polygon3D
 from .geom.transformations import Transformation
 from .geom.vectors import Vector2D, Vector3D  # noqa
 
-if False:
+if False:  # hacky way to avoid circular imports required by MyPy
     from .idf import IDF  # noqa
-if False:
     from .patches import EpBunch  # noqa
 
 
@@ -29,8 +28,10 @@ def set_default_constructions(idf):
     """
     constructions = [
         "Project Wall",
+        "Project Basement Wall", #to consider the basement walls for 'ground' conditions
         "Project Partition",
         "Project Floor",
+        "Project Basement Floor", #to consider the basement floor for 'ground' conditions diffrent from 'Floor'
         "Project Flat Roof",
         "Project Ceiling",
         "Project Door",
@@ -77,12 +78,12 @@ def set_default_construction(surface):
         if surface.Outside_Boundary_Condition.lower() == "outdoors":
             surface.Construction_Name = "Project Wall"
         elif surface.Outside_Boundary_Condition.lower() == "ground":
-            surface.Construction_Name = "Project Wall"
+            surface.Construction_Name = "Project Basement Wall"
         else:
             surface.Construction_Name = "Project Partition"
     if surface.Surface_Type.lower() == "floor":
         if surface.Outside_Boundary_Condition.lower() == "ground":
-            surface.Construction_Name = "Project Floor"
+            surface.Construction_Name = "Project Basement Floor"
         else:
             surface.Construction_Name = "Project Floor"
     if surface.Surface_Type.lower() == "roof":
@@ -96,9 +97,15 @@ def set_default_construction(surface):
 
 
 def set_wwr(
-    idf, wwr=0.2, construction=None, force=False, wwr_map=None, orientation=None
+    idf,  # IDF
+    wwr=0.2,  # float
+    construction=None,  # Optional[str]
+    force=False,  # bool
+    wwr_map=None,  # Optional[dict]
+    orientation=None,  # Optional[str]
+    surfaces=None,  # Optional[Iterable]
 ):
-    # type: (IDF, Optional[float], Optional[str], Optional[bool], Optional[dict], Optional[str]) -> None
+    # type: (...) -> None
     """Set the window to wall ratio on all external walls.
 
     :param idf: The IDF to edit.
@@ -107,6 +114,7 @@ def set_wwr(
     :param force: True to remove all subsurfaces before setting the WWR.
     :param wwr_map: Mapping from wall orientation (azimuth) to WWR, e.g. {180: 0.25, 90: 0.2}.
     :param orientation: One of "north", "east", "south", "west". Walls within 45 degrees will be affected.
+    :param surfaces: Iterable of surfaces to set the window to wall ratio of.
 
     """
     try:
@@ -125,7 +133,7 @@ def set_wwr(
     degrees = orientations.get(orientation, None)
     external_walls = filter(
         lambda x: x.Outside_Boundary_Condition.lower() == "outdoors",
-        idf.getsurfaces("wall"),
+        surfaces or idf.getsurfaces("wall"),
     )
     external_walls = filter(
         lambda x: _has_correct_orientation(x, degrees), external_walls

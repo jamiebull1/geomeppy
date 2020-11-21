@@ -131,6 +131,18 @@ class Polygon(Clipper2D, MutableSequence):
         ]
         return edges
 
+    @property
+    def edges_length(self):
+        # type: () -> List[Segment]
+        """A list of edges represented as Segment objects."""
+        vertices = self.vertices
+        edges_length =[]
+        for i in range(len(self)-1):
+            edges_length.append(((vertices[i+1][0]-vertices[i][0])**2+(vertices[i+1][1]-vertices[i][1])**2)**0.5)
+        edges_length.append(
+            ((vertices[-1][0] - vertices[0][0]) ** 2 + (vertices[-1][1] - vertices[0][1]) ** 2) ** 0.5)
+        return edges_length
+
     def invert_orientation(self):
         # type: () -> Polygon
         """Reverse the order of the vertices.

@@ -283,7 +283,7 @@ class IDF(PatchedIDF):
                         )
                         for storey in block.stories
                     ]
-            except NotImplementedError:
+            except (NotImplementedError, TypeError) as e:
                 raise ValueError("Perimeter depth is too great")
         else:
             raise ValueError("%s is not a valid zoning rule" % block.zoning)
