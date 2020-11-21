@@ -28,8 +28,10 @@ def set_default_constructions(idf):
     """
     constructions = [
         "Project Wall",
+        "Project Basement Wall", #to consider the basement walls for 'ground' conditions
         "Project Partition",
         "Project Floor",
+        "Project Basement Floor", #to consider the basement floor for 'ground' conditions diffretn from 'Floor'
         "Project Flat Roof",
         "Project Ceiling",
         "Project Door",
@@ -76,12 +78,12 @@ def set_default_construction(surface):
         if surface.Outside_Boundary_Condition.lower() == "outdoors":
             surface.Construction_Name = "Project Wall"
         elif surface.Outside_Boundary_Condition.lower() == "ground":
-            surface.Construction_Name = "Project Wall"
+            surface.Construction_Name = "Project Basement Wall"
         else:
             surface.Construction_Name = "Project Partition"
     if surface.Surface_Type.lower() == "floor":
         if surface.Outside_Boundary_Condition.lower() == "ground":
-            surface.Construction_Name = "Project Floor"
+            surface.Construction_Name = "Project Basement Floor"
         else:
             surface.Construction_Name = "Project Floor"
     if surface.Surface_Type.lower() == "roof":
