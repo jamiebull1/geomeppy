@@ -31,7 +31,7 @@ def set_default_constructions(idf):
         "Project Basement Wall", #to consider the basement walls for 'ground' conditions
         "Project Partition",
         "Project Floor",
-        "Project Basement Floor", #to consider the basement floor for 'ground' conditions diffretn from 'Floor'
+        "Project Basement Floor", #to consider the basement floor for 'ground' conditions diffrent from 'Floor'
         "Project Flat Roof",
         "Project Ceiling",
         "Project Door",

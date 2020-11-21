@@ -8,7 +8,7 @@ def get_core(footprint, perim_depth=None):
     try:
         core = poly.buffer(distance=-perim_depth)
         if perim_depth:
-            newcore = check_core(core,perim_depth/2)
+            newcore = check_core(core,perim_depth/2) #the tolerance is defined as half the perim depth
         else:
             newcore = core
     except:
@@ -19,7 +19,7 @@ def check_core(core,epsilon):
     # #filtering with edges length. length below 1m are removed #modif from xavfa
     #but also vertexes that are closer to the same distance (balcony effect : merge point on the balcony bit not at its birth, on the wall
     #this modification is associated with the one in identifying the perimeters zone
-    #first, let removed the edge thqt qre smqller then epsilon
+    #first, let removed the edge that are smaller then epsilon
     checked_core = True
     corecoord = [core.vertices_list[i] for i, v in enumerate(core.edges_length[:-1]) if v > epsilon]
     #than lets remove eventually the nodes that creates narrow triangles in the core zone so nomore than one in between
@@ -41,14 +41,6 @@ def check_core(core,epsilon):
         for idx, node in enumerate(corecoord):
             if not idx in nd2rm:
                 newcorecoord.append(node)
-        # for idx in range(len(node2remove)):
-        #     if idx==0:
-        #         newcorecoord= corecoord[:node2remove[idx][0]]
-        #     else:
-        #         for i in range(node2remove[idx][0]-node2remove[idx-1][1]):
-        #             newcorecoord.append(corecoord[i+node2remove[idx-1][1]])
-        # for i in range(len(corecoord)-node2remove[idx][1]):
-        #     newcorecoord.append(corecoord[i+node2remove[idx][1]])
     else:
         newcorecoord = corecoord
     if len(newcorecoord)<3:
@@ -61,7 +53,6 @@ def check_core(core,epsilon):
 
 def get_perims(footprint, core):
     perims = []
-    #footprint.append(footprint[0])
     poly = Polygon2D(footprint)
     if not(core):
         print('The perimetre width aksed for is too wide to build the core zone')
@@ -120,7 +111,7 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 0
                     break
             else:
-                # if EdgeP1:                        #not ready for to avoid triangle...some case might lead to more weird situations...
+                # if EdgeP1:                        #tries to avoid triangles is possible, but...some case might lead to more weird situations...
                 #     if Point == EdgeP1:
                 #         satisfied = 0
                 #         break
