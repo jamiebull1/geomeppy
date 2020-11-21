@@ -55,8 +55,11 @@ def match_idf_surfaces(idf):
                 set_unmatched_surface(surface, vector)
             matches = planes.get(-distance, {}).get(-vector, [])
             for s, m in product(surfaces, matches):
-                if almostequal(sorted(s.coords), sorted(m.coords)):
-                    matched[sorted_tuple(m, s)] = (m, s)
+                for i in range(len(s.coords)):  # xavfa modification to make a vertex rotation (the almostequl makes vertex per vertex comparison only.
+                    coord2test = s.coords[i:] + s.coords[:i]
+                    if almostequal(coord2test, reversed(m.coords)):
+                        matched[sorted_tuple(m, s)] = (m, s)
+                        break
 
     for key in matched:
         set_matched_surfaces(*matched[key])
