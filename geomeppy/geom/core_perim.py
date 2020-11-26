@@ -71,31 +71,43 @@ def get_perims(footprint, core):
             )[0][1]
             perims.append(Polygon2D([c1, edge.p1, edge.p2, c2]))
     else:
+        GoodPoint = True
         for idx, edge in enumerate(poly1.edges):
             if poly1.edges_length[idx]>1:
                 if idx==0:
                     c1 = FindClosestNode(edge.p1, poly1, footprint)
-                else:
+                    coreEdge1 = edge.p1
+                elif GoodPoint:
+                    coreEdge1 = edge.p1
                     c1 = c2
-                c2 = FindClosestNode(edge.p2, poly1, footprint, EdgeP1 = c1)
-                startidx = 0
-                endidx = 0
-                for i,pt in enumerate(footprint):
-                    if str(c1) in str(pt):
-                        startidx = i
-                    if str(c2) in str(pt):
-                        endidx = i
-                if startidx>endidx:
-                    perim_coord = [edge.p1]+footprint[startidx:]+footprint[:endidx+1]+[edge.p2]
-                else:
-                    perim_coord = [edge.p1]+footprint[startidx:endidx+1]+[edge.p2]
-                perims.append(Polygon2D(perim_coord))
+                #integration of a try in order to avoid havoing triangle zone due to the same point for c1 and c2.
+                c2, GoodPoint = FindClosestNode(edge.p2, poly1, footprint, EdgeP1 = c1)
+                if GoodPoint:
+                    startidx = 0
+                    endidx = 0
+                    for i,pt in enumerate(footprint):
+                        if str(c1) in str(pt):
+                            startidx = i
+                        if str(c2) in str(pt):
+                            endidx = i
+                    if startidx>endidx:
+                        if not str(coreEdge1) in str(edge.p1):
+                            perim_coord = [coreEdge1]+footprint[startidx:]+footprint[:endidx+1]+[edge.p2]+[edge.p1]
+                        else:
+                            perim_coord = [coreEdge1] + footprint[startidx:] + footprint[:endidx + 1] + [edge.p2]
+                    else:
+                        if not str(coreEdge1) in str(edge.p1):
+                            perim_coord = [coreEdge1]+footprint[startidx:endidx+1]+[edge.p2]+[edge.p1]
+                        else:
+                            perim_coord = [coreEdge1] + footprint[startidx:endidx + 1] + [edge.p2]
+                    perims.append(Polygon2D(perim_coord))
     return perims
 
 def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
     shorter = 0
     satisfied = 0
     Point = []
+    GoodPoint = True
     while satisfied == 0:
         Point = sorted(
             product([edgePoint] * len(footprint), footprint),
@@ -111,13 +123,13 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 0
                     break
             else:
-                # if EdgeP1:                        #tries to avoid triangles is possible, but...some case might lead to more weird situations...
-                #     if Point == EdgeP1:
-                #         satisfied = 0
+                if EdgeP1:                        #tries to avoid triangles is possible, but...some case might lead to more weird situations...
+                    if Point == EdgeP1:
+                        GoodPoint = False
                 #         break
                 if shorter == len(poly1.edges):
                     satisfied = 1
-    return Point
+    return Point, GoodPoint
 
 def CheckFootprintNodes(footprint):
     node2remove = []
