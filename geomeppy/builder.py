@@ -128,7 +128,10 @@ class Block(object):
         """
         lfl = self.lowest_floor_level
         sh = self.storey_height
-        floor_heights = [lfl + sh * i for i in range(self.num_stories)]
+        bgsh = self.below_ground_storey_height
+        #floor_heights = [lfl + sh * i for i in range(self.num_stories)]
+        floor_heights = [lfl + bgsh * i for i in range(self.num_below_ground_stories)] + [
+            sh * i for i in range(self.num_stories-self.num_below_ground_stories)]
         return floor_heights
 
     @property
@@ -141,7 +144,10 @@ class Block(object):
         """
         lfl = self.lowest_floor_level
         sh = self.storey_height
-        ceiling_heights = [lfl + sh * (i + 1) for i in range(self.num_stories)]
+        bgsh = self.below_ground_storey_height
+        #ceiling_heights = [lfl + sh * (i + 1) for i in range(self.num_stories)]
+        ceiling_heights = [lfl + bgsh * (i+1) for i in range(self.num_below_ground_stories)] + [
+            sh * (i+1) for i in range(self.num_stories-self.num_below_ground_stories)]
         return ceiling_heights
 
     @property

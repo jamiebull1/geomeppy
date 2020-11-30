@@ -73,16 +73,16 @@ def get_perims(footprint, core):
     else:
         GoodPoint = True
         for idx, edge in enumerate(poly1.edges):
-            if poly1.edges_length[idx]>1:
+            if poly1.edges_length[idx]>0: #since the core is a closed loop polygon, the length of the last edge is 0 and there is no need to search for zone construction with this one
                 if idx==0:
-                    c1 = FindClosestNode(edge.p1, poly1, footprint)
+                    c1, notneeded = FindClosestNode(edge.p1, poly1, footprint)
                     coreEdge1 = edge.p1
                 elif GoodPoint:
                     coreEdge1 = edge.p1
                     c1 = c2
                 #integration of a try in order to avoid havoing triangle zone due to the same point for c1 and c2.
                 c2, GoodPoint = FindClosestNode(edge.p2, poly1, footprint, EdgeP1 = c1)
-                if GoodPoint:
+                if GoodPoint or idx>=(len(poly1.edges)-2): #if a triangle is detected for the last possible core's edge....we still accept a triangle zone
                     startidx = 0
                     endidx = 0
                     for i,pt in enumerate(footprint):
@@ -123,10 +123,10 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 0
                     break
             else:
-                if EdgeP1:                        #tries to avoid triangles is possible, but...some case might lead to more weird situations...
+                if EdgeP1:                        #tries to avoid triangles, but tfor the lqst edge, we still authoraieze it
                     if Point == EdgeP1:
                         GoodPoint = False
-                #         break
+                        break
                 if shorter == len(poly1.edges):
                     satisfied = 1
     return Point, GoodPoint
@@ -149,8 +149,11 @@ def core_perim_zone_coordinates(footprint, perim_depth):
     a list of tuples containing the coordinates for the core zone."""
     #check for any angle to close to 180deg because it generates extra perimeter's zones
     footprint = CheckFootprintNodes(footprint)
-    zones_perim = get_perims(footprint, get_core(footprint, perim_depth))
     core = get_core(footprint, perim_depth)
+    zones_perim = get_perims(footprint, core)
+
+    # zones_perim = get_perims(footprint, get_core(footprint, perim_depth))
+    # core = get_core(footprint, perim_depth)
 
     zones_dict = {}
     if not(zones_perim):

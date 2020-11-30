@@ -59,7 +59,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
 
     if not test:
         plt.show()
-
+        #plt.savefig(idf.idfname+'.png')
 
 def view_polygons(polygons):
     """Display a collection of polygons for inspection.
