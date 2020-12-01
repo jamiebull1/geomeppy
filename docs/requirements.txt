@@ -12,7 +12,7 @@ cycler==0.10.0            # via matplotlib
 decorator==4.4.2          # via eppy
 eppy==0.5.53
 future==0.18.2            # via eppy
-kiwisolver==1.2.0         # via matplotlib
+kiwisolver==1.3.1         # via matplotlib
 lxml==4.5.2               # via eppy
 matplotlib==3.3.0
 more-itertools==8.4.0     # via pytest
