@@ -27,7 +27,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     from geomeppy import IDF
 
     try:
-        plt.figure()
+        plt.figure(0)
     except TclError:
         # this is as expected on the test server
         return

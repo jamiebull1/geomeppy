@@ -275,6 +275,8 @@ class IDF(PatchedIDF):
                         coordinates=coords,
                         height=block.height,
                         num_stories=block.num_stories,
+                        below_ground_stories=block.num_below_ground_stories,
+                        below_ground_storey_height = block.below_ground_storey_height,
                     )
                     zones += [
                         Zone(
