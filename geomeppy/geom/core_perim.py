@@ -72,6 +72,7 @@ def get_perims(footprint, core):
             perims.append(Polygon2D([c1, edge.p1, edge.p2, c2]))
     else:
         GoodPoint = True
+        extraPoint = []
         for idx, edge in enumerate(poly1.edges):
             if poly1.edges_length[idx]>0: #since the core is a closed loop polygon, the length of the last edge is 0 and there is no need to search for zone construction with this one
                 if idx==0:
@@ -82,25 +83,23 @@ def get_perims(footprint, core):
                     c1 = c2
                 #integration of a try in order to avoid havoing triangle zone due to the same point for c1 and c2.
                 c2, GoodPoint = FindClosestNode(edge.p2, poly1, footprint, EdgeP1 = c1)
+                if not GoodPoint:
+                    extraPoint.append(edge.p1)
                 if GoodPoint or idx>=(len(poly1.edges)-2): #if a triangle is detected for the last possible core's edge....we still accept a triangle zone
                     startidx = 0
                     endidx = 0
+                    #we need to deal with the extra points that might be present if more than 2 core's edges are embedded in the perimzone
                     for i,pt in enumerate(footprint):
                         if str(c1) in str(pt):
                             startidx = i
                         if str(c2) in str(pt):
                             endidx = i
                     if startidx>endidx:
-                        if not str(coreEdge1) in str(edge.p1):
-                            perim_coord = [coreEdge1]+footprint[startidx:]+footprint[:endidx+1]+[edge.p2]+[edge.p1]
-                        else:
-                            perim_coord = [coreEdge1] + footprint[startidx:] + footprint[:endidx + 1] + [edge.p2]
+                        perim_coord = footprint[startidx:] + footprint[:endidx + 1] + [edge.p2] + [edge.p1] + list(reversed(extraPoint))
                     else:
-                        if not str(coreEdge1) in str(edge.p1):
-                            perim_coord = [coreEdge1]+footprint[startidx:endidx+1]+[edge.p2]+[edge.p1]
-                        else:
-                            perim_coord = [coreEdge1] + footprint[startidx:endidx + 1] + [edge.p2]
+                        perim_coord = footprint[startidx:endidx + 1] + [edge.p2] + [edge.p1] + list(reversed(extraPoint))
                     perims.append(Polygon2D(perim_coord))
+                    extraPoint = []
     return perims
 
 def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
