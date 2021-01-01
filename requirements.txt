@@ -22,7 +22,7 @@ numpy==1.19.4             # via matplotlib
 packaging==20.4           # via pytest
 pluggy==0.13.1            # via pytest
 py==1.10.0                 # via pytest
-pyclipper==1.2.0
+pyclipper==1.2.1
 pydot3k==1.0.17           # via eppy
 pyparsing==2.4.7          # via matplotlib, packaging, pydot3k
 pypoly2tri==0.0.3
