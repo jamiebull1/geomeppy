@@ -4,37 +4,26 @@
 #
 #    pip-compile --output-file=./requirements.txt ./requirements.in
 #
-atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via packaging, pytest
 beautifulsoup4==4.9.0     # via eppy
-colorama==0.4.3           # via pytest
 cycler==0.10.0            # via matplotlib
 decorator==4.4.2          # via eppy
-eppy==0.5.52
+eppy==0.5.52              # via -r requirements.in
 future==0.18.2            # via eppy
-importlib-metadata==1.6.0  # via pluggy, pytest
 kiwisolver==1.2.0         # via matplotlib
-lxml==4.5.0               # via eppy
-matplotlib==3.2.1
-more-itertools==8.2.0     # via pytest, zipp
+lxml==4.6.2               # via eppy
+matplotlib==3.2.1         # via -r requirements.in
 munch==2.5.0              # via eppy
 numpy==1.18.3             # via matplotlib
-packaging==20.3           # via pytest
-pluggy==0.13.1            # via pytest
-py==1.8.1                 # via pytest
-pyclipper==1.1.0.post1
+pyclipper==1.1.0.post1    # via -r requirements.in
 pydot3k==1.0.17           # via eppy
-pyparsing==2.4.7          # via matplotlib, packaging, pydot3k
-pypoly2tri==0.0.3
-pytest==5.4.1             # via eppy
+pyparsing==2.4.7          # via matplotlib, pydot3k
+pypoly2tri==0.0.3         # via -r requirements.in
 python-dateutil==2.8.1    # via matplotlib
-shapely==1.7.0
-six==1.14.0               # via cycler, eppy, more-itertools, munch, packaging, python-dateutil
-soupsieve==2.0          # via beautifulsoup4
+shapely==1.7.0            # via -r requirements.in
+six==1.14.0               # via cycler, eppy, munch, python-dateutil
+soupsieve==2.0            # via beautifulsoup4
 tinynumpy==1.2.1          # via eppy
-transforms3d==0.3.1
-wcwidth==0.1.9            # via pytest
-zipp==3.1.0               # via importlib-metadata
+transforms3d==0.3.1       # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via kiwisolver, pydot3k
+# setuptools
