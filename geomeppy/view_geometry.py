@@ -58,8 +58,19 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     ax.set_zlim(limits["z"])
 
     if not test:
-        plt.show()
+        #ax.arrow(0,0,10,0)
+        ax.plot([0,0],[100,0], zs=0, zdir='z', label='curve in (x,y)')
+        #ax.plot([100, 0], [90, 1], zs=0, zdir='z', label='curve in (x,y)')
+        #ax.plot([100, 90], [100, 90], zs=0, zdir='z', label='curve in (x,y)')
+        ax.azim = -90
+        ax.elev = 90
+        ax.dist = 5
+        ax.axis('off')
+        ax.grid(b=None)
+        plt.title(idf.idfname)
+        #plt.title(idf.idfname[-(idf.idfname[::-1].index('\\')):])
         #plt.savefig(idf.idfname+'.png')
+        plt.show()
 
 def view_polygons(polygons):
     """Display a collection of polygons for inspection.
@@ -109,9 +120,11 @@ def _get_collections(idf, opacity=1):
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
-    shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
-
-    return walls, roofs, floors, windows, shading
+    if idf.idfobjects["SHADING:SITE:DETAILED"]:
+        shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
+        return walls, roofs, floors, windows, shading
+    else:
+        return walls, roofs, floors, windows
 
 
 def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
