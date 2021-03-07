@@ -117,7 +117,7 @@ def getidfplanes(surfaces):
     :param surfaces: List of all the surfaces.
     :returns: Mapping to look up IDF surfaces.
     """
-    round_factor = 8
+    round_factor = 7
     planes = {}  # type: Dict[float64, Dict[Union[Vector2D, Vector3D], List[EpBunch]]]
     for s in surfaces:
         poly = Polygon3D(s.coords)

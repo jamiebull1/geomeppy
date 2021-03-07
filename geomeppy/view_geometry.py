@@ -27,7 +27,14 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     from geomeppy import IDF
 
     try:
-        plt.figure(0)
+        if plt.fignum_exists(0):
+            openned = True
+
+        else:
+            openned = False
+        fig = plt.figure(0)
+
+
     except TclError:
         # this is as expected on the test server
         return
@@ -46,7 +53,10 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
             idf = IDF()
             idf.initreadtxt(idf_txt)
     # create the figure and add the surfaces
-    ax = plt.axes(projection="3d")
+    if not openned:
+        ax = plt.axes(projection="3d")
+    else:
+        ax = fig.axes[0]
     collections = _get_collections(idf, opacity=0.5)
     for c in collections:
         ax.add_collection3d(c)
@@ -56,19 +66,21 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     ax.set_xlim(limits["x"])
     ax.set_ylim(limits["y"])
     ax.set_zlim(limits["z"])
+    c_x = 0
+    c_y = 0
+    c_z = 0
+    ax.set_xbound(c_x - 200, c_x + 200)
+    ax.set_ybound(c_y - 200, c_y + 200)
+    ax.set_zbound(c_z - 200, c_z + 200)
+    ax.plot([0, 0], [100, 0], zs=0, zdir='z', label='curve in (x,y)')
+    ax.azim = -90
+    ax.elev = 90
+    ax.dist = 5
+    ax.axis('off')
+    ax.grid(b=None)
+    plt.title(idf.idfname)
 
-    if not test:
-        #ax.arrow(0,0,10,0)
-        ax.plot([0,0],[100,0], zs=0, zdir='z', label='curve in (x,y)')
-        #ax.plot([100, 0], [90, 1], zs=0, zdir='z', label='curve in (x,y)')
-        #ax.plot([100, 90], [100, 90], zs=0, zdir='z', label='curve in (x,y)')
-        ax.azim = -90
-        ax.elev = 90
-        ax.dist = 5
-        ax.axis('off')
-        ax.grid(b=None)
-        plt.title(idf.idfname)
-        #plt.title(idf.idfname[-(idf.idfname[::-1].index('\\')):])
+    if test:
         #plt.savefig(idf.idfname+'.png')
         plt.show()
 

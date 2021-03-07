@@ -2,6 +2,7 @@
 from itertools import product
 from geomeppy.geom.polygons import Polygon2D, is_convex_polygon
 from shapely.geometry import LineString
+import math
 
 def get_core(footprint, perim_depth=None):
     poly = Polygon2D(footprint)
@@ -16,8 +17,8 @@ def get_core(footprint, perim_depth=None):
     return newcore
 
 def check_core(core,epsilon):
-    # #filtering with edges length. length below 1m are removed #modif from xavfa
-    #but also vertexes that are closer to the same distance (balcony effect : merge point on the balcony bit not at its birth, on the wall
+    # #filtering with edges length. length below epsilon are removed #modif from xavfa
+    #but also vertexes that are closer to the same distance (balcony effect : merge point on the balcony but not at its birth, on the wall
     #this modification is associated with the one in identifying the perimeters zone
     #first, let removed the edge that are smaller then epsilon
     checked_core = True
@@ -130,24 +131,37 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 1
     return Point, GoodPoint
 
-def CheckFootprintNodes(footprint):
+def CheckFootprintNodes(footprint,tol):
     node2remove = []
     newfootprint =[]
     for i in range(len(footprint)-2):
-        slope1 = abs((footprint[i][1]-footprint[i+1][1])/(footprint[i][0]-footprint[i+1][0]))
-        slope2 = abs((footprint[i+1][1] - footprint[i+2][1]) / (footprint[i+1][0] - footprint[i+2][0]))
-        if abs(slope1-slope2)<1e-1:
+        vect1 = [(footprint[i+1][0]-footprint[i][0]), (footprint[i+1][1]-footprint[i][1])]
+        vect2 = [(footprint[i+2][0]-footprint[i+1][0]), (footprint[i+2][1]-footprint[i+1][1])]
+        cosVect12 = (vect1[0]*vect2[0] + vect1[1]*vect2[1])/(((vect1[0]**2 + vect1[1]**2)**0.5) * ((vect2[0]**2 + vect2[1]**2)**0.5))
+        angleVect12 = math.degrees(math.acos(min(1,cosVect12)))
+        #old way of cleaning the aligned vertex
+        # slope1 = abs((footprint[i][1]-footprint[i+1][1])/((footprint[i][0]-footprint[i+1][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
+        # slope2 = abs((footprint[i+1][1] - footprint[i+2][1]) / ((footprint[i+1][0] - footprint[i+2][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
+        if abs(angleVect12)<tol: #abs(slope1-slope2)<tol:
             node2remove.append(i+1)
+    #check for the last vertex (we need the two edges besides the vertex so out of the previous loop
+    vect1 = [(footprint[0][0] - footprint[-1][0]), (footprint[0][1] - footprint[-1][1])]
+    vect2 = [(footprint[1][0] - footprint[0][0]), (footprint[1][1] - footprint[0][1])]
+    cosVect12 = (vect1[0] * vect2[0] + vect1[1] * vect2[1]) / (
+                ((vect1[0] ** 2 + vect1[1] ** 2) ** 0.5) * ((vect2[0] ** 2 + vect2[1] ** 2) ** 0.5))
+    angleVect12 = math.degrees(math.acos(min(1, cosVect12)))
+    if abs(angleVect12) < tol:  # abs(slope1-slope2)<tol:
+        node2remove.append(0) #we are dealing forthe first node here so index 0 is concerned
     for idx, node in enumerate(footprint):
         if not idx in node2remove:
             newfootprint.append(node)
-    return newfootprint
+    return newfootprint, node2remove
 
-def core_perim_zone_coordinates(footprint, perim_depth):
+def core_perim_zone_coordinates(footprint, perim_depth, blockName):
     """Returns a dictionary with the coordinates of the core/perimeter zones and
     a list of tuples containing the coordinates for the core zone."""
     #check for any angle to close to 180deg because it generates extra perimeter's zones
-    footprint = CheckFootprintNodes(footprint)
+    footprint, node2remove = CheckFootprintNodes(footprint,0) #with putting 0 we don't clean anymore the footprint. these is done on the geojson file or in the DB_Building now'
     core = get_core(footprint, perim_depth)
     zones_perim = get_perims(footprint, core)
 
@@ -158,7 +172,7 @@ def core_perim_zone_coordinates(footprint, perim_depth):
     if not(zones_perim):
         return False
     for idx, zone_perim in enumerate(zones_perim, 1):
-        zone_name = "Perimeter_Zone_%i" % idx
+        zone_name = "Perimeter_Zone_%i" % idx + blockName
         perim_zones_coords = []
         for pts in zone_perim:
             perim_zones_coords.append(pts.as_tuple(dims=2))
@@ -167,5 +181,5 @@ def core_perim_zone_coordinates(footprint, perim_depth):
     for pts in core:
         core_zone_coords.append(pts.as_tuple(dims=2))
 
-    zones_dict["Core_Zone"] = core_zone_coords
+    zones_dict["Core_Zone" + blockName] = core_zone_coords
     return zones_dict, core_zone_coords
