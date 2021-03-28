@@ -35,7 +35,7 @@ def set_coords(
     poly = Polygon3D(deduped)
     poly = poly.normalize_coords(ggr)
     coords = [i for vertex in poly for i in vertex]
-    if len(coords) > 120:
+    if len(coords)/3 > 120:     #the /3 is needed because the len takes into account the three direction thus, the numbers of vertexes are not equl to the length of the coordinates
         warnings.warn(
             "To create surfaces with >120 vertices, ensure you have customised your IDD before running EnergyPlus. "
             "https://unmethours.com/question/9343/energy-idf-parsing-error/?answer=9344#post-id-9344"
@@ -143,11 +143,11 @@ def get_adjacencies(surfaces):
     for s1, s2 in combinations(surfaces, 2):
         adjacencies = populate_adjacencies(adjacencies, s1, s2)
     for adjacency, polys in adjacencies.items():
-        adjacencies[adjacency] = minimal_set(polys)
+        adjacencies[adjacency] = minimal_set(polys,adjacency[1])
     return adjacencies
 
 
-def minimal_set(polys):
+def minimal_set(polys,name):
     """Remove overlaps from a set of polygons.
 
     :param polys: List of polygons.
@@ -162,6 +162,17 @@ def minimal_set(polys):
     as_3d = [p.project_to_3D(polys[0]) for p in shapes]
     if not almostequal(as_3d[0].normal_vector, normal):
         as_3d = [p.invert_orientation() for p in as_3d]
+    # done = False
+    # i = 0 #this check is added because of colinear nodes stille needed for the purpose of adjacentes blocs.
+    # while not done: #but these colinera creates a error in the area computation in eppy, thus we reorder to shapes object with a new added methods in the polygon 2D objetc in order to
+    #     i += 1# make several tries until iut works or until we ended the lenght of the polygons.
+    #     if as_3d[0].area!=0:
+    #         done = True
+    #     else:
+    #         try:
+    #             as_3d = [as_3d[0].reorder([i])]
+    #         except:
+    #             done = True
     return [p for p in as_3d if p.area > 0]
 
 

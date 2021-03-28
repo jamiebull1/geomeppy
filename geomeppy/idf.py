@@ -222,10 +222,10 @@ class IDF(PatchedIDF):
         """
         set_wwr(self, wwr, construction, force, wwr_map, orientation)
 
-    def view_model(self, test=False):
+    def view_model(self, test=False, FigCenter = (0,0)):
         # type: (Optional[bool]) -> None
         """Show a zoomable, rotatable representation of the IDF."""
-        view_idf(idf=self, test=test)
+        view_idf(idf=self, test=test,FigCenter = FigCenter)
 
     def to_obj(self, fname=None, mtllib=None):
         # type: (Optional[str], Optional[str]) -> None

@@ -17,7 +17,7 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None, test=False, idf=None):
+def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None):
     # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
     """Display an IDF for inspection.
 
@@ -66,13 +66,12 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     ax.set_xlim(limits["x"])
     ax.set_ylim(limits["y"])
     ax.set_zlim(limits["z"])
-    c_x = 0
-    c_y = 0
+    c_x = FigCenter[0]
+    c_y = FigCenter[1]
     c_z = 0
-    ax.set_xbound(c_x - 200, c_x + 200)
-    ax.set_ybound(c_y - 200, c_y + 200)
-    ax.set_zbound(c_z - 200, c_z + 200)
-    ax.plot([0, 0], [100, 0], zs=0, zdir='z', label='curve in (x,y)')
+    ax.set_xbound(c_x - 100, c_x + 100)
+    ax.set_ybound(c_y - 100, c_y + 100)
+    ax.set_zbound(c_z - 100, c_z + 100)
     ax.azim = -90
     ax.elev = 90
     ax.dist = 5
@@ -82,6 +81,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
 
     if test:
         #plt.savefig(idf.idfname+'.png')
+
         plt.show()
 
 def view_polygons(polygons):
