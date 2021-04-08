@@ -163,9 +163,9 @@ def set_wwr(
         # remove all subsurfaces
         for ss in wall_subsurfaces:
             idf.removeidfobject(ss)
-        wwr = (wwr_map or {}).get(wall.azimuth) or base_wwr
+        wwr = (wwr_map or {}).get(wall.azimuth, base_wwr)
         if not wwr:
-            return
+            continue
         coords = window_vertices_given_wall(wall, wwr)
         window = idf.newidfobject(
             "FENESTRATIONSURFACE:DETAILED",
