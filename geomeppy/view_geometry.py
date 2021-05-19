@@ -17,7 +17,7 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None):
+def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None, SpecialRoffColor = "firebrick"):
     # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
     """Display an IDF for inspection.
 
@@ -57,7 +57,7 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None):
         ax = plt.axes(projection="3d")
     else:
         ax = fig.axes[0]
-    collections = _get_collections(idf, opacity=0.5)
+    collections = _get_collections(idf, opacity=0.5,roof_color = SpecialRoffColor)
     for c in collections:
         ax.add_collection3d(c)
 
@@ -124,13 +124,13 @@ def _get_shading(idf):
     return shading
 
 
-def _get_collections(idf, opacity=1):
+def _get_collections(idf, opacity=1,roof_color = "firebrick" ):
     """Set up 3D collections for each surface type."""
     surfaces = _get_surfaces(idf)
     # set up the collections
     walls = _get_collection("wall", surfaces, opacity, facecolor="lightyellow")
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
-    roofs = _get_collection("roof", surfaces, opacity, facecolor="firebrick")
+    roofs = _get_collection("roof", surfaces, opacity, facecolor=roof_color)
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
     if idf.idfobjects["SHADING:SITE:DETAILED"]:
         shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
