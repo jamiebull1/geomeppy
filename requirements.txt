@@ -28,7 +28,7 @@ pyparsing==2.4.7          # via matplotlib, packaging, pydot3k
 pypoly2tri==0.0.3
 pytest==6.2.4             # via eppy
 python-dateutil==2.8.1    # via matplotlib
-shapely==1.7.0
+shapely==1.7.1
 six==1.15.0               # via cycler, eppy, more-itertools, munch, packaging, python-dateutil
 soupsieve==2.0.1          # via beautifulsoup4
 tinynumpy==1.2.1          # via eppy
