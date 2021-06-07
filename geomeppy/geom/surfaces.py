@@ -117,7 +117,7 @@ def getidfplanes(surfaces):
     :param surfaces: List of all the surfaces.
     :returns: Mapping to look up IDF surfaces.
     """
-    round_factor = 7
+    round_factor = 4
     planes = {}  # type: Dict[float64, Dict[Union[Vector2D, Vector3D], List[EpBunch]]]
     for s in surfaces:
         poly = Polygon3D(s.coords)
@@ -140,7 +140,12 @@ def get_adjacencies(surfaces):
     """
     adjacencies = defaultdict(list)  # type: defaultdict
     # find all adjacent surfaces
+    name2look = ['Block Perimeter_Zone_8Build0 Storey 0 Floor 0001']#','Block Perimeter_Zone_8Build0 Storey -1 Floor 0001','Block Perimeter_Zone_8Build0 Storey 0 Roof 0001','Block Perimeter_Zone_8Build0 Storey -1 Ceiling 0001']#['Block Core_ZoneBuild0 Storey 0 Wall 0004','Block Perimeter_Zone_4Build0 Storey 0 Wall 0002']
     for s1, s2 in combinations(surfaces, 2):
+        if s1.Name in name2look and s2.Name in name2look:
+                a=1
+
+
         adjacencies = populate_adjacencies(adjacencies, s1, s2)
     for adjacency, polys in adjacencies.items():
         adjacencies[adjacency] = minimal_set(polys,adjacency[1])
@@ -185,6 +190,7 @@ def populate_adjacencies(adjacencies, s1, s2):
     :param s2: Object representing an EnergyPlus surface.
     :returns: An updated dict of adjacencies.
     """
+
     poly1 = Polygon3D(s1.coords)
     poly2 = Polygon3D(s2.coords)
     if not almostequal(abs(poly1.distance), abs(poly2.distance), 4):
@@ -194,6 +200,15 @@ def populate_adjacencies(adjacencies, s1, s2):
             return adjacencies
 
     intersection = poly1.intersect(poly2)
+    #intersection might of ull area, so the following are added. It could have been integrated but in order to keep the original package visible
+    #it is added as extra lines
+    newintersection = []
+    for inter in intersection:
+        if inter.area > 0.0:
+            newintersection.append(inter)
+    intersection = newintersection
+    #end of correction fro null intersection's areas
+
     if intersection:
         new_surfaces = intersect(poly1, poly2)
         new_s1 = [
