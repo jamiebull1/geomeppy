@@ -293,7 +293,10 @@ class PatchedIDF(BaseIDF):
             namebunch(abunch, aname)
         self.idfobjects[key].append(abunch)  # type: Dict[str, Idf_MSequence]
         for k, v in kwargs.items():
-            abunch[k] = v
+            try:    #this try has been added to enable having more keys than the required one to create an object.
+                abunch[k] = v
+            except:
+                continue
         return abunch
 
     def copyidfobject(self, idfobject):

@@ -17,7 +17,7 @@ except (ImportError, RuntimeError):
     pass
 
 
-def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None, SpecialRoffColor = "firebrick"):
+def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 100, idf=None, SpecialRoffColor = "firebrick"):
     # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
     """Display an IDF for inspection.
 
@@ -69,9 +69,9 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),idf=None, S
     c_x = FigCenter[0]
     c_y = FigCenter[1]
     c_z = 0
-    ax.set_xbound(c_x - 100, c_x + 100)
-    ax.set_ybound(c_y - 100, c_y + 100)
-    ax.set_zbound(c_z - 100, c_z + 100)
+    ax.set_xbound(c_x - WindSize, c_x + WindSize)
+    ax.set_ybound(c_y - WindSize, c_y + WindSize)
+    ax.set_zbound(c_z - WindSize, c_z + WindSize)
     ax.azim = -90
     ax.elev = 90
     ax.dist = 5

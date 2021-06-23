@@ -222,10 +222,10 @@ class IDF(PatchedIDF):
         """
         set_wwr(self, wwr, construction, force, wwr_map, orientation)
 
-    def view_model(self, test=False, FigCenter = (0,0),RoofSpecialColor = "firebrick"):
+    def view_model(self, test=False, FigCenter = (0,0), WindSize = 100,RoofSpecialColor = "firebrick"):
         # type: (Optional[bool]) -> None
         """Show a zoomable, rotatable representation of the IDF."""
-        view_idf(idf=self, test=test,FigCenter = FigCenter, SpecialRoffColor = RoofSpecialColor)
+        view_idf(idf=self, test=test,FigCenter = FigCenter, WindSize = WindSize, SpecialRoffColor = RoofSpecialColor)
 
     def to_obj(self, fname=None, mtllib=None):
         # type: (Optional[str], Optional[str]) -> None
