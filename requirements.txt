@@ -5,7 +5,7 @@
 #    pip-compile --output-file=./requirements.txt ./requirements.in
 #
 atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via packaging, pytest
+attrs==21.2.0             # via packaging, pytest
 beautifulsoup4==4.9.1     # via eppy
 colorama==0.4.3           # via pytest
 cycler==0.10.0            # via matplotlib
