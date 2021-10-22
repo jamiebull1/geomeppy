@@ -123,7 +123,7 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 0
                     break
             else:
-                if EdgeP1:                        #tries to avoid triangles, but tfor the lqst edge, we still authoraieze it
+                if EdgeP1:                        #tries to avoid triangles, but for the last edge, we still authorize it
                     if Point == EdgeP1:
                         GoodPoint = False
                         break
@@ -131,27 +131,25 @@ def FindClosestNode(edgePoint,poly1,footprint, EdgeP1 = (None,None)):
                     satisfied = 1
     return Point, GoodPoint
 
-def CheckFootprintNodes(footprint,tol):
+def CheckFootprintNodes(footprint,tol_angle):
     node2remove = []
     newfootprint =[]
-    for i in range(len(footprint)-2):
-        vect1 = [(footprint[i+1][0]-footprint[i][0]), (footprint[i+1][1]-footprint[i][1])]
-        vect2 = [(footprint[i+2][0]-footprint[i+1][0]), (footprint[i+2][1]-footprint[i+1][1])]
+    if footprint[0] != footprint[-1]:
+        dim = len(footprint)
+    else:
+        dim = len(footprint)-1
+    for i in range(dim):
+        vect1 = [(footprint[(i+1)%dim][0]-footprint[i][0]), (footprint[(i+1)%dim][1]-footprint[i][1])]
+        vect2 = [(footprint[(i+2)%dim][0]-footprint[(i+1)%dim][0]), (footprint[(i+2)%dim][1]-footprint[(i+1)%dim][1])]
+        lgvect1 = (vect1[0]**2+vect1[1]**2)**0.5
+        lgvect2 = (vect2[0] ** 2 + vect2[1] ** 2) ** 0.5
         cosVect12 = (vect1[0]*vect2[0] + vect1[1]*vect2[1])/(((vect1[0]**2 + vect1[1]**2)**0.5) * ((vect2[0]**2 + vect2[1]**2)**0.5))
         angleVect12 = math.degrees(math.acos(min(1,cosVect12)))
         #old way of cleaning the aligned vertex
         # slope1 = abs((footprint[i][1]-footprint[i+1][1])/((footprint[i][0]-footprint[i+1][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
         # slope2 = abs((footprint[i+1][1] - footprint[i+2][1]) / ((footprint[i+1][0] - footprint[i+2][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
-        if abs(angleVect12)<tol: #abs(slope1-slope2)<tol:
-            node2remove.append(i+1)
-    #check for the last vertex (we need the two edges besides the vertex so out of the previous loop
-    vect1 = [(footprint[0][0] - footprint[-1][0]), (footprint[0][1] - footprint[-1][1])]
-    vect2 = [(footprint[1][0] - footprint[0][0]), (footprint[1][1] - footprint[0][1])]
-    cosVect12 = (vect1[0] * vect2[0] + vect1[1] * vect2[1]) / (
-                ((vect1[0] ** 2 + vect1[1] ** 2) ** 0.5) * ((vect2[0] ** 2 + vect2[1] ** 2) ** 0.5))
-    angleVect12 = math.degrees(math.acos(min(1, cosVect12)))
-    if abs(angleVect12) < tol:  # abs(slope1-slope2)<tol:
-        node2remove.append(0) #we are dealing forthe first node here so index 0 is concerned
+        if abs(angleVect12)<tol_angle or abs(angleVect12-180)<tol_angle: #abs(slope1-slope2)<tol:
+            node2remove.append((i+1)%dim)
     for idx, node in enumerate(footprint):
         if not idx in node2remove:
             newfootprint.append(node)

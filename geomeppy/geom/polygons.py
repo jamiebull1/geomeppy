@@ -138,9 +138,11 @@ class Polygon(Clipper2D, MutableSequence):
         vertices = self.vertices
         edges_length =[]
         for i in range(len(self)-1):
-            edges_length.append(((vertices[i+1][0]-vertices[i][0])**2+(vertices[i+1][1]-vertices[i][1])**2)**0.5)
-        edges_length.append(
-            ((vertices[-1][0] - vertices[0][0]) ** 2 + (vertices[-1][1] - vertices[0][1]) ** 2) ** 0.5)
+            x = vertices[(i+1)%len(self)][0]-vertices[i][0]
+            y = vertices[(i+1)%len(self)][1]-vertices[i][1]
+            try: z = vertices[(i+1)%len(self)][2]-vertices[i][2]
+            except: z = 0
+            edges_length.append((x**2+y**2+z**2)**0.5)
         return edges_length
 
     def invert_orientation(self):
@@ -352,9 +354,9 @@ class Polygon3D(Clipper3D, Polygon):
         d1 = self.distance
         d2 = other.distance
 
-        if almostequal(n1, n2) and almostequal(d1, d2):
+        if almostequal(n1, n2,3):# and almostequal(d1, d2):
             return True
-        elif almostequal(n1, -n2) and almostequal(d1, -d2):
+        elif almostequal(n1, -n2,3):# and almostequal(d1, -d2):
             return True
         else:
             return False
@@ -644,6 +646,14 @@ def intersect(poly1, poly2):
     :returns: A list of unique polygons.
 
     """
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # ax = plt.axes(projection="3d")
+    # x,y,z = zip(*poly1)
+    # plt.plot(x,y,z,'x-')
+    # x, y, z = zip(*poly2)
+    # plt.plot(x, y, z, 's-')
+    # plt.show()
     polys = []  # type: List[Polygon]
     polys.extend(poly1.intersect(poly2))
     polys.extend(poly2.intersect(poly1))
@@ -671,11 +681,34 @@ def is_hole(surface, possible_hole):
     """
     if surface.area < possible_hole.area:
         return False
+
+    #extra check on intersection added by xavfa (the case was encountered
+    from shapely.geometry import LineString
+    cross = False
+    surface2D = surface.project_to_2D()
+    possible_hole2D = possible_hole.project_to_2D()
+    for edge1 in surface2D.edges:
+        for edge2 in possible_hole2D.edges:
+            if LineString(edge1.vertices).intersection(LineString(edge2.vertices)):
+                cross = True
+                break
+    ##endof extra check
+    #this check is done on the projected 2D surfaces for checking the edge intersection.
+    #some intersection might be present on 3D even though the surface are far from eachother.
+    # thus this check is a complement if no colinera vertexes are found
+    # a full check on the veracitiy on this methods hasn't been checkd yet
+
+
     collinear_edges = (
         edges[0]._is_collinear(edges[1])
         for edges in product(surface.edges, possible_hole.edges)
     )
-    return not any(collinear_edges)
+    if not any(collinear_edges) and cross:
+        return False
+    else:
+        return not any(collinear_edges)
+
+    #return not any(collinear_edges) #this was the previous return with the added check
 
 
 def bounding_box(polygons):

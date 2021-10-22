@@ -38,6 +38,21 @@ class Segment(object):
         # type: (Any) -> bool
         return self.__dict__ == other.__dict__
 
+    @property
+    def length(self):
+        # type: (*Vector3D) -> None
+        pt1 = self.p1
+        pt2 = self.p2
+        x = pt2[0] - pt1[0]
+        y = pt2[1] - pt1[1]
+        try:
+            z = pt2[2] - pt1[2]
+        except:
+            z = 0
+        edges_length = (x ** 2 + y ** 2 + z ** 2) ** 0.5
+        return edges_length
+
+
     def _is_collinear(self, other):
         # type: (Segment) -> bool
         """Test if a segment is collinear with another segment

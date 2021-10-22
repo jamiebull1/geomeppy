@@ -48,7 +48,8 @@ class IDF(PatchedIDF):
         # type: () -> None
         """Intersect all surfaces in the IDF, then set boundary conditions."""
         self.intersect()
-        self.match()
+        MatchedShade = self.match()
+        return MatchedShade
 
     def intersect(self):
         # type: () -> None
@@ -58,7 +59,8 @@ class IDF(PatchedIDF):
     def match(self):
         # type: () -> None
         """Set boundary conditions for all surfaces in the IDF."""
-        match_idf_surfaces(self)
+        MatchedShade =  match_idf_surfaces(self)
+        return MatchedShade
 
     def translate_to_origin(self):
         # type: () -> None

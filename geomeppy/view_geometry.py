@@ -57,7 +57,7 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
         ax = plt.axes(projection="3d")
     else:
         ax = fig.axes[0]
-    collections = _get_collections(idf, opacity=0.5,roof_color = SpecialRoffColor)
+    collections = _get_collections(idf, opacity=0.5,roof_color = SpecialRoffColor,addShading= test)
     for c in collections:
         ax.add_collection3d(c)
 
@@ -124,20 +124,41 @@ def _get_shading(idf):
     return shading
 
 
-def _get_collections(idf, opacity=1,roof_color = "firebrick" ):
+def _get_collections(idf, opacity=1,roof_color = "firebrick",addShading = True):
     """Set up 3D collections for each surface type."""
     surfaces = _get_surfaces(idf)
+    surfaces, adj_surfaces = splitAdjacencies(surfaces)
     # set up the collections
     walls = _get_collection("wall", surfaces, opacity, facecolor="lightyellow")
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, facecolor=roof_color)
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
-    if idf.idfobjects["SHADING:SITE:DETAILED"]:
+    if idf.idfobjects["SHADING:SITE:DETAILED"] and addShading:
         shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
-        return walls, roofs, floors, windows, shading
+        if adj_surfaces:
+            adjSurf = _get_collection("wall", adj_surfaces, opacity, facecolor="darkblue")
+            return walls, roofs, floors, adjSurf, windows ,shading,
+        else:
+            return walls, roofs, floors, windows, shading,
     else:
-        return walls, roofs, floors, windows
+        if adj_surfaces:
+            adjSurf = _get_collection("wall", adj_surfaces, opacity, facecolor="darkblue")
+            return walls, roofs, floors, windows, adjSurf
+        else:
+            return walls, roofs, floors, windows
 
+def splitAdjacencies(surfaces):
+    Adjacencies = []
+    Others = []
+    for surf in surfaces:
+        try:
+            if surf.Outside_Boundary_Condition == 'adiabatic':
+                Adjacencies.append(surf)
+            else:
+                Others.append(surf)
+        except:
+            Others.append(surf)
+    return Others,Adjacencies
 
 def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
     """Make collections from a list of EnergyPlus surfaces."""

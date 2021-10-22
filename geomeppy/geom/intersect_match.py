@@ -27,7 +27,12 @@ def intersect_idf_surfaces(idf):
     except IndexError:
         ggr = None
     # get all the intersected surfaces
-    adjacencies = get_adjacencies(surfaces)
+    adjacencies, adjacentShades = get_adjacencies(surfaces)
+    for surface in adjacentShades:
+        key, name = surface
+        obj = idf.getobject(key.upper(), name)
+        idf.removeidfobject(obj)
+
     for surface in adjacencies:
         key, name = surface
         new_surfaces = adjacencies[surface]
@@ -54,15 +59,37 @@ def match_idf_surfaces(idf):
             for surface in surfaces:
                 set_unmatched_surface(surface, vector)
             matches = planes.get(-distance, {}).get(-vector, [])
+            # if matches :
+            #     import matplotlib.pyplot as plt
+            #     fig = plt.figure()
+            #     ax = plt.axes(projection="3d")
             for s, m in product(surfaces, matches):
+                # print(m.Name)
+                #
+                # x, y, z = zip(*m.coords)
+                # plt.plot(x,y,z)
+                # x, y, z = zip(*s.coords)
+                # plt.plot(x, y, z)
+                # plt.show()
+                # if s.Name == 'Block Build0 Storey 0 Wall 0004':
+                #     a=1
                 for i in range(len(s.coords)):  # xavfa modification to make a vertex rotation (the almostequl makes vertex per vertex comparison only.
                     coord2test = s.coords[i:] + s.coords[:i]
-                    if almostequal(coord2test, reversed(m.coords)):
+                    if almostequal(coord2test, reversed(m.coords),3):
                         matched[sorted_tuple(m, s)] = (m, s)
                         break
 
+    MatchedShades = []
     for key in matched:
-        set_matched_surfaces(*matched[key])
+        Shade2Reomove = set_matched_surfaces(*matched[key])
+        if Shade2Reomove:
+            obj = idf.getobject(Shade2Reomove[0].upper(), Shade2Reomove[1])
+            idf.removeidfobject(obj)
+            mainShadeName = Shade2Reomove[1][:Shade2Reomove[1].index('_1')]
+            if mainShadeName not in MatchedShades:
+                MatchedShades.append(mainShadeName)
+    return MatchedShades
+
 
 
 def sorted_tuple(m, s):
