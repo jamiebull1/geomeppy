@@ -29,9 +29,15 @@ def intersect_idf_surfaces(idf):
     # get all the intersected surfaces
     adjacencies, adjacentShades = get_adjacencies(surfaces)
     for surface in adjacentShades:
-        key, name = surface
-        obj = idf.getobject(key.upper(), name)
-        idf.removeidfobject(obj)
+        Shade1, Shade2 = surface
+        old_obj1 = idf.getobject('SHADING:SITE:DETAILED', Shade1)
+        old_obj2 = idf.getobject('SHADING:SITE:DETAILED', Shade2)
+        for i,subsurf in enumerate(adjacentShades[surface]):
+            new = idf.copyidfobject(old_obj1)
+            new.Name = "%s_%i" % (Shade1, i)
+            set_coords(new, subsurf, ggr)
+        idf.removeidfobject(old_obj1)
+        idf.removeidfobject(old_obj2)
 
     for surface in adjacencies:
         key, name = surface
@@ -59,20 +65,7 @@ def match_idf_surfaces(idf):
             for surface in surfaces:
                 set_unmatched_surface(surface, vector)
             matches = planes.get(-distance, {}).get(-vector, [])
-            # if matches :
-            #     import matplotlib.pyplot as plt
-            #     fig = plt.figure()
-            #     ax = plt.axes(projection="3d")
             for s, m in product(surfaces, matches):
-                # print(m.Name)
-                #
-                # x, y, z = zip(*m.coords)
-                # plt.plot(x,y,z)
-                # x, y, z = zip(*s.coords)
-                # plt.plot(x, y, z)
-                # plt.show()
-                # if s.Name == 'Block Build0 Storey 0 Wall 0004':
-                #     a=1
                 for i in range(len(s.coords)):  # xavfa modification to make a vertex rotation (the almostequl makes vertex per vertex comparison only.
                     coord2test = s.coords[i:] + s.coords[:i]
                     if almostequal(coord2test, reversed(m.coords),3):

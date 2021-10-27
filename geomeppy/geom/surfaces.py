@@ -151,11 +151,6 @@ def get_adjacencies(surfaces):
             BetweenShades = True
             adjacentShades = populate_adjacencies(adjacentShades, s1, s2, BetweenShades)
             continue
-        surf2lookat = ['floor','ceiling']
-        # if s1.Surface_Type in surf2lookat and s2.Surface_Type in surf2lookat:
-        #     a = 1
-        if 'V69467-8' in s1.Name or 'V69467-8' in s2.Name:
-            a = 1
         try:
             adjacencies = populate_adjacencies(adjacencies, s1, s2, BetweenShades)
         except:
@@ -212,15 +207,6 @@ def minimal_set(polys,name):
             p.vertices.append(p.vertices[0])
         # because an empty as_3D polygon was found...
         as_3d = [p for p in as_3d if p.area>0]
-    #             done = True
-    #############################################
-    # # xavfa : bug identified for some polygons, by changing the vertex order, the area was no more zero...
-    # for idx, p in enumerate(as_3d):
-    #     if p.area ==0:
-    #         as_3d[idx] = as_3d[idx].order_points('upperleftcorner')
-    #         if as_3d[idx].area ==0:
-    #             as_3d[idx].order_points('lowerleftcorner')
-    #################################################################
 
     return [p for p in as_3d if p.area > 0]
 
@@ -234,8 +220,6 @@ def populate_adjacencies(adjacencies, s1, s2, BetweenShades = False):
     :param s2: Object representing an EnergyPlus surface.
     :returns: An updated dict of adjacencies.
     """
-    if s1.Name == 'Shading_V65174-20_1':
-        a = 1
     poly1 = Polygon3D(s1.coords)
     poly2 = Polygon3D(s2.coords)
     if not almostequal(abs(poly1.distance), abs(poly2.distance), 3):
@@ -258,12 +242,9 @@ def populate_adjacencies(adjacencies, s1, s2, BetweenShades = False):
         if almostequal(poly1.normal_vector, poly2.normal_vector, 4):
             poly2 = poly2.invert_orientation()
         if BetweenShades:
-            print(
-                '[/!\ Warning] Special care should be taken to this one as overlap shading are computed even thought there is a mistake... ')
-            if s1.height <= s2.height:
-                adjacencies[(s1.key, s1.Name)] = s1.height
-            else:
-                adjacencies[(s2.key, s2.Name)] = s1.height
+            NewPoly = poly1.union(poly2)
+            new_s1 = check4newsplits(NewPoly)
+            adjacencies[(s1.Name, s2.Name)] += new_s1
             return adjacencies
         new_surfaces = intersect(poly1, poly2)
 
@@ -304,26 +285,21 @@ def is_parallel(line1, line2):
     vector_a_y = line1[1][1] - line1[0][1]
     vector_b_x = line2[1][0] - line2[0][0]
     vector_b_y = line2[1][1] - line2[0][1]
-    # slope1 = vector_a_y/vector_a_x
-    # slope2 = vector_b_y/vector_b_x
     import numpy as np
     v = np.array([vector_a_x,vector_a_y])
     w = np.array([vector_b_x,vector_b_y])
     angledeg = abs(np.rad2deg(np.arccos(round(v.dot(w) / (np.linalg.norm(v) * np.linalg.norm(w)),4))))
-    #slopediff = abs((slope1 - slope2) / (slope1))
-    if angledeg <5 or abs(angledeg-180) < 5:# >slopediff < 0.05:# and slope1*slope2>0: #5%of tolerance in the slope difference
+    if angledeg <5 or abs(angledeg-180) < 5:
         return True
     else:
         return False
 
 def check4newsplits(new_surfaces):
     # function addeded in order to consider non convex vertical wall and to make several rectangular polygon out of the previous function
-
     newsurf = []
     for s in new_surfaces:
         if abs(s.normal_vector[2]) < 1e-3: #means vertical surface
             if (s.area / s.bounding_box.area) < .99: #would mean that s is not a rectanglw
-                splittedsurf = []
                 surf2D = s.project_to_2D()
                 box2D = s.bounding_box.project_to_2D()
                 Pt2keep = []
@@ -395,13 +371,6 @@ def check4newsplits(new_surfaces):
                             node2remove.append(idx)
                     for node in node2remove:
                         surfidx.vertices.remove(surfidx.vertices[node])
-                    #surf2Analyse = surfidx.project_to_2D()
-                    # #first filter on the edge length
-                    # pt2remove = getTooCloseNodes(surf2Analyse, 1e-3)
-                    #for pt in pt2remove:
-                        #surfidx.vertices.remove(surfidx.vertices[pt])
-                        #surf2Analyse.vertices.remove(surf2Analyse.vertices[pt])
-                    #second filter on the point between two parallel lines
                     # only if we have more than 2 points ! and four should be present
                     if len(surfidx.vertices) < 4 and surfidx.area == 0:
                         continue  # it will be automatically reoved by checking the area
