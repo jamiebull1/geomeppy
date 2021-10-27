@@ -57,7 +57,7 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
         ax = plt.axes(projection="3d")
     else:
         ax = fig.axes[0]
-    collections = _get_collections(idf, opacity=0.5,roof_color = SpecialRoffColor,addShading= test)
+    collections = _get_collections(idf, opacity=0.4,roof_color = SpecialRoffColor,addShading= test)
     for c in collections:
         ax.add_collection3d(c)
 

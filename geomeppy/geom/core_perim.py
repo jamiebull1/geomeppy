@@ -22,14 +22,18 @@ def check_core(core,epsilon):
     #this modification is associated with the one in identifying the perimeters zone
     #first, let removed the edge that are smaller then epsilon
     checked_core = True
-    corecoord = [core.vertices_list[i] for i, v in enumerate(core.edges_length[:-1]) if v > epsilon]
-    #than lets remove eventually the nodes that creates narrow triangles in the core zone so nomore than one in between
+    corecoord = [core.vertices_list[i] for i, v in enumerate(core.edges_length) if v > epsilon]
+    #than lets remove eventually the nodes that creates narrow triangles in the core zone so no more than one in between
     node2remove = []
     newcorecoord = []
     nd2rm = []
     #corecoord.append(corecoord[0])
     corecoordtotest=list(corecoord)
     corecoordtotest += corecoordtotest
+    #the following 2 loops are here to clean some triangle form the balcony effect
+    #the edge length filtering abive could have lead to triangle form balcony effect
+    #the following loops are here to catch the two extrem vertexes from these tirangles and remove the two first
+    #afterward
     for idx, nodei in enumerate(corecoordtotest):
         for jdx, nodej in enumerate(corecoordtotest):
             if jdx>idx:
@@ -44,6 +48,8 @@ def check_core(core,epsilon):
                 newcorecoord.append(node)
     else:
         newcorecoord = corecoord
+    #last round for either skewed angle or triangle resulting into two small edges (lengthtol)
+    newcorecoord,nodeRemoved = CheckFootprintNodes(newcorecoord, 5)
     if len(newcorecoord)<3:
             checked_core = False
     if checked_core:
@@ -144,11 +150,8 @@ def CheckFootprintNodes(footprint,tol_angle):
         lgvect1 = (vect1[0]**2+vect1[1]**2)**0.5
         lgvect2 = (vect2[0] ** 2 + vect2[1] ** 2) ** 0.5
         cosVect12 = (vect1[0]*vect2[0] + vect1[1]*vect2[1])/(((vect1[0]**2 + vect1[1]**2)**0.5) * ((vect2[0]**2 + vect2[1]**2)**0.5))
-        angleVect12 = math.degrees(math.acos(min(1,cosVect12)))
-        #old way of cleaning the aligned vertex
-        # slope1 = abs((footprint[i][1]-footprint[i+1][1])/((footprint[i][0]-footprint[i+1][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
-        # slope2 = abs((footprint[i+1][1] - footprint[i+2][1]) / ((footprint[i+1][0] - footprint[i+2][0])+0.01)) #the 0.01 is here to avoid error when y are identical (division by zero)
-        if abs(angleVect12)<tol_angle or abs(angleVect12-180)<tol_angle: #abs(slope1-slope2)<tol:
+        angleVect12 = math.acos(min(1,cosVect12))
+        if abs(math.degrees(angleVect12))<tol_angle or abs(math.degrees(angleVect12)-180)<tol_angle: #abs(slope1-slope2)<tol:
             node2remove.append((i+1)%dim)
     for idx, node in enumerate(footprint):
         if not idx in node2remove:

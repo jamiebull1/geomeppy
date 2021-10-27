@@ -258,6 +258,8 @@ def populate_adjacencies(adjacencies, s1, s2, BetweenShades = False):
         if almostequal(poly1.normal_vector, poly2.normal_vector, 4):
             poly2 = poly2.invert_orientation()
         if BetweenShades:
+            print(
+                '[/!\ Warning] Special care should be taken to this one as overlap shading are computed even thought there is a mistake... ')
             if s1.height <= s2.height:
                 adjacencies[(s1.key, s1.Name)] = s1.height
             else:
@@ -277,12 +279,10 @@ def populate_adjacencies(adjacencies, s1, s2, BetweenShades = False):
             if almostequal(s.normal_vector, poly2.normal_vector, 4)
         ]
 
-        # function added in order to consider non convex vertial wall
-        if s1.key == 'BUILDINGSURFACE:DETAILED':
-            new_s1 = check4newsplits(new_s1)
-        # function added in order to consider non convex vertial wall
-        if s2.key == 'BUILDINGSURFACE:DETAILED':
-            new_s2 = check4newsplits(new_s2)
+        # function added in order to consider non convex vertidal wall
+        new_s1 = check4newsplits(new_s1)
+        # function added in order to consider non convex vertical wall
+        new_s2 = check4newsplits(new_s2)
 
 
         adjacencies[(s1.key, s1.Name)] += new_s1

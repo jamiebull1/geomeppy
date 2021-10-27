@@ -137,7 +137,7 @@ class Polygon(Clipper2D, MutableSequence):
         """A list of edges represented as Segment objects."""
         vertices = self.vertices
         edges_length =[]
-        for i in range(len(self)-1):
+        for i in range(len(self)):
             x = vertices[(i+1)%len(self)][0]-vertices[i][0]
             y = vertices[(i+1)%len(self)][1]-vertices[i][1]
             try: z = vertices[(i+1)%len(self)][2]-vertices[i][2]
