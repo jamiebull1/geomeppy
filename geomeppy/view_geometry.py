@@ -57,7 +57,7 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
         ax = plt.axes(projection="3d")
     else:
         ax = fig.axes[0]
-    collections = _get_collections(idf, opacity=0.4,roof_color = SpecialRoffColor,addShading= test)
+    collections = _get_collections(idf, opacity=0.8,roof_color = SpecialRoffColor,addShading= test)
     for c in collections:
         ax.add_collection3d(c)
 
@@ -129,7 +129,7 @@ def _get_collections(idf, opacity=1,roof_color = "firebrick",addShading = True):
     surfaces = _get_surfaces(idf)
     surfaces, adj_surfaces = splitAdjacencies(surfaces)
     # set up the collections
-    walls = _get_collection("wall", surfaces, opacity, facecolor="lightyellow")
+    walls = _get_collection("wall", surfaces, opacity, facecolor='aliceblue')#'"lightyellow")
     floors = _get_collection("floor", surfaces, opacity, facecolor="dimgray")
     roofs = _get_collection("roof", surfaces, opacity, facecolor=roof_color)
     windows = _get_collection("window", surfaces, opacity, facecolor="cornflowerblue")
@@ -160,7 +160,7 @@ def splitAdjacencies(surfaces):
             Others.append(surf)
     return Others,Adjacencies
 
-def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
+def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="grey"):
     """Make collections from a list of EnergyPlus surfaces."""
     if surface_type == "shading":
         coords = [getcoords(s) for s in surfaces if not hasattr(s, "Surface_Type")]
@@ -173,7 +173,7 @@ def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="blac
         ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(
-        trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors
+        trimmed_coords, alpha=opacity, facecolor=facecolor, edgecolors=edgecolors,linewidth=.5
     )
     return collection
 
