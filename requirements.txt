@@ -34,7 +34,7 @@ soupsieve==2.3.1          # via beautifulsoup4
 tinynumpy==1.2.1          # via eppy
 transforms3d==0.3.1
 wcwidth==0.2.5            # via pytest
-zipp==3.1.0               # via importlib-metadata
+zipp==3.6.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools==41.2.0        # via kiwisolver, pydot3k
