@@ -14,7 +14,7 @@ eppy==0.5.57
 future==0.18.2            # via eppy
 importlib-metadata==1.7.0  # via pluggy, pytest
 kiwisolver==1.3.2         # via matplotlib
-lxml==4.5.2               # via eppy
+lxml==4.7.1               # via eppy
 matplotlib==3.3.0
 more-itertools==8.4.0     # via pytest, zipp
 munch==2.5.0              # via eppy
