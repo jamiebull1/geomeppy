@@ -132,6 +132,17 @@ class Polygon(Clipper2D, MutableSequence):
         return edges
 
     @property
+    def edges_reversed(self):
+        # type: () -> List[Segment]
+        """A list of edges represented as Segment objects."""
+        vertices = self.vertices
+        edges_reversed = [
+            Segment(vertices[(i + 1) % len(self)],vertices[i])
+            for i in range(len(self))
+        ]
+        return edges_reversed
+
+    @property
     def edges_length(self):
         # type: () -> List[Segment]
         """A list of edges represented as Segment objects."""

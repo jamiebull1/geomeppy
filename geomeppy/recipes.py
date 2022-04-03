@@ -225,8 +225,8 @@ def window_vertices_given_wall(wall, wwr):
     # move windows in 0.5% from the edges so they can be drawn in SketchUp
     window_points = [
         [
-            ((x - average_x) * 0.9) + average_x,
-            ((y - average_y) * 0.9) + average_y,
+            ((x - average_x) * 0.999) + average_x,
+            ((y - average_y) * 0.999) + average_y,
             ((z - average_z) * wwr) + average_z,
         ]
         for x, y, z in vertices

@@ -57,7 +57,9 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
         ax = plt.axes(projection="3d")
     else:
         ax = fig.axes[0]
-    collections = _get_collections(idf, opacity=0.8,roof_color = SpecialRoffColor,addShading= test)
+    
+    addShading = True if FigCenter == (0,0) else False
+    collections = _get_collections(idf, opacity=0.8,roof_color = SpecialRoffColor,addShading= addShading)
     for c in collections:
         ax.add_collection3d(c)
 
@@ -72,8 +74,8 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
     ax.set_xbound(c_x - WindSize, c_x + WindSize)
     ax.set_ybound(c_y - WindSize, c_y + WindSize)
     ax.set_zbound(c_z - WindSize, c_z + WindSize)
-    ax.azim = -90
-    ax.elev = 90
+    ax.azim = -111
+    ax.elev = 33
     ax.dist = 5
     ax.axis('off')
     ax.grid(b=None)
@@ -81,7 +83,6 @@ def view_idf(fname=None, idf_txt=None, test=False, FigCenter = (0,0),WindSize = 
 
     if test:
         #plt.savefig(idf.idfname+'.png')
-
         plt.show()
 
 def view_polygons(polygons):
@@ -160,7 +161,7 @@ def splitAdjacencies(surfaces):
             Others.append(surf)
     return Others,Adjacencies
 
-def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="grey"):
+def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):#"darkgray"
     """Make collections from a list of EnergyPlus surfaces."""
     if surface_type == "shading":
         coords = [getcoords(s) for s in surfaces if not hasattr(s, "Surface_Type")]
