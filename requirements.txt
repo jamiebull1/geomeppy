@@ -18,7 +18,7 @@ lxml==4.9.1               # via eppy
 matplotlib==3.5.2
 more-itertools==8.13.0     # via pytest, zipp
 munch==2.5.0              # via eppy
-numpy==1.19.1             # via matplotlib
+numpy==1.23.1             # via matplotlib
 packaging==20.4           # via pytest
 pluggy==0.13.1            # via pytest
 py==1.9.0                 # via pytest
