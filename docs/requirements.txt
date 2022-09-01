@@ -19,7 +19,7 @@ more-itertools==8.14.0     # via pytest
 munch==2.5.0              # via eppy
 numpy==1.23.2             # via matplotlib
 pluggy==1.0.0             # via pytest
-py==1.9.0                 # via pytest
+py==1.11.0                 # via pytest
 pyclipper==1.2.0
 pydot3k==1.0.17           # via eppy
 pyparsing==2.4.7          # via matplotlib, pydot3k
