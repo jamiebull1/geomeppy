@@ -298,14 +298,16 @@ def scale(surfaces, factor, axes):
 
     """
     for s in surfaces:
-        if not s.coords:
+        try:
+            new_coords = scale_coords(s.coords, factor, axes)
+            s.setcoords(new_coords)
+        except BadEPFieldError:
             warnings.warn(
-                "%s was not affected by this operation since it does not define vertices."
+                "%s was not affected by this operation since it does not define "
+                "vertices."
                 % s.Name
             )
             continue
-        new_coords = scale_coords(s.coords, factor, axes)
-        s.setcoords(new_coords)
 
 
 def scale_coords(coords, factor, axes="xy"):
@@ -338,14 +340,16 @@ def rotate(surfaces, angle):
     """
     radians = np.deg2rad(angle)
     for s in surfaces:
-        if not s.coords:
+        try:
+            new_coords = rotate_coords(s.coords, radians)
+            s.setcoords(new_coords)
+        except BadEPFieldError:
             warnings.warn(
-                "%s was not affected by this operation since it does not define vertices."
+                "%s was not affected by this operation since it does not define "
+                "vertices."
                 % s.Name
             )
             continue
-        new_coords = rotate_coords(s.coords, radians)
-        s.setcoords(new_coords)
 
 
 def rotate_coords(coords, radians):
