@@ -27,7 +27,7 @@ pypoly2tri==0.0.3
 pytest==7.1.3             # via eppy
 python-dateutil==2.8.2    # via matplotlib
 shapely==1.8.4
-six==1.15.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
+six==1.16.0               # via cycler, eppy, more-itertools, munch, pytest, python-dateutil
 tinynumpy==1.2.1          # via eppy
 transforms3d==0.3.1
 
