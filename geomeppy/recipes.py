@@ -183,7 +183,7 @@ def _has_correct_orientation(wall, orientation_degrees):
     """
     if orientation_degrees is None:
         return True
-    if abs(wall.azimuth - orientation_degrees) < 45:
+    if abs((wall.azimuth - orientation_degrees + 180) % 360 - 180) < 45:
         return True
     return False
 
