@@ -61,7 +61,7 @@ ring_idf_txt = """
 @pytest.fixture()
 def ring_idf():
     """A two-zone model with an inner ring."""
-    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
+    iddfhandle = StringIO(iddcurrent.iddtxt)
     if IDF.getiddname() == None:
         IDF.setiddname(iddfhandle)
 
@@ -71,7 +71,7 @@ def ring_idf():
 @pytest.fixture()
 def new_idf():
     """An empty model."""
-    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
+    iddfhandle = StringIO(iddcurrent.iddtxt)
     IDF.setiddname(iddfhandle, testing=True)
     idf = IDF()
     idf.new()
@@ -113,7 +113,7 @@ extracts_idf_txt = """
 @pytest.fixture()
 def extracts_idf():
     """A model with a minimal zone and material object."""
-    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
+    iddfhandle = StringIO(iddcurrent.iddtxt)
     if IDF.getiddname() == None:
         IDF.setiddname(iddfhandle)
 
