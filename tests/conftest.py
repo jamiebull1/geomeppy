@@ -1,16 +1,10 @@
 """A module containing pytest fixtures that are used in multiple places in the test suite."""
-import os
 
-import matplotlib
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
-import os
 
 from geomeppy.idf import IDF
-
-if not os.getenv("CI"):
-    matplotlib.use("Qt5Agg")
 
 base_idf_txt = """
     Version, 8.5;
@@ -67,7 +61,7 @@ ring_idf_txt = """
 @pytest.fixture()
 def ring_idf():
     """A two-zone model with an inner ring."""
-    iddfhandle = StringIO(iddcurrent.iddtxt)
+    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
     if IDF.getiddname() == None:
         IDF.setiddname(iddfhandle)
 
@@ -77,7 +71,7 @@ def ring_idf():
 @pytest.fixture()
 def new_idf():
     """An empty model."""
-    iddfhandle = StringIO(iddcurrent.iddtxt)
+    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
     IDF.setiddname(iddfhandle, testing=True)
     idf = IDF()
     idf.new()
@@ -119,7 +113,7 @@ extracts_idf_txt = """
 @pytest.fixture()
 def extracts_idf():
     """A model with a minimal zone and material object."""
-    iddfhandle = StringIO(iddcurrent.iddtxt)
+    iddfhandle = "C:\EnergyPlusV9-1-0\Energy+.idd"
     if IDF.getiddname() == None:
         IDF.setiddname(iddfhandle)
 

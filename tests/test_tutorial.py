@@ -1,5 +1,5 @@
-import os
 import shutil
+from pathlib import Path
 
 import esoreader
 import pytest
@@ -10,10 +10,11 @@ from geomeppy.extractor import copy_constructions
 
 @pytest.fixture
 def tmp_dir():
-    shutil.rmtree("tests/tutorial", ignore_errors=True)
-    os.mkdir("tests/tutorial")
+    p = Path("tests/tutorial")
+    shutil.rmtree(p, ignore_errors=True)
+    p.mkdir(parents=True, exist_ok=True)
     yield
-    shutil.rmtree("tests/tutorial")
+    shutil.rmtree(p)
 
 
 @pytest.mark.usefixtures("tmp_dir")
