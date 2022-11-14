@@ -109,7 +109,11 @@ class Polygon(Clipper2D, MutableSequence):
 
         """
         s_poly = SPoly(self.vertices)
-        core = orient(s_poly.buffer(distance=distance, join_style=join_style), sign=1.0)
+        buffer = s_poly.buffer(distance=distance, join_style=join_style)
+        if buffer.is_empty:
+            # occurs when using too large a negative buffer which meets in the middle
+            raise(ValueError("Negative buffer is too large"))
+        core = orient(buffer, sign=1.0)
         return Polygon2D(core.boundary.coords)
 
     @property
