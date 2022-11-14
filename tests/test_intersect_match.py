@@ -364,7 +364,7 @@ class TestIntersectMatchRing:
         idf.set_default_constructions()
         ending = len(idf.idfobjects["BUILDINGSURFACE:DETAILED"])
         assert starting == 12
-        assert ending == 14
+        assert ending == 15
         for name in [
             "z1 Roof 0001_1",
             "z1 Roof 0001_2",
