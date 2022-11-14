@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "geomeppy"
+version = "0.11.8"
+description = "Geometry editing for E+ idf files"
+authors = ["Jamie Bull <jamie.bull@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+eppy = "^0.5.60"
+matplotlib = "^3.6.2"
+pypoly2tri = "^0.0.3"
+shapely = "^1.8.5.post1"
+transforms3d = "^0.4.1"
+pyclipper = "^1.3.0.post3"
+esoreader = "^1.2.3"
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.0.0"
+flake8 = "^5.0.4"
+codecov = "^2.1.12"
+black = "^22.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[flake8]
+max-line-length = 120
+exclude = "tests/*"
+max-complexity = 10
+
+
