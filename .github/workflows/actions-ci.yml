@@ -23,7 +23,9 @@ jobs:
           if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
           ENERGYPLUS_VERSION=9.0.1
           ENERGYPLUS_SHA=bb7ca4f0da
-          ENERGYPLUS_INSTALL_VERSION=9-0-1
+          PLATFORM=Linux
+          EXT=sh
+          ENERGYPLUS_INSTALL_VERSION=9.0.1
           ENERGYPLUS_DOWNLOAD_BASE_URL=https://github.com/NREL/EnergyPlus/releases/download/v$ENERGYPLUS_VERSION
           ENERGYPLUS_DOWNLOAD_FILENAME=EnergyPlus-$ENERGYPLUS_VERSION-$ENERGYPLUS_SHA-$PLATFORM-x86_64
           ENERGYPLUS_DOWNLOAD_URL=$ENERGYPLUS_DOWNLOAD_BASE_URL/$ENERGYPLUS_DOWNLOAD_FILENAME.$EXT
