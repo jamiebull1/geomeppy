@@ -28,10 +28,3 @@ black = "^22.10.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[flake8]
-max-line-length = 120
-exclude = "tests/*"
-max-complexity = 10
-
-

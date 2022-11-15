@@ -274,7 +274,7 @@ def translate(
 
 
 def translate_coords(coords, vector):
-    # type: (Union[List[Tuple[float, float, float]], Polygon3D], Union[List[float], Vector3D]) -> List[Union[Vector2D, Vector3D]]
+    # type: (Union[List[Tuple[float, float, float]], Polygon3D], Union[List[float], Vector3D]) -> List[Union[Vector2D, Vector3D]]  # noqa
     """Translate a set of coords by a direction vector.
 
     :param coords: A list of points.

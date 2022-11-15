@@ -1,21 +1,29 @@
 """Heavy lifting geometry for IDF surfaces."""
 from collections.abc import MutableSequence
 from itertools import product
-from math import atan2, pi
-from typing import Any, List, Optional, Tuple, Union  # noqa
+from math import atan2
+from math import pi
+from typing import Any  # noqa
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
+import numpy as np
 from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
-import numpy as np
 from shapely import wkt
 from shapely.geometry.polygon import Polygon as SPoly
 from shapely.geometry.polygon import orient
 from six.moves import zip
 
-from .clippers import Clipper2D, Clipper3D
+from .clippers import Clipper2D
+from .clippers import Clipper3D
 from .segments import Segment
-from .transformations import align_face, invert_align_face
-from .vectors import Vector2D, Vector3D
+from .transformations import align_face
+from .transformations import invert_align_face
+from .vectors import Vector2D
+from .vectors import Vector3D
 from ..utilities import almostequal
 
 
@@ -112,7 +120,7 @@ class Polygon(Clipper2D, MutableSequence):
         buffer = s_poly.buffer(distance=distance, join_style=join_style)
         if buffer.is_empty:
             # occurs when using too large a negative buffer which meets in the middle
-            raise(ValueError("Negative buffer is too large"))
+            raise (ValueError("Negative buffer is too large"))
         core = orient(buffer, sign=1.0)
         return Polygon2D(core.boundary.coords)
 
@@ -449,11 +457,11 @@ class Polygon3D(Clipper3D, Polygon):
                 on_exterior = links[0][1]
                 # join them up
                 exterior = Polygon3D(
-                    exterior[exterior.index(on_exterior) :]
+                    exterior[exterior.index(on_exterior):]
                     + exterior[: exterior.index(on_exterior) + 1]
                 )
                 interior = Polygon3D(
-                    interior[interior.index(on_interior) :]
+                    interior[interior.index(on_interior):]
                     + interior[: interior.index(on_interior) + 1]
                 )
                 exterior = Polygon3D(exterior[:] + interior[:])
@@ -524,7 +532,7 @@ def project(pt, proj_axis):
 
 
 def project_inv(
-    pt, proj_axis, a, v
+        pt, proj_axis, a, v
 ):  # type: (np.ndarray, int, np.float64, Vector3D) -> Any
     """Returns the vector w in the surface's plane such that project(w) equals x.
 
@@ -561,7 +569,7 @@ def project_to_2D(vertices, proj_axis):
 
 
 def project_to_3D(
-    vertices, proj_axis, a, v
+        vertices, proj_axis, a, v
 ):  # type: (np.ndarray, int, np.float64, Vector3D) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
 
@@ -576,7 +584,7 @@ def project_to_3D(
 
 
 def normalize_coords(
-    poly, outside_pt, ggr=None
+        poly, outside_pt, ggr=None
 ):  # type: (Polygon3D, Vector3D, Union[List, None, Idf_MSequence]) -> Polygon3D
     """Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).
 
