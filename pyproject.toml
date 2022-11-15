@@ -19,7 +19,7 @@ numpy = "^1.22"
 lxml = "^4.9.1"
 
 [tool.poetry.group.dev.dependencies]
-py = "^1.11"
+pytest = "^7.2"
 pytest-cov = "^4.0.0"
 flake8 = "^5.0.4"
 codecov = "^2.1.12"
