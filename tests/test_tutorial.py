@@ -1,3 +1,4 @@
+import os
 import shutil
 from pathlib import Path
 
@@ -10,6 +11,23 @@ from geomeppy.extractor import copy_constructions
 
 _, EPLUS_HOME = paths_from_version("9.0.1")
 
+
+class ESO:
+    def __init__(self, path):
+        self.dd, self.data = esoreader.read(path)
+
+    def read_var(self, variable, frequency="Hourly"):
+        return [
+            {"key": k, "series": self.data[self.dd.index[frequency, k, variable]]}
+            for _f, k, _v in self.dd.find_variable(variable)
+        ]
+
+    def total_kwh(self, variable, frequency="Hourly"):
+        j_per_kwh = 3_600_000
+        results = self.read_var(variable, frequency)
+        return sum(sum(s["series"]) for s in results) / j_per_kwh
+
+
 @pytest.fixture
 def tmp_dir():
     p = Path("tests/tutorial")
@@ -19,6 +37,7 @@ def tmp_dir():
     shutil.rmtree(p)
 
 
+@pytest.mark.skipif(os.environ.get("CI"))
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_1():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
@@ -34,6 +53,7 @@ def test_tutorial_1():
     idf.run(output_directory="tests/tutorial")
 
 
+@pytest.mark.skipif(os.environ.get("CI"))
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_2():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
@@ -101,22 +121,7 @@ def test_tutorial_2():
         print(row_format.format(*row))
 
 
-class ESO:
-    def __init__(self, path):
-        self.dd, self.data = esoreader.read(path)
-
-    def read_var(self, variable, frequency="Hourly"):
-        return [
-            {"key": k, "series": self.data[self.dd.index[frequency, k, variable]]}
-            for _f, k, _v in self.dd.find_variable(variable)
-        ]
-
-    def total_kwh(self, variable, frequency="Hourly"):
-        j_per_kwh = 3_600_000
-        results = self.read_var(variable, frequency)
-        return sum(sum(s["series"]) for s in results) / j_per_kwh
-
-
+@pytest.mark.skipif(os.environ.get("CI"))
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_3():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
