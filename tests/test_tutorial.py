@@ -3,10 +3,12 @@ from pathlib import Path
 
 import esoreader
 import pytest
+from eppy.runner.run_functions import paths_from_version
 
 from geomeppy import IDF
 from geomeppy.extractor import copy_constructions
 
+_, EPLUS_HOME = paths_from_version("9.0.1")
 
 @pytest.fixture
 def tmp_dir():
@@ -19,8 +21,8 @@ def tmp_dir():
 
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_1():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Boring hut", coordinates=[(10, 0), (10, 10), (0, 10), (0, 0)], height=3.5
@@ -34,8 +36,8 @@ def test_tutorial_1():
 
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_2():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Two storey",
@@ -117,8 +119,8 @@ class ESO:
 
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_3():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Two storey",
@@ -137,7 +139,7 @@ def test_tutorial_3():
     print(idf.getobject("MATERIAL", "DefaultMaterial"))
     print(idf.getobject("WINDOWMATERIAL:SIMPLEGLAZINGSYSTEM", "DefaultGlazing"))
 
-    src_idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/WindowTestsSimple.idf")
+    src_idf = IDF(f"{EPLUS_HOME}/ExampleFiles/WindowTestsSimple.idf")
     copy_constructions(source_idf=src_idf, target_idf=idf)
     for c in idf.idfobjects["CONSTRUCTION"]:
         print(c)
