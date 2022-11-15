@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
 
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +21,16 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
+          ENERGYPLUS_VERSION=9.0.1
+          ENERGYPLUS_SHA=bb7ca4f0da
+          ENERGYPLUS_INSTALL_VERSION=9-0-1
+          ENERGYPLUS_DOWNLOAD_BASE_URL=https://github.com/NREL/EnergyPlus/releases/download/v$ENERGYPLUS_VERSION
+          ENERGYPLUS_DOWNLOAD_FILENAME=EnergyPlus-$ENERGYPLUS_VERSION-$ENERGYPLUS_SHA-$PLATFORM-x86_64
+          ENERGYPLUS_DOWNLOAD_URL=$ENERGYPLUS_DOWNLOAD_BASE_URL/$ENERGYPLUS_DOWNLOAD_FILENAME.$EXT
+          curl -SLO $ENERGYPLUS_DOWNLOAD_URL
+          sudo chmod +x $ENERGYPLUS_DOWNLOAD_FILENAME.$EXT
+          echo "y\r" | sudo ./$ENERGYPLUS_DOWNLOAD_FILENAME.$EXT
+          sudo rm $ENERGYPLUS_DOWNLOAD_FILENAME.$EXT
       - name: Test with pytest
         run: |
           pytest
