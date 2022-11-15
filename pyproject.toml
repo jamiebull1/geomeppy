@@ -15,8 +15,11 @@ shapely = "^1.8.5.post1"
 transforms3d = "^0.4.1"
 pyclipper = "^1.3.0.post3"
 esoreader = "^1.2.3"
+numpy = "^1.22"
+lxml = "^4.9.1"
 
 [tool.poetry.group.dev.dependencies]
+py = "^1.11"
 pytest-cov = "^4.0.0"
 flake8 = "^5.0.4"
 codecov = "^2.1.12"
