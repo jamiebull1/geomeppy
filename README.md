@@ -1,8 +1,5 @@
 GeomEppy
 ========
-[![Build Status](https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master)](https://travis-ci.org/jamiebull1/geomeppy)
- for Python 2.7, 3.7 via Travis
-
 [![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov
 

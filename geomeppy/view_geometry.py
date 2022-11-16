@@ -1,8 +1,9 @@
 """Tool for visualising geometry."""
-from typing import Optional, TYPE_CHECKING  # noqa
+from typing import Optional  # noqa
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
@@ -24,7 +25,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 
     try:
         plt.figure()
@@ -122,8 +123,8 @@ def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="blac
         coords = [
             getcoords(s)
             for s in surfaces
-            if hasattr(s, "Surface_Type")
-            and s.Surface_Type.lower() == surface_type.lower()
+            if hasattr(s,
+                       "Surface_Type") and s.Surface_Type.lower() == surface_type.lower()
         ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(

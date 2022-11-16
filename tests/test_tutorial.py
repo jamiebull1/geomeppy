@@ -1,25 +1,47 @@
 import os
 import shutil
+from pathlib import Path
 
 import esoreader
 import pytest
+from eppy.runner.run_functions import paths_from_version
 
 from geomeppy import IDF
 from geomeppy.extractor import copy_constructions
 
+_, EPLUS_HOME = paths_from_version("9-1-0")
+
+
+class ESO:
+    def __init__(self, path):
+        self.dd, self.data = esoreader.read(path)
+
+    def read_var(self, variable, frequency="Hourly"):
+        return [
+            {"key": k, "series": self.data[self.dd.index[frequency, k, variable]]}
+            for _f, k, _v in self.dd.find_variable(variable)
+        ]
+
+    def total_kwh(self, variable, frequency="Hourly"):
+        j_per_kwh = 3_600_000
+        results = self.read_var(variable, frequency)
+        return sum(sum(s["series"]) for s in results) / j_per_kwh
+
 
 @pytest.fixture
 def tmp_dir():
-    shutil.rmtree("tests/tutorial", ignore_errors=True)
-    os.mkdir("tests/tutorial")
+    p = Path("tests/tutorial")
+    shutil.rmtree(p, ignore_errors=True)
+    p.mkdir(parents=True, exist_ok=True)
     yield
-    shutil.rmtree("tests/tutorial")
+    shutil.rmtree(p)
 
 
+@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_1():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Boring hut", coordinates=[(10, 0), (10, 10), (0, 10), (0, 0)], height=3.5
@@ -31,10 +53,11 @@ def test_tutorial_1():
     idf.run(output_directory="tests/tutorial")
 
 
+@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_2():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Two storey",
@@ -98,26 +121,11 @@ def test_tutorial_2():
         print(row_format.format(*row))
 
 
-class ESO:
-    def __init__(self, path):
-        self.dd, self.data = esoreader.read(path)
-
-    def read_var(self, variable, frequency="Hourly"):
-        return [
-            {"key": k, "series": self.data[self.dd.index[frequency, k, variable]]}
-            for _f, k, _v in self.dd.find_variable(variable)
-        ]
-
-    def total_kwh(self, variable, frequency="Hourly"):
-        j_per_kwh = 3_600_000
-        results = self.read_var(variable, frequency)
-        return sum(sum(s["series"]) for s in results) / j_per_kwh
-
-
+@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_3():
-    IDF.setiddname("C:/EnergyPlusV9-1-0/Energy+.idd", testing=True)
-    idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/Minimal.idf")
+    IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
+    idf = IDF(f"{EPLUS_HOME}/ExampleFiles/Minimal.idf")
     idf.epw = "USA_CO_Golden-NREL.724666_TMY3.epw"
     idf.add_block(
         name="Two storey",
@@ -136,7 +144,7 @@ def test_tutorial_3():
     print(idf.getobject("MATERIAL", "DefaultMaterial"))
     print(idf.getobject("WINDOWMATERIAL:SIMPLEGLAZINGSYSTEM", "DefaultGlazing"))
 
-    src_idf = IDF("C:/EnergyPlusV9-1-0/ExampleFiles/WindowTestsSimple.idf")
+    src_idf = IDF(f"{EPLUS_HOME}/ExampleFiles/WindowTestsSimple.idf")
     copy_constructions(source_idf=src_idf, target_idf=idf)
     for c in idf.idfobjects["CONSTRUCTION"]:
         print(c)
