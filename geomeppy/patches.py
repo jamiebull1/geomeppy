@@ -264,11 +264,12 @@ class PatchedIDF(BaseIDF):
         )
         self.__class__.setidd(idd_info, idd_index, block, versiontuple)
 
-    def newidfobject(self, key, aname="", **kwargs):
-        # type: (str, str, **Any) -> EpBunch
+    def newidfobject(self, key, aname="", defaultvalues=True, **kwargs):
+        # type: (str, str, bool, **Any) -> EpBunch
         """Add a new idfobject to the model.
 
-        If you don't specify a value for a field, the default value will be set.
+        If you don't specify a value for a field, the default value will be set, unless
+        defaultvalues is set to False.
 
         For example ::
 
@@ -280,10 +281,11 @@ class PatchedIDF(BaseIDF):
 
         :param key: The type of IDF object. This must be in ALL_CAPS.
         :param aname: This parameter is not used. It is left there for backward compatibility.
+        :param defaultvalues: Specifies whether to set default values when creating IDF objects.
         :param kwargs: Keyword arguments in the format `field=value` used to set fields in the EnergyPlus object.
         :returns: EpBunch object.
         """
-        obj = newrawobject(self.model, self.idd_info, key)
+        obj = newrawobject(self.model, self.idd_info, key, defaultvalues=defaultvalues)
         abunch = obj2bunch(self.model, self.idd_info, obj)
         if aname:
             warnings.warn(
