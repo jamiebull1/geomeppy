@@ -5,7 +5,10 @@ from geomeppy.geom.polygons import Polygon2D
 
 def get_core(footprint, perim_depth=None):
     poly = Polygon2D(footprint)
-    core = poly.buffer(distance=-perim_depth)
+    try:
+        core = poly.buffer(distance=-perim_depth)
+    except ValueError:
+        raise ValueError("Perimeter depth is too great")
     return core
 
 
