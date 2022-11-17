@@ -21,12 +21,12 @@ import os
 import sys
 from pathlib import Path
 
-import toml
+import tomli
 
 sys.path.insert(0, os.path.abspath("../../"))
 
 pyproject_path = Path("../../pyproject.toml")
-pyproject = toml.loads(pyproject_path.read_text())
+pyproject = tomli.loads(pyproject_path.read_text())
 
 # -- General configuration ------------------------------------------------
 
@@ -55,7 +55,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = pyproject
+project = pyproject["tool"]["poetry"]["name"]
 copyright = "2018, Jamie Bull"
 author = "Jamie Bull"
 

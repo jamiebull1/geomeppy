@@ -4,8 +4,6 @@ import subprocess
 import sys
 from tempfile import mkstemp
 
-from geomeppy import __version__
-
 
 def replace(file_path, pattern, subst):
     # Create temp file
@@ -31,7 +29,7 @@ def main(increment):
     assert b"Untracked" not in status, "Repository contains untracked files"
 
     # increment version
-    version = __version__
+    version = "0.12.0"
     new_version = [int(i) for i in version.split(".")]
     for i in range(len(new_version)):
         if i == increment:
