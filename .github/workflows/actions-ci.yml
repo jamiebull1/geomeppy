@@ -30,14 +30,21 @@ jobs:
           flake8
       - name: Run black
         run: |
-          black -l 88 geomeppy tests docs
+          black --check --verbose -l 88 geomeppy tests docs
       - name: Test with pytest
         run: |
-          pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy tests
+          pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy tests --cov-report=xml
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
+      - name: Build and publish to test pypi
+          if: github.ref == 'refs/heads/develop'
+          uses: JRubics/poetry-publish@v1.13
+          with:
+            pypi_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
+            repository_name: "testpypi"
+            repository_url: "https://test.pypi.org/legacy/"
       - name: Build and publish to pypi
-        if: github.ref == 'refs/heads/develop'
-        uses: JRubics/poetry-publish@v1.13
-        with:
-          pypi_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_name: "testpypi"
-          repository_url: "https://test.pypi.org/legacy/"
+          if: github.ref == 'refs/heads/master'
+          uses: JRubics/poetry-publish@v1.13
+          with:
+            pypi_token: ${{ secrets.PYPI_API_TOKEN }}
