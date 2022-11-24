@@ -86,8 +86,7 @@ def view_polygons(polygons):
 
 
 def _get_surfaces(idf):
-    """Get the surfaces from the IDF.
-    """
+    """Get the surfaces from the IDF."""
     surfaces = idf.getsurfaces() + idf.getshadingsurfaces() + idf.getsubsurfaces()
     return surfaces
 
@@ -123,8 +122,8 @@ def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="blac
         coords = [
             getcoords(s)
             for s in surfaces
-            if hasattr(s,
-                       "Surface_Type") and s.Surface_Type.lower() == surface_type.lower()
+            if hasattr(s, "Surface_Type")
+            and s.Surface_Type.lower() == surface_type.lower()
         ]
     trimmed_coords = [c for c in coords if c]  # dump any empty surfaces
     collection = Poly3DCollection(

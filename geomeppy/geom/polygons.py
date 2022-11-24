@@ -457,11 +457,11 @@ class Polygon3D(Clipper3D, Polygon):
                 on_exterior = links[0][1]
                 # join them up
                 exterior = Polygon3D(
-                    exterior[exterior.index(on_exterior):]
+                    exterior[exterior.index(on_exterior) :]
                     + exterior[: exterior.index(on_exterior) + 1]
                 )
                 interior = Polygon3D(
-                    interior[interior.index(on_interior):]
+                    interior[interior.index(on_interior) :]
                     + interior[: interior.index(on_interior) + 1]
                 )
                 exterior = Polygon3D(exterior[:] + interior[:])
@@ -532,7 +532,7 @@ def project(pt, proj_axis):
 
 
 def project_inv(
-        pt, proj_axis, a, v
+    pt, proj_axis, a, v
 ):  # type: (np.ndarray, int, np.float64, Vector3D) -> Any
     """Returns the vector w in the surface's plane such that project(w) equals x.
 
@@ -569,7 +569,7 @@ def project_to_2D(vertices, proj_axis):
 
 
 def project_to_3D(
-        vertices, proj_axis, a, v
+    vertices, proj_axis, a, v
 ):  # type: (np.ndarray, int, np.float64, Vector3D) -> List[Tuple[np.float64, np.float64, np.float64]]
     """Project a 2D polygon into 3D space.
 
@@ -584,7 +584,7 @@ def project_to_3D(
 
 
 def normalize_coords(
-        poly, outside_pt, ggr=None
+    poly, outside_pt, ggr=None
 ):  # type: (Polygon3D, Vector3D, Union[List, None, Idf_MSequence]) -> Polygon3D
     """Put coordinates into the correct format for EnergyPlus dependent on Global Geometry Rules (GGR).
 

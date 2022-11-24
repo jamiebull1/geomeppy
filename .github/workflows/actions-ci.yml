@@ -28,6 +28,9 @@ jobs:
       - name: Run flake8
         run: |
           flake8
+      - name: Run black
+        run: |
+          black -l 88 geomeppy tests docs
       - name: Test with pytest
         run: |
           pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy tests
