@@ -1,7 +1,7 @@
 GeomEppy
 ========
 [![Build](https://img.shields.io/github/workflow/status/jamiebull1/geomeppy/Python%20package)](https://github.com/jamiebull1/geomeppy/)
- for Python 3.9 on Linux
+ for Python 3.8 on Linux
 
 [![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov
