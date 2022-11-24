@@ -80,3 +80,6 @@ dist
 .mypy_cache
 
 venv
+
+coverage
+coverage.xml

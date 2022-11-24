@@ -33,9 +33,12 @@ jobs:
           black --check --verbose -l 88 geomeppy tests docs
       - name: Test with pytest
         run: |
-          pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy tests --cov-report=xml
+          pytest -v --cov-config .coveragerc --cov=geomeppy tests --cov-report=xml
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
       - name: Build and publish to test pypi
         if: github.ref == 'refs/heads/develop'
         uses: JRubics/poetry-publish@v1.13

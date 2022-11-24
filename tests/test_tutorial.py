@@ -8,6 +8,7 @@ from eppy.runner.run_functions import paths_from_version
 
 from geomeppy import IDF
 from geomeppy.extractor import copy_constructions
+from tests.conftest import on_ci
 
 _, EPLUS_HOME = paths_from_version("9-1-0")
 
@@ -37,7 +38,7 @@ def tmp_dir():
     shutil.rmtree(p)
 
 
-@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
+@pytest.mark.skipif(on_ci(), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_1():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
@@ -53,7 +54,7 @@ def test_tutorial_1():
     idf.run(output_directory="tests/tutorial")
 
 
-@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
+@pytest.mark.skipif(on_ci(), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_2():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)
@@ -121,7 +122,7 @@ def test_tutorial_2():
         print(row_format.format(*row))
 
 
-@pytest.mark.skipif(os.environ.get("CI"), reason="Running without EnergyPlus installed")
+@pytest.mark.skipif(on_ci(), reason="Running without EnergyPlus installed")
 @pytest.mark.usefixtures("tmp_dir")
 def test_tutorial_3():
     IDF.setiddname(f"{EPLUS_HOME}/Energy+.idd", testing=True)

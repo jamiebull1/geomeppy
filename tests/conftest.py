@@ -1,10 +1,17 @@
 """A module containing pytest fixtures that are used in multiple places in the test suite."""
+import os
 
 import pytest
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
 
 from geomeppy.idf import IDF
+
+
+def on_ci():
+    """Helper to check if we're running on a CI platform."""
+    return os.environ.get("CI", "") != "0"
+
 
 base_idf_txt = """
     Version, 8.5;
