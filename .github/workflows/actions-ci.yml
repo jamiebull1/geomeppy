@@ -37,14 +37,14 @@ jobs:
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
       - name: Build and publish to test pypi
-          if: github.ref == 'refs/heads/develop'
-          uses: JRubics/poetry-publish@v1.13
-          with:
-            pypi_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
-            repository_name: "testpypi"
-            repository_url: "https://test.pypi.org/legacy/"
+        if: github.ref == 'refs/heads/develop'
+        uses: JRubics/poetry-publish@v1.13
+        with:
+          pypi_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_name: "testpypi"
+          repository_url: "https://test.pypi.org/legacy/"
       - name: Build and publish to pypi
-          if: github.ref == 'refs/heads/master'
-          uses: JRubics/poetry-publish@v1.13
-          with:
-            pypi_token: ${{ secrets.PYPI_API_TOKEN }}
+        if: github.ref == 'refs/heads/master'
+        uses: JRubics/poetry-publish@v1.13
+        with:
+          pypi_token: ${{ secrets.PYPI_API_TOKEN }}
