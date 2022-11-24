@@ -20,7 +20,7 @@ from eppy.EPlusInterfaceFunctions import eplusdata, iddindex, parse_idd
 from eppy.EPlusInterfaceFunctions.eplusdata import Eplusdata  # noqa
 from eppy.bunch_subclass import EpBunch as BaseBunch
 from eppy.idf_msequence import Idf_MSequence
-from eppy.idfreader import convertallfields, iddversiontuple
+from eppy.idfreader import convertallfields, iddversiontuple, convertfields
 from eppy.modeleditor import IDF as BaseIDF
 from eppy.modeleditor import IDDNotSetError, namebunch, newrawobject
 
@@ -161,7 +161,7 @@ def addthisbunch(
     """
     key = thisbunch.key.upper()
     obj = copy.copy(thisbunch.obj)
-    abunch = obj2bunch(data, commdct, obj)
+    abunch = obj2bunch(data, commdct, obj, thisbunch.theidf.block)
     bunchdt[key].append(abunch)
     return abunch
 
@@ -191,20 +191,21 @@ def makebunches(
 
 
 def obj2bunch(
-    data, commdct, obj
+    data, commdct, obj, block=None
 ):  # type: (Eplusdata, List[List[Dict[str, Any]]], List[str]) -> EpBunch
     """Make a new bunch object using the data object.
 
     :param data: Eplusdata object containing representions of IDF objects.
     :param commdct: Descriptions of IDF fields from the IDD.
     :param obj: List of field values in an object.
+    :param block: EnergyPlus field ID names of the IDF from the IDD. Defaults to None.
     :returns: EpBunch object.
 
     """
     dtls = data.dtls
     key = obj[0].upper()
     key_i = dtls.index(key)
-    abunch = makeabunch(commdct, obj, key_i)
+    abunch = makeabunch(commdct, obj, key_i, block)
     return abunch
 
 
@@ -212,6 +213,8 @@ def makeabunch(
     commdct,  # type: List[List[Dict[str, Any]]]
     obj,  # type: Union[List[Union[float, str]], List[str]]
     obj_i,  # type: int
+    block=None,  # type:
+    debugidd=True,
 ):
     # type: (...) -> EpBunch
     """Make a bunch from the object.
@@ -219,11 +222,34 @@ def makeabunch(
     :param commdct: Descriptions of IDF fields from the IDD.
     :param obj: List of field values in an object.
     :param obj_i: Index of the object in commdct.
+    :param block: EnergyPlus field ID names of the IDF from the IDD. Defaults to None.
     :returns: EpBunch object.
 
     """
     objidd = commdct[obj_i]
-    objfields = [comm.get("field") for comm in commdct[obj_i]]  # type: List
+    objfields = [comm.get("field") for comm in commdct[obj_i]]
+    if debugidd:
+        import eppy.ext_field_functions as extff
+
+        if len(obj) > len(objfields):
+            # there are not enough fields in the IDD to match the IDF
+            # -- increase the number of fields in the IDD (in block and commdct)
+            #       -- start
+            n = len(obj) - len(objfields)
+            key_txt = obj[0]
+            objfields = extff.increaseIDDfields(block, commdct, obj_i, key_txt, n)
+            # -- increase the number of fields in the IDD (in block and commdct)
+            #       -- end
+            #
+            # -- convertfields for added fields -  start
+            key_i = obj_i
+            key_comm = commdct[obj_i]
+            try:
+                inblock = block[obj_i]
+            except TypeError as e:
+                inblock = None
+            obj = convertfields(key_comm, obj, inblock)
+            # -- convertfields for added fields -  end
     objfields[0] = ["key"]
     objfields = [field[0] for field in objfields]
     obj_fields = [bunchhelpers.makefieldname(field) for field in objfields]
