@@ -207,3 +207,8 @@ def test_shadow_intersecting(new_idf, shadow_matching):
     new_idf.intersect()
     shadows = [Polygon3D(s.coords) for s in new_idf.getshadingsurfaces()]
     assert len(shadows) == 23
+
+
+def test_defaultvalues_in_newidfobject(new_idf):
+    obj = new_idf.newidfobject("ZONE", Name="O-Zone", defaultvalues=True)
+    assert obj.Name == "O-Zone"

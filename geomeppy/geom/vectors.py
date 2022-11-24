@@ -75,7 +75,7 @@ class Vector2D(Sized, Iterable):
     def length(self):
         # type: () -> float
         """The length of a vector."""
-        length = sum(x ** 2 for x in self.args) ** 0.5
+        length = sum(x**2 for x in self.args) ** 0.5
 
         return length
 
@@ -90,7 +90,7 @@ class Vector2D(Sized, Iterable):
         closest_pt = None
         for pt2 in poly:
             direction = self - pt2
-            sq_d = sum(x ** 2 for x in direction)
+            sq_d = sum(x**2 for x in direction)
             if sq_d < min_d:
                 min_d = sq_d
                 closest_pt = pt2
@@ -166,7 +166,7 @@ class Vector2D(Sized, Iterable):
 
         """
         direction = self - v2
-        return sum(x ** 2 for x in direction)
+        return sum(x**2 for x in direction)
 
 
 class Vector3D(Vector2D):

@@ -1,14 +1,16 @@
 GeomEppy
 ========
-[![Build Status](https://travis-ci.org/jamiebull1/geomeppy.svg?branch=master)](https://travis-ci.org/jamiebull1/geomeppy)
- for Python 2.7, 3.7 via Travis
+[![Build](https://img.shields.io/github/workflow/status/jamiebull1/geomeppy/Python%20package)](https://github.com/jamiebull1/geomeppy/)
+ for Python 3.8 on Linux
 
-[![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master.svg)](https://codecov.io/github/jamiebull1/geomeppy)
+[![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov
 
 [![Documentation Status](https://readthedocs.org/projects/geomeppy/badge/?version=latest)](http://geomeppy.readthedocs.io/en/latest/?badge=latest)
  on Read the Docs
- 
+
+[![Licence](https://img.shields.io/github/license/jamiebull1/geomeppy)](https://opensource.org/licenses/MIT)
+
 GeomEppy is a scripting language for use with Eppy, which in turn is a scripting language for EnergyPlus IDF files and output files.
 
 It primarily adds functions to do with IDF geometry, including zones, surfaces, constructions, etc.

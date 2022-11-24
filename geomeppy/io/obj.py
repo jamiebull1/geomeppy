@@ -27,10 +27,12 @@ Example polygon::
     f 1// 2// 3// 4//
 
 """
-from itertools import product
-import shutil
-from typing import List, Optional, Set  # noqa
 import os
+import shutil
+from itertools import product
+from typing import List  # noqa
+from typing import Optional
+from typing import Set
 
 import pypoly2tri as p2t
 
@@ -92,7 +94,11 @@ class ObjWriter(object):
             links = sorted(links, key=lambda x: x[0].relative_distance(x[1]))
             t1 = [links[0][0], links[0][1], pt2 if pt1 in links[0] else pt1]
             links = sorted(
-                [l for l in links[1:] if links[0][0] not in l and links[0][1] not in l],
+                [
+                    lnk
+                    for lnk in links[1:]
+                    if links[0][0] not in lnk and links[0][1] not in lnk
+                ],
                 key=lambda x: x[0].relative_distance(x[1]),
             )
             t2 = (links[0][0], links[0][1], [pt for pt in t1 if pt in inner_poly][0])

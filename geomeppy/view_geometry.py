@@ -1,8 +1,9 @@
 """Tool for visualising geometry."""
-from typing import Optional, TYPE_CHECKING  # noqa
+from typing import Optional  # noqa
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 from six import StringIO
@@ -24,7 +25,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 
     try:
         plt.figure()
@@ -85,8 +86,7 @@ def view_polygons(polygons):
 
 
 def _get_surfaces(idf):
-    """Get the surfaces from the IDF.
-    """
+    """Get the surfaces from the IDF."""
     surfaces = idf.getsurfaces() + idf.getshadingsurfaces() + idf.getsubsurfaces()
     return surfaces
 

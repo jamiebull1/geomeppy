@@ -1,21 +1,29 @@
 """Heavy lifting geometry for IDF surfaces."""
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from itertools import product
-from math import atan2, pi
-from typing import Any, List, Optional, Tuple, Union  # noqa
+from math import atan2
+from math import pi
+from typing import Any  # noqa
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
+import numpy as np
 from eppy.geometry.surface import area
 from eppy.idf_msequence import Idf_MSequence  # noqa
-import numpy as np
 from shapely import wkt
 from shapely.geometry.polygon import Polygon as SPoly
 from shapely.geometry.polygon import orient
 from six.moves import zip
 
-from .clippers import Clipper2D, Clipper3D
+from .clippers import Clipper2D
+from .clippers import Clipper3D
 from .segments import Segment
-from .transformations import align_face, invert_align_face
-from .vectors import Vector2D, Vector3D
+from .transformations import align_face
+from .transformations import invert_align_face
+from .vectors import Vector2D
+from .vectors import Vector3D
 from ..utilities import almostequal
 
 
@@ -109,7 +117,11 @@ class Polygon(Clipper2D, MutableSequence):
 
         """
         s_poly = SPoly(self.vertices)
-        core = orient(s_poly.buffer(distance=distance, join_style=join_style), sign=1.0)
+        buffer = s_poly.buffer(distance=distance, join_style=join_style)
+        if buffer.is_empty:
+            # occurs when using too large a negative buffer which meets in the middle
+            raise (ValueError("Negative buffer is too large"))
+        core = orient(buffer, sign=1.0)
         return Polygon2D(core.boundary.coords)
 
     @property
