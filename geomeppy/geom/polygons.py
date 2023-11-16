@@ -1,5 +1,5 @@
 """Heavy lifting geometry for IDF surfaces."""
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from itertools import product
 from math import atan2, pi
 from typing import Any, List, Optional, Tuple, Union  # noqa
