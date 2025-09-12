@@ -38,6 +38,29 @@ def intersect_idf_surfaces(idf):
             set_coords(new, new_coords, ggr)
         idf.removeidfobject(old_obj)
 
+def polygon_coords_equal(a, b, tol=1e-6):
+    """Return True if polygons a and b have the same vertices up to rotation and orientation."""
+    a = list(a)
+    b = list(b)
+    if len(a) != len(b):
+        return False
+
+    # quick numeric equality with tolerance
+    def close(p, q):
+        return all(abs(pi - qi) <= tol for pi, qi in zip(p, q))
+
+    # try all rotations of b (forward)
+    for shift in range(len(b)):
+        if all(close(a[i], b[(i + shift) % len(b)]) for i in range(len(a))):
+            return True
+
+    # try all rotations of reversed b (opposite orientation)
+    rb = b[::-1]
+    for shift in range(len(rb)):
+        if all(close(a[i], rb[(i + shift) % len(rb)]) for i in range(len(a))):
+            return True
+
+    return False
 
 def match_idf_surfaces(idf):
     # type: (IDF) -> None
@@ -55,7 +78,7 @@ def match_idf_surfaces(idf):
                 set_unmatched_surface(surface, vector)
             matches = planes.get(-distance, {}).get(-vector, [])
             for s, m in product(surfaces, matches):
-                if almostequal(s.coords, reversed(m.coords)):
+                if polygon_coords_equal(s.coords, m.coords):
                     matched[sorted_tuple(m, s)] = (m, s)
 
     for key in matched:
