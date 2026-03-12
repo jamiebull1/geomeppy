@@ -1,12 +1,12 @@
 """Tool for visualising geometry."""
+from io import StringIO
+from tkinter import TclError
 from typing import Optional, TYPE_CHECKING  # noqa
 
 if TYPE_CHECKING:
     from geomeppy import IDF
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
-from six import StringIO
-from six.moves.tkinter import TclError
 
 try:
     from mpl_toolkits.mplot3d import Axes3D  # noqa
@@ -15,7 +15,6 @@ try:
 except (ImportError, RuntimeError):
     # this isn't always needed so we can ignore if it's not present
     pass
-
 
 def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     # type: (Optional[str], Optional[str], Optional[bool], Optional[IDF]) -> None
@@ -60,7 +59,6 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     if not test:
         plt.show()
 
-
 def view_polygons(polygons):
     """Display a collection of polygons for inspection.
 
@@ -83,13 +81,11 @@ def view_polygons(polygons):
 
     plt.show()
 
-
 def _get_surfaces(idf):
     """Get the surfaces from the IDF.
     """
     surfaces = idf.getsurfaces() + idf.getshadingsurfaces() + idf.getsubsurfaces()
     return surfaces
-
 
 def _get_shading(idf):
     """Get the shading surfaces from the IDF."""
@@ -99,7 +95,6 @@ def _get_shading(idf):
         shading.extend(idf.idfobjects[shading_type])
 
     return shading
-
 
 def _get_collections(idf, opacity=1):
     """Set up 3D collections for each surface type."""
@@ -112,7 +107,6 @@ def _get_collections(idf, opacity=1):
     shading = _get_collection("shading", surfaces, opacity, facecolor="darkolivegreen")
 
     return walls, roofs, floors, windows, shading
-
 
 def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="black"):
     """Make collections from a list of EnergyPlus surfaces."""
@@ -131,7 +125,6 @@ def _get_collection(surface_type, surfaces, opacity, facecolor, edgecolors="blac
     )
     return collection
 
-
 def _make_collections(polygons, opacity=1):
     """Make collections from a dict of polygons."""
     collection = []
@@ -145,7 +138,6 @@ def _make_collections(polygons, opacity=1):
             )
         )
     return collection
-
 
 def _get_limits(idf=None, polygons=None):
     """Get limits for the x, y and z axes so the plot is fitted to the axes."""
@@ -171,7 +163,6 @@ def _get_limits(idf=None, polygons=None):
         limits = {"x": (0, 0), "y": (0, 0), "z": (0, 0)}
 
     return limits
-
 
 def main(fname=None, polygons=None):
     if fname:
