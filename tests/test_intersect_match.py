@@ -3,7 +3,7 @@ import itertools
 
 import pytest
 from eppy.iddcurrent import iddcurrent
-from six import StringIO
+from io import StringIO
 
 from geomeppy.geom.surfaces import minimal_set
 from geomeppy.idf import IDF

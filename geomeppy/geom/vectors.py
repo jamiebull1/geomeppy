@@ -6,7 +6,6 @@ These are used to represent points in 2D and 3D, as well as directions for trans
 from typing import Any, Iterable, Iterator, List, Optional, Sized, Tuple, Union  # noqa
 
 import numpy as np
-from six.moves import zip
 
 if False:
     from .polygons import Polygon3D  # noqa
