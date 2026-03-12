@@ -28,9 +28,13 @@ setup(
     keywords=["EnergyPlus", "geometry", "building performance simulation"],
     platforms="any",
     install_requires=install_requires,
+    python_requires=">=3.10",
     classifiers=[
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Development Status :: 3 - Alpha",
         "Natural Language :: English",
         "Environment :: Console",
@@ -40,8 +44,8 @@ setup(
         "Topic :: Scientific/Engineering",
     ],
     extras_require={
-        ':python_version>="3.7"': ["mypy", "black"],
+        "lint": ["mypy", "black"],
         "testing": test_requires,
-    },  # static type checking
+    },
     include_package_data=True,
 )
