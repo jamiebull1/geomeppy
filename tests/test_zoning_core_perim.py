@@ -1,5 +1,5 @@
 import pytest
-from six import StringIO
+from io import StringIO
 from geomeppy.geom.core_perim import core_perim_zone_coordinates, get_core, get_perims
 from geomeppy.geom.polygons import Polygon2D
 from geomeppy import IDF
@@ -12,7 +12,6 @@ expected_footprint = {
     "Perimeter_Zone_2": [(25.0, 5.0), (30.0, 0.0), (30.0, 20.0), (25.0, 15.0)],
     "Perimeter_Zone_1": [(5.0, 5.0), (0.0, 0.0), (30.0, 0.0), (25.0, 5.0)],
 }
-
 
 def test_core_perim():
     perim_depth = 5
