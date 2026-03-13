@@ -21,10 +21,10 @@ def replace(file_path, pattern, subst):
 
 
 def main(increment):
-    # check we're on develop
-    assert b"* develop" in subprocess.check_output(
+    # check we're on master
+    assert b"* master" in subprocess.check_output(
         ["git", "branch"]
-    ), "Not on develop branch"
+    ), "Not on master branch"
     # check we're up-to-date
     status = subprocess.check_output(["git", "status"])
     assert b"modified" not in status, "Repository contains modified files"
@@ -72,7 +72,7 @@ def main(increment):
         exit()
     try:
         # push the changes
-        print(subprocess.check_output(["git", "push", "origin", "develop", "-f"]))
+        print(subprocess.check_output(["git", "push", "origin", "master", "-f"]))
         # create a tagged release
         print(
             subprocess.check_output(
