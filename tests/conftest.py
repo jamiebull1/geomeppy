@@ -1,4 +1,5 @@
 """A module containing pytest fixtures that are used in multiple places in the test suite."""
+
 import os
 
 import matplotlib

@@ -1,5 +1,5 @@
-"""Intersect and match all surfaces in an IDF.
-"""
+"""Intersect and match all surfaces in an IDF."""
+
 from itertools import product
 
 from geomeppy.geom.surfaces import (

@@ -1,4 +1,5 @@
 """Heavy lifting geometry for IDF surfaces."""
+
 from collections.abc import MutableSequence
 from itertools import product
 from math import atan2, pi

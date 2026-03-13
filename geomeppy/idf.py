@@ -1,6 +1,7 @@
 """
 This module contains the implementation of `geomeppy.IDF`.
 """
+
 import itertools
 from typing import Any, Dict, List, Optional, Union  # noqa
 

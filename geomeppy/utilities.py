@@ -1,4 +1,5 @@
 """Utilities for use in geomeppy."""
+
 from typing import Any  # noqa
 
 

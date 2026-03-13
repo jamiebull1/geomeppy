@@ -8,6 +8,7 @@ We implement a few of the functions of PyClipper here as `.difference`, `.inters
 `Clipper2D` and `Clipper3D` classes. These are then used as mixins for the `Polygon2D` and `Polygon3D` classes.
 
 """
+
 from typing import List  # noqa
 
 import pyclipper as pc

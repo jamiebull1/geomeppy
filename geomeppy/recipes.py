@@ -4,6 +4,7 @@ These are generally exposed and methods on the IDF object, e.g. `set_default_con
 can be called on an existing `IDF` object like ``myidf.set_default_constructions()``.
 
 """
+
 from typing import List, Optional, Tuple, Union  # noqa
 import warnings
 

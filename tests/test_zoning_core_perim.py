@@ -13,6 +13,7 @@ expected_footprint = {
     "Perimeter_Zone_1": [(5.0, 5.0), (0.0, 0.0), (30.0, 0.0), (25.0, 5.0)],
 }
 
+
 def test_core_perim():
     perim_depth = 5
     assert core_perim_zone_coordinates(footprint, perim_depth)[0] == expected_footprint
