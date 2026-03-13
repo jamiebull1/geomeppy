@@ -1,5 +1,6 @@
 """Heavy lifting geometry for IDF surfaces."""
-from collections import MutableSequence
+
+from collections.abc import MutableSequence
 from itertools import product
 from math import atan2, pi
 from typing import Any, List, Optional, Tuple, Union  # noqa
@@ -10,7 +11,6 @@ import numpy as np
 from shapely import wkt
 from shapely.geometry.polygon import Polygon as SPoly
 from shapely.geometry.polygon import orient
-from six.moves import zip
 
 from .clippers import Clipper2D, Clipper3D
 from .segments import Segment
@@ -145,7 +145,6 @@ class Polygon(Clipper2D, MutableSequence):
     @property
     def is_convex(self):
         return is_convex_polygon(self.vertices_list)
-        return False
 
     @property
     def points_matrix(self):
@@ -538,7 +537,7 @@ def project_inv(
     c = a
     for i in range(3):
         c -= w[i] * v[i]
-    c /= v[proj_axis]
+    c /= v[proj_axis]  # type: ignore[operator]
     w[proj_axis] = c
     return tuple(w)
 

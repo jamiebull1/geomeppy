@@ -6,6 +6,7 @@ There is the option to copy:
 - surface construction elements
 
 """
+
 import itertools
 from typing import Optional  # noqa
 

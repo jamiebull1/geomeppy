@@ -1,5 +1,5 @@
 import pytest
-from six import StringIO
+from io import StringIO
 from geomeppy.geom.core_perim import core_perim_zone_coordinates, get_core, get_perims
 from geomeppy.geom.polygons import Polygon2D
 from geomeppy import IDF

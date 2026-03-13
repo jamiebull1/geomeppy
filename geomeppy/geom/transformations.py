@@ -63,12 +63,12 @@ class Transformation(object):
         # check if face normal is up or down
         if abs(zp.dot(z_axis)) < 0.99:
             # not facing up or down, set yPrime along z_axis
-            yp = z_axis - zp.dot(z_axis) * zp
+            yp = z_axis - zp.dot(z_axis) * zp  # type: ignore[operator]
             yp = yp.normalize()
             xp = yp.cross(zp)
         else:
             # facing up or down, set xPrime along -x_axis
-            xp = neg_x_axis - zp.dot(neg_x_axis) * zp
+            xp = neg_x_axis - zp.dot(neg_x_axis) * zp  # type: ignore[operator]
             xp = xp.normalize()
             yp = zp.cross(xp)
 
@@ -121,7 +121,7 @@ class Transformation(object):
         return Transformation(translation_matrix(direction))
 
     def _rotation(self, direction, angle):
-        # type: (Vector3D, Union[int, np.float]) -> Transformation
+        # type: (Vector3D, Union[int, float]) -> Transformation
         return Transformation(rotation_matrix(angle, direction))
 
 

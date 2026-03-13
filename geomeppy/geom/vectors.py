@@ -6,7 +6,6 @@ These are used to represent points in 2D and 3D, as well as directions for trans
 from typing import Any, Iterable, Iterator, List, Optional, Sized, Tuple, Union  # noqa
 
 import numpy as np
-from six.moves import zip
 
 if False:
     from .polygons import Polygon3D  # noqa
@@ -65,17 +64,17 @@ class Vector2D(Sized, Iterable):
 
     def dot(self, other):
         # type: (Vector3D) -> np.float64
-        return np.dot(self, other)
+        return np.dot(self, other)  # type: ignore[call-overload]
 
     def cross(self, other):
         # type: (Union[Vector2D, Vector3D]) -> np.ndarray
-        return np.cross(self, other)
+        return np.cross(self, other)  # type: ignore[call-overload]
 
     @property
     def length(self):
         # type: () -> float
         """The length of a vector."""
-        length = sum(x ** 2 for x in self.args) ** 0.5
+        length = sum(x**2 for x in self.args) ** 0.5
 
         return length
 
@@ -90,7 +89,7 @@ class Vector2D(Sized, Iterable):
         closest_pt = None
         for pt2 in poly:
             direction = self - pt2
-            sq_d = sum(x ** 2 for x in direction)
+            sq_d = sum(x**2 for x in direction)
             if sq_d < min_d:
                 min_d = sq_d
                 closest_pt = pt2
@@ -166,7 +165,7 @@ class Vector2D(Sized, Iterable):
 
         """
         direction = self - v2
-        return sum(x ** 2 for x in direction)
+        return sum(x**2 for x in direction)
 
 
 class Vector3D(Vector2D):

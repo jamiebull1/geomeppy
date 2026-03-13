@@ -1,7 +1,6 @@
 """Build IDF geometry from minimal inputs."""
-from typing import Any, Dict, List, Tuple, Union  # noqa
 
-from six.moves import zip
+from typing import Any, Dict, List, Tuple, Union  # noqa
 
 from .geom.polygons import Polygon, Polygon3D  # noqa
 from .geom.segments import Segment  # noqa

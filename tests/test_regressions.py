@@ -1,4 +1,5 @@
 """Tests for issue previously raised and fixed, so we can be alerted if they start failing again."""
+
 import pytest
 
 from geomeppy.geom.polygons import Polygon3D
