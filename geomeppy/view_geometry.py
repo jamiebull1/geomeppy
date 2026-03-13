@@ -50,13 +50,13 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     ax = plt.axes(projection="3d")
     collections = _get_collections(idf, opacity=0.5)
     for c in collections:
-        ax.add_collection3d(c)
+        ax.add_collection3d(c)  # type: ignore[attr-defined]
 
     # calculate and set the axis limits
     limits = _get_limits(idf=idf)
     ax.set_xlim(limits["x"])
     ax.set_ylim(limits["y"])
-    ax.set_zlim(limits["z"])
+    ax.set_zlim(limits["z"])  # type: ignore[attr-defined]
 
     if not test:
         plt.show()

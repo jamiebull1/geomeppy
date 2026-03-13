@@ -64,11 +64,11 @@ class Vector2D(Sized, Iterable):
 
     def dot(self, other):
         # type: (Vector3D) -> np.float64
-        return np.dot(self, other)
+        return np.dot(self, other)  # type: ignore[call-overload]
 
     def cross(self, other):
         # type: (Union[Vector2D, Vector3D]) -> np.ndarray
-        return np.cross(self, other)
+        return np.cross(self, other)  # type: ignore[call-overload]
 
     @property
     def length(self):

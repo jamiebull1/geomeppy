@@ -537,7 +537,7 @@ def project_inv(
     c = a
     for i in range(3):
         c -= w[i] * v[i]
-    c /= v[proj_axis]
+    c /= v[proj_axis]  # type: ignore[operator]
     w[proj_axis] = c
     return tuple(w)
 
