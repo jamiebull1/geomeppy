@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint (black)
         if: matrix.python-version == '3.13'
-        run: black --check geomeppy tests docs setup.py release.py
+        run: black --check geomeppy tests docs setup.py
 
       - name: Lint (mypy)
         if: matrix.python-version == '3.13'
