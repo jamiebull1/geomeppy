@@ -1,8 +1,20 @@
 import os
+import re
 
 from setuptools import setup
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def get_version():
+    """Read the single source-of-truth version from geomeppy/__init__.py."""
+    with open(os.path.join(THIS_DIR, "geomeppy", "__init__.py")) as f:
+        init = f.read()
+    match = re.search(r'__version__ = "(.+?)"', init)
+    if match is None:
+        raise RuntimeError("Cannot find __version__ in geomeppy/__init__.py")
+    return match.group(1)
+
 
 with open(os.path.join(THIS_DIR, "requirements.in")) as f:
     install_requires = [line for line in f if line and line[0] not in "#-"]
@@ -16,14 +28,16 @@ with open(os.path.join(THIS_DIR, "README.md")) as f:
 setup(
     name="geomeppy",
     packages=["geomeppy", "geomeppy.geom", "geomeppy.io", "tests"],
-    version="0.11.8",
+    version=get_version(),
     description="Geometry editing for E+ idf files",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Jamie Bull",
-    author_email="jamie.bull@oco-carbon.com",
+    author_email="jamie.bull@gmail.com",
     url="https://github.com/jamiebull1/geomeppy",
-    download_url="https://github.com/jamiebull1/geomeppy/tarball/v0.11.8",
+    download_url="https://github.com/jamiebull1/geomeppy/tarball/v{}".format(
+        get_version()
+    ),
     license="MIT License",
     keywords=["EnergyPlus", "geometry", "building performance simulation"],
     platforms="any",
