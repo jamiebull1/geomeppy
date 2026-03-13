@@ -21,7 +21,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Jamie Bull",
-    author_email="jamie.bull@oco-carbon.com",
+    author_email="jamie.bull@gmail.com",
     url="https://github.com/jamiebull1/geomeppy",
     download_url="https://github.com/jamiebull1/geomeppy/tarball/v0.12.1",
     license="MIT License",
