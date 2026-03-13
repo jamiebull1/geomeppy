@@ -102,7 +102,7 @@ Now we need to tell `geomeppy` to match up our surfaces with the correct outside
 
 Last step, let's add some nice big windows. We'll set window to wall ratio (WWR) of 0.6 for all external walls.
 
-    >>> idf.set_wwr(0.6)
+    >>> idf.set_wwr(0.6, construction="Project External Window")
 
 So what have we built? We can export the IDF geometry as an OBJ file, a format that can be imported into a 3D geometry viewer.
 
