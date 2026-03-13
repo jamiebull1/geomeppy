@@ -51,17 +51,45 @@ jobs:
       name: pypi
       url: https://pypi.org/p/geomeppy
     permissions:
+      contents: write  # required to create tags and GitHub releases
       id-token: write  # required for PyPI trusted publishing (OIDC)
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # required to check existing tags
 
       - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(python -c "import re; print(re.search(r'__version__ = \"(.+?)\"', open('geomeppy/__init__.py').read()).group(1))")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create tag and GitHub release
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.get_version.outputs.version }}" \
+            --title "v${{ steps.get_version.outputs.version }}" \
+            --generate-notes
+
       - name: Build package
+        if: steps.check_tag.outputs.exists == 'false'
         run: |
           pip install build
           python -m build
@@ -69,4 +97,5 @@ jobs:
       # PyPI Trusted Publishing must be configured on PyPI for this to work.
       # See: https://docs.pypi.org/trusted-publishers/
       - name: Publish to PyPI
+        if: steps.check_tag.outputs.exists == 'false'
         uses: pypa/gh-action-pypi-publish@release/v1
