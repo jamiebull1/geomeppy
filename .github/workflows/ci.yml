@@ -35,7 +35,7 @@ jobs:
         run: mypy --ignore-missing-imports geomeppy
 
       - name: Run tests
-        run: pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy tests
+        run: pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy --cov-report=xml tests
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.13'
