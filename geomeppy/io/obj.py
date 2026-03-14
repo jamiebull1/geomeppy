@@ -27,9 +27,6 @@ Example polygon::
     f 1// 2// 3// 4//
 
 """
-from itertools import product
-import shutil
-from typing import List, Optional, Set  # noqa
 import os
 import shutil
 from itertools import product
