@@ -2,15 +2,17 @@
 
 import os
 
-import matplotlib
 import pytest
 from eppy.iddcurrent import iddcurrent
 from io import StringIO
 
 from geomeppy.idf import IDF
 
-if not os.getenv("CI"):
-    matplotlib.use("Qt5Agg")
+
+def on_ci():
+    """Helper to check if we're running on a CI platform."""
+    return os.environ.get("CI", "") != "0"
+
 
 base_idf_txt = """
     Version, 8.5;

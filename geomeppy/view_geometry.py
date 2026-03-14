@@ -1,11 +1,10 @@
 """Tool for visualising geometry."""
-
 from io import StringIO
 from tkinter import TclError
 from typing import Optional, TYPE_CHECKING  # noqa
 
 if TYPE_CHECKING:
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
 
@@ -25,7 +24,7 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     :param fname: Path to the IDF.
     :param idf_txt: The string representation of an IDF.
     """
-    from geomeppy import IDF
+    from geomeppy import IDF  # noqa
 
     try:
         plt.figure()

@@ -1,5 +1,5 @@
 black:
-	black -l 88 geomeppy tests docs setup.py
+	black -l 88 geomeppy tests docs
 
 reqs:
 	pip-compile --upgrade --output-file ./requirements.txt ./requirements.in

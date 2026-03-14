@@ -74,8 +74,12 @@ fabric.properties
 # build files
 build
 dist
+/poetry.lock
 
 # MyPy
 .mypy_cache
 
 venv
+
+coverage
+coverage.xml
