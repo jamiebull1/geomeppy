@@ -1,4 +1,5 @@
 """Tool for visualising geometry."""
+
 from io import StringIO
 from tkinter import TclError
 from typing import Optional, TYPE_CHECKING  # noqa

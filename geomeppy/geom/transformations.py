@@ -63,12 +63,12 @@ class Transformation(object):
         # check if face normal is up or down
         if abs(zp.dot(z_axis)) < 0.99:
             # not facing up or down, set yPrime along z_axis
-            yp = z_axis - zp.dot(z_axis) * zp  # type: ignore[operator]
+            yp = z_axis - zp.dot(z_axis) * zp  # type: ignore[operator, call-overload]
             yp = yp.normalize()
             xp = yp.cross(zp)
         else:
             # facing up or down, set xPrime along -x_axis
-            xp = neg_x_axis - zp.dot(neg_x_axis) * zp  # type: ignore[operator]
+            xp = neg_x_axis - zp.dot(neg_x_axis) * zp  # type: ignore[operator, call-overload]
             xp = xp.normalize()
             yp = zp.cross(xp)
 

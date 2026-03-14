@@ -1,4 +1,5 @@
 """Heavy lifting geometry for IDF surfaces."""
+
 from collections.abc import MutableSequence
 from itertools import product
 from math import atan2
@@ -548,7 +549,7 @@ def project_inv(
     c = a
     for i in range(3):
         c -= w[i] * v[i]
-    c /= v[proj_axis]  # type: ignore[operator]
+    c /= v[proj_axis]  # type: ignore[operator, call-overload]
     w[proj_axis] = c
     return tuple(w)
 
