@@ -1,4 +1,5 @@
 """Tests for Segment class, representing a line segment."""
+
 from geomeppy.geom.segments import Segment
 from geomeppy.geom.vectors import Vector3D
 

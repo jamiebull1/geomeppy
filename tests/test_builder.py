@@ -1,4 +1,5 @@
 """Test for builder module."""
+
 from geomeppy.builder import Block
 
 breaking_coords = [

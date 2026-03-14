@@ -1,4 +1,5 @@
 """Core and perimeter zoning approach."""
+
 from itertools import product
 from geomeppy.geom.polygons import Polygon2D
 

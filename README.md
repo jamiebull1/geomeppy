@@ -1,7 +1,7 @@
 GeomEppy
 ========
-[![Build](https://img.shields.io/github/workflow/status/jamiebull1/geomeppy/Python%20package)](https://github.com/jamiebull1/geomeppy/)
- for Python 3.8 on Linux
+[![CI](https://github.com/jamiebull1/geomeppy/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiebull1/geomeppy/actions/workflows/ci.yml)
+ for Python 3.10, 3.11, 3.12, 3.13 via GitHub Actions
 
 [![CodeCov](https://img.shields.io/codecov/c/github/jamiebull1/geomeppy/master)](https://codecov.io/github/jamiebull1/geomeppy)
  via CodeCov

@@ -1,8 +1,9 @@
 """
 This module contains the implementation of `geomeppy.IDF`.
 """
+
 import itertools
-from typing import Any, Dict, List, Optional, Union  # noqa
+from typing import Any, Dict, Iterable, List, Optional, Union  # noqa
 
 from eppy.bunch_subclass import EpBunch  # noqa
 from eppy.idf_msequence import Idf_MSequence  # noqa
@@ -154,7 +155,7 @@ class IDF(PatchedIDF):
                 self.idfobjects[key.upper()]
                 for key in self.idd_index["ref2names"]["SurfaceNames"]
             ]
-        )
+        )  # type: Iterable[Any]
         if surface_type:
             surfaces = filter(
                 lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces
@@ -174,7 +175,7 @@ class IDF(PatchedIDF):
                 self.idfobjects[key.upper()]
                 for key in self.idd_index["ref2names"]["SubSurfNames"]
             ]
-        )
+        )  # type: Iterable[Any]
         if surface_type:
             surfaces = filter(
                 lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces
@@ -194,7 +195,7 @@ class IDF(PatchedIDF):
                 self.idfobjects[key.upper()]
                 for key in self.idd_index["ref2names"]["AllShadingSurfNames"]
             ]
-        )
+        )  # type: Iterable[Any]
         if surface_type:
             surfaces = filter(
                 lambda x: x.Surface_Type.lower() == surface_type.lower(), surfaces

@@ -1,13 +1,13 @@
 """Tool for visualising geometry."""
-from typing import Optional  # noqa
-from typing import TYPE_CHECKING
+
+from io import StringIO
+from tkinter import TclError
+from typing import Optional, TYPE_CHECKING  # noqa
 
 if TYPE_CHECKING:
     from geomeppy import IDF  # noqa
 from eppy.function_helpers import getcoords
 from eppy.iddcurrent import iddcurrent
-from six import StringIO
-from six.moves.tkinter import TclError
 
 try:
     from mpl_toolkits.mplot3d import Axes3D  # noqa
@@ -50,13 +50,13 @@ def view_idf(fname=None, idf_txt=None, test=False, idf=None):
     ax = plt.axes(projection="3d")
     collections = _get_collections(idf, opacity=0.5)
     for c in collections:
-        ax.add_collection3d(c)
+        ax.add_collection3d(c)  # type: ignore[attr-defined]
 
     # calculate and set the axis limits
     limits = _get_limits(idf=idf)
     ax.set_xlim(limits["x"])
     ax.set_ylim(limits["y"])
-    ax.set_zlim(limits["z"])
+    ax.set_zlim(limits["z"])  # type: ignore[attr-defined]
 
     if not test:
         plt.show()

@@ -11,6 +11,7 @@ fixes which have not yet made it to the released version of Eppy. These will be
 removed if/when they are added to Eppy.
 
 """
+
 import copy
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union  # noqa
@@ -68,7 +69,7 @@ def idfreader1(
     iddfile,  # type: str
     theidf,  # type: IDF
     conv=True,  # type: Optional[bool]
-    commdct=None,  # type: List[List[Dict[str, Any]]]
+    commdct=None,  # type: Optional[List[List[Dict[str, Any]]]]
     block=None,  # type: Optional[List]
 ):
     # type: (...) -> Tuple[Dict[str, Any], Optional[List[Any]], Any, List[List[Dict[str, Any]]], Any, Any]
@@ -293,7 +294,7 @@ class PatchedIDF(BaseIDF):
                 UserWarning,
             )
             namebunch(abunch, aname)
-        self.idfobjects[key].append(abunch)  # type: Dict[str, Idf_MSequence]
+        self.idfobjects[key].append(abunch)
         for k, v in kwargs.items():
             abunch[k] = v
         return abunch

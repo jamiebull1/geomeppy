@@ -1,4 +1,5 @@
 """Tests for polygons."""
+
 from geomeppy.geom.polygons import (
     break_polygons,
     Polygon2D,

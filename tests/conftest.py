@@ -1,9 +1,10 @@
 """A module containing pytest fixtures that are used in multiple places in the test suite."""
+
 import os
 
 import pytest
 from eppy.iddcurrent import iddcurrent
-from six import StringIO
+from io import StringIO
 
 from geomeppy.idf import IDF
 
