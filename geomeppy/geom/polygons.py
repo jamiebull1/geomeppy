@@ -491,8 +491,10 @@ def break_polygons(poly, hole):
     first_on_hole = links[1][1]
     last_on_hole = links[0][1]
 
+    same_winding = almostequal(hole.normal_vector, poly.normal_vector)
+    hole_coords = reversed(hole[:] + hole[:]) if same_winding else hole[:] + hole[:]
     new_poly = section(first_on_poly, last_on_poly, poly[:] + poly[:]) + section(
-        first_on_hole, last_on_hole, reversed(hole[:] + hole[:])
+        first_on_hole, last_on_hole, hole_coords
     )
 
     new_poly = Polygon3D(new_poly)

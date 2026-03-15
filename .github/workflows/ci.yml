@@ -35,13 +35,15 @@ jobs:
         run: mypy --ignore-missing-imports geomeppy
 
       - name: Run tests
-        run: pytest --fixtures -v --cov-config .coveragerc --cov=geomeppy --cov-report=xml tests
+        run: pytest -v --cov-config .coveragerc --cov=geomeppy --cov-report=xml tests
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.13'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ github.workspace }}/coverage.xml
+          fail_ci_if_error: true
 
   publish:
     needs: test
