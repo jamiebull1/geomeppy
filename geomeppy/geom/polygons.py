@@ -492,7 +492,7 @@ def break_polygons(poly, hole):
     last_on_hole = links[0][1]
 
     new_poly = section(first_on_poly, last_on_poly, poly[:] + poly[:]) + section(
-        first_on_hole, last_on_hole, reversed(hole[:] + hole[:])
+        first_on_hole, last_on_hole, hole[:] + hole[:]
     )
 
     new_poly = Polygon3D(new_poly)
