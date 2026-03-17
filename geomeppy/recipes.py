@@ -8,6 +8,7 @@ can be called on an existing `IDF` object like ``myidf.set_default_constructions
 from typing import Iterable, List, Optional, Tuple, Union  # noqa
 import warnings
 
+from eppy.bunch_subclass import BadEPFieldError
 from eppy.idf_msequence import Idf_MSequence  # noqa
 import numpy as np
 
@@ -264,14 +265,16 @@ def translate(
     """
     vector = Vector3D(*vector)
     for s in surfaces:
-        if not s.coords:
+        try:
+            new_coords = translate_coords(s.coords, vector)
+            s.setcoords(new_coords)
+        except BadEPFieldError:
             warnings.warn(
-                "%s was not affected by this operation since it does not define vertices."
+                "%s was not affected by this operation since it does not define "
+                "vertices."
                 % s.Name
             )
             continue
-        new_coords = translate_coords(s.coords, vector)
-        s.setcoords(new_coords)
 
 
 def translate_coords(coords, vector):
@@ -296,14 +299,16 @@ def scale(surfaces, factor, axes):
 
     """
     for s in surfaces:
-        if not s.coords:
+        try:
+            new_coords = scale_coords(s.coords, factor, axes)
+            s.setcoords(new_coords)
+        except BadEPFieldError:
             warnings.warn(
-                "%s was not affected by this operation since it does not define vertices."
+                "%s was not affected by this operation since it does not define "
+                "vertices."
                 % s.Name
             )
             continue
-        new_coords = scale_coords(s.coords, factor, axes)
-        s.setcoords(new_coords)
 
 
 def scale_coords(coords, factor, axes="xy"):
@@ -336,14 +341,16 @@ def rotate(surfaces, angle):
     """
     radians = np.deg2rad(angle)
     for s in surfaces:
-        if not s.coords:
+        try:
+            new_coords = rotate_coords(s.coords, radians)
+            s.setcoords(new_coords)
+        except BadEPFieldError:
             warnings.warn(
-                "%s was not affected by this operation since it does not define vertices."
+                "%s was not affected by this operation since it does not define "
+                "vertices."
                 % s.Name
             )
             continue
-        new_coords = rotate_coords(s.coords, radians)
-        s.setcoords(new_coords)
 
 
 def rotate_coords(coords, radians):
